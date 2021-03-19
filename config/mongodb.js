@@ -1,4 +1,4 @@
-const mangoose= require("mongoose");
+const mongoose= require("mongoose");
 
 // mangoose.connect("mongodb://localhost:27017/call-my-mover", {
 //   useNewUrlParser:true, 
