@@ -1,12 +1,19 @@
 let config = require("../../../config/config")
 let commenFunction = require('../common/Common')
 const UsersModel = require('../../models/customers');
+const VehicleModel = require('../../models/vehicleDetails');
+const DriverModel = require('../../models/driver')
+const Mongoose = require('mongoose')
+// const db = require('../models')
 const moment = require("moment");
 class users {
     constructor() {
         return {
             signUp: this.signUp.bind(this),
             verifyOtp: this.verifyOtp.bind(this),
+            getDriver: this.getDriver.bind(this),
+            insertDriver: this.insertDriver.bind(this),
+            getVehcle: this.getVehcle.bind(this)
         }
     }
 
@@ -96,6 +103,65 @@ class users {
             }
 
 
+        } catch (error) {
+            console.log("error in catch", error)
+            res.status(500).json({ success: false, message: "Internal server error", data: null })
+        }
+
+    }
+    async getDriver(req, res) {
+        try {
+            let data;
+            let errorMessage;
+            let successMessage;
+               data = await DriverModel.find()
+               successMessage = "Data get successfully"
+            if (errorMessage) {
+                res.status(400).json({ success: false, message: errorMessage })
+            } else {
+                res.status(200).json({ success: true, message: successMessage, data: data })
+            }
+        } catch (error) {
+            console.log("error in catch", error)
+            res.status(500).json({ success: false, message: "Internal server error", data: null })
+        }
+
+    }
+    async getVehcle(req, res) {
+        try {
+            let data;
+            let errorMessage;
+            let successMessage;
+               data = await VehicleModel.find().populate('vehicle_owner')
+               successMessage = "Data get successfully"
+            if (errorMessage) {
+                res.status(400).json({ success: false, message: errorMessage })
+            } else {
+                res.status(200).json({ success: true, message: successMessage, data: data })
+            }
+        } catch (error) {
+            console.log("error in catch", error)
+            res.status(500).json({ success: false, message: "Internal server error", data: null })
+        }
+
+    }
+////////incomplet temprory/////
+    async insertDriver(req, res) {
+        try {
+            let data;
+            let errorMessage;
+            let successMessage;
+            
+            req.body.vehicle_owner = Mongoose.Types.ObjectId(req.body.vehicle_owner)
+            console.log("hiii",req.body,  typeof req )
+            let saveData = new VehicleModel(req.body)
+            data = await saveData.save();
+            successMessage = "Data save sucessfully"
+            if (errorMessage) {
+                res.status(400).json({ success: false, message: errorMessage })
+            } else {
+                res.status(200).json({ success: true, message: successMessage, data: data })
+            }
         } catch (error) {
             console.log("error in catch", error)
             res.status(500).json({ success: false, message: "Internal server error", data: null })
