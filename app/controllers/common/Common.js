@@ -63,7 +63,7 @@ class Common {
           }
       }
       else {
-          return "please send proper parameter to the function";
+          return "please send proper parameter to the function jii";
       }
     }
 
