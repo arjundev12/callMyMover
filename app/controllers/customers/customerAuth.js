@@ -2,9 +2,6 @@ let config = require("../../../config/config")
 let commenFunction = require('../common/Common')
 const UsersModel = require('../../models/customers');
 const moment = require("moment");
-let data;
-let errorMessage;
-let successMessage;
 class users {
     constructor() {
         return {
@@ -29,9 +26,7 @@ class users {
             user.otp_details.otp = await this._randomOTP()
             user.otp_details.status = false
             user.otp_details.otp_time = await moment().format("DD.MM.YYYY HH.mm.ss")
-            console.log("user", user)
-            let updateData = await UsersModel.findOneAndUpdate({ _id: user._id }, user,{new:true})
-            successMessage = "Update successfully"
+            let updateData = await UsersModel.findOneAndUpdate({ _id: user._id }, user, { new: true })
             return updateData
         } catch (error) {
             throw error
@@ -39,10 +34,13 @@ class users {
     }
     async signUp(req, res) {
         try {
+            let data;
+            let errorMessage;
+            let successMessage;
             let getUser = await UsersModel.findOne({ number: Number(req.body.number) }).lean();
-            console.log("getUser", getUser)
             if (getUser) {
                 data = await this._resendOtp(getUser);
+                successMessage = "Update successfully"
             } else {
                 let saveData = new UsersModel({
                     number: req.body.number,
@@ -66,7 +64,9 @@ class users {
     }
     async verifyOtp(req, res) {
         try {
-
+            let data;
+            let errorMessage;
+            let successMessage;
             let { number, otp } = req.body
             let getUser = await UsersModel.findOne({ number: Number(number) }).lean();
             console.log("getUser", getUser)
@@ -74,18 +74,17 @@ class users {
                 let dt = moment().format("DD.MM.YYYY HH.mm.ss");
                 let endDate = moment(dt, "DD.MM.YYYY HH.mm.ss");
                 let startDate = moment(getUser.otp_details.otp_time, "DD.MM.YYYY HH.mm.ss");
-                console.log(",,,", getUser.otp_details.otp != Number(otp),getUser.otp_details.otp,Number(otp) )
                 if (getUser.otp_details.otp != Number(otp)) {
                     errorMessage = "Otp is invalid"
                 }
                 if (Number(endDate.diff(startDate, 'seconds')) > 120) {
                     errorMessage = "Time is expired"
-                   
-                }if(Number(endDate.diff(startDate, 'seconds')) <= 120 && getUser.otp_details.otp == Number(otp)){
+
+                } if (Number(endDate.diff(startDate, 'seconds')) <= 120 && getUser.otp_details.otp == Number(otp)) {
                     getUser.otp_details.status = true
                     getUser.otp_details.otp = 0
                     data = await UsersModel.findOneAndUpdate({ _id: getUser._id }, getUser)
-                    successMessage= "Otp verified sucessfully"
+                    successMessage = "Otp verified sucessfully"
                 }
             } else {
                 errorMessage = "Authentication is Failed"
