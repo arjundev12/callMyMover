@@ -9,6 +9,11 @@ let validationData= require('../middlewares/FrontendValidator');
 
 router.post('/sign-up', validationData.signUp, user_controller.signUp);
 router.put('/verify-otp', validationData.verifyOtp, user_controller.verifyOtp);
+router.get('/get-driver', user_controller.getDriver)
+router.post('/insert-driver', user_controller.insertDriver)
+router.get('/get-vehcle', user_controller.getVehcle)
+
+
 
 
 module.exports = router;
