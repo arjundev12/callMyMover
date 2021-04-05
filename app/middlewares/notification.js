@@ -63,7 +63,7 @@ _sendPushNotification = async (message, fcmtoken, data = null) => {
 
       }
     };
-    console.log("hiiiii",  typeof   payload.data.pickupLocation, payload.data.pickupLocation)
+    // console.log("hiiiii",  typeof   payload.data.pickupLocation, payload.data.pickupLocation)
     let token = [fcmtoken]
     //   let payload = { Notification: {title: "this is a notification" , body: "this is the body of the notification"}}
     // let options ={ priority : "high", timeToLive: 60*60*24}
@@ -84,12 +84,11 @@ _sendPushNotification = async (message, fcmtoken, data = null) => {
       timeToLive: 60 * 60 * 24
     }
     let response = await firebaseAdmin.messaging().sendToDevice(token, payload, option)
-    return payload
     console.log("response of notification", response)
   } catch (error) {
     console.log("error in notification", error)
   }
-  // return true
+  return true
 }
 module.exports = { _sendPushNotification }
 
