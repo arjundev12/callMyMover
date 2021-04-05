@@ -1,5 +1,5 @@
 const User = require('../../models/driver/user');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const authConfig = require('../../authConfig/auth');
 const auth = require('../../authConfig/auth');
