@@ -5,7 +5,17 @@ var walletSchema = new Schema({
     wallet: {
         type: String
     },
-    ammount: {
+    total_amount: {
+        type: String,
+        default: "0",
+        trim: true
+    },
+    referral_ammount: {
+        type: String,
+        default: "0",
+        trim: true
+    },
+    earning_ammount: {
         type: String,
         default: "0",
         trim: true
@@ -30,7 +40,7 @@ var walletSchema = new Schema({
         trim: true
     },
 
-}, { versionKey: false });
+}, { versionKey: false, timestamps:true });
 
 walletSchema.plugin(mongoosePaginate);
 let Walletmodel = mongoose.model('wallet', walletSchema);

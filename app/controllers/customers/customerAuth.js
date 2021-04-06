@@ -80,9 +80,11 @@ class users {
 
                 let saveData = new UsersModel(saveData1)
                 data = await saveData.save();
+                await commenFunction._createWallet(data._id, 'customer' )
                 successMessage = "Data save successfully"
             }
-            await commenFunction._sendMail("arjunsinghyed@gmail.com")
+            // await commenFunction._sendMail("arjunsinghyed@gmail.com")
+
             res.status(200).json({ code: 200, success: true, message: successMessage, data: data })
 
         } catch (error) {

@@ -126,9 +126,6 @@ completeRide = async (req, res) => {
                 //send notification on customer divice
                 let message = {
                     title: 'your order is completed by service provider',
-                    // body: JSON.stringify(data),
-                    orderId: data._id.toString(),
-                    // orderInfo: JSON.stringify(data.orderInfo),
                     time: Date.now().toString()
                 }
                 let fcmToken = req.body.fcmToken ? req.body.fcmToken :'cujP55WHQ1CAnv9WSmwj7J:APA91bGPu05dJ6zDrSREMbmFSSVw5QMD5zTPioGbj2CQIVYBrP3D8YpqaO9ObdPf3Apb3Nz79jSTpoUiOCjR91V6e8JSEodlrQkRqsafT_bdyzftwsKd6C48FjjVI3xQJ1sSYZieT1lt'
@@ -185,9 +182,9 @@ cancelOrder = async (req, res) => {
             let message = {
                 title: `your order is ${data.status} by service provider please try again`,
                 orderId: data._id.toString() ,
-                orderInfo: JSON.stringify(data.orderInfo),
+                // orderInfo: JSON.stringify(data.orderInfo),
                 time: Date.now().toString(),
-                body: data
+                // body: data
             }
             let fcmToken = req.body.fcmToken ?req.body.fcmToken :'cujP55WHQ1CAnv9WSmwj7J:APA91bGPu05dJ6zDrSREMbmFSSVw5QMD5zTPioGbj2CQIVYBrP3D8YpqaO9ObdPf3Apb3Nz79jSTpoUiOCjR91V6e8JSEodlrQkRqsafT_bdyzftwsKd6C48FjjVI3xQJ1sSYZieT1lt'
             let sendnotification = await Notification._sendPushNotification(message, fcmToken,data)

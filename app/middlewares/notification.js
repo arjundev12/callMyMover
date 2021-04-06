@@ -51,20 +51,22 @@ _sendPushNotification = async (message, fcmtoken, data = null) => {
     console.log("hiiiii",  typeof   data, data)
 
     var payload = {
-      notification: message,
+      // notification: message,
       data : {
+        title: message.title,
+        time : message.time,
         _id: data._id.toString(),
         status: data.status,
-        estimateTime: JSON.stringify(data.estimateTime),
-        pickupLocation:  JSON.stringify( data.pickupLocation),
-        stoppage:  JSON.stringify(data.stoppage),
-        dropLocation:  JSON.stringify(data.dropLocation),
-        orderInfo:  JSON.stringify(data.orderInfo),
+        estimateTime: `${data.estimateTime.time} ${data.estimateTime.unit}`,
+        estimateDistance: `${data.estimateDistance.distance} ${data.estimateDistance.unit}`,
+        pickupLocation:  data.pickupLocation[0].address,
+        dropLocation:  data.dropLocation[0].address,
+        job_cost:  data.orderInfo.job_cost
 
       }
     };
     // console.log("hiiiii",  typeof   payload.data.pickupLocation, payload.data.pickupLocation)
-    let token = [fcmtoken]
+    let token = ["dJGkGbfsTQOp2SeCkwlHHz:APA91bFz0qNQdunI0umBjuLxnqAIQ9OC7LTeOL9mNPGJHQXjI8ZLC5KVfs-OULu1QoBbVNXfYZxUPO2QsgKD78KcfJqL0KE4ZM542fmcc9lVcBN03zt1SoHp5xmANDMVfHImdzQOfj2D"]
     //   let payload = { Notification: {title: "this is a notification" , body: "this is the body of the notification"}}
     // let options ={ priority : "high", timeToLive: 60*60*24}
     // sendToDevice(token, payload, option)
@@ -78,7 +80,7 @@ _sendPushNotification = async (message, fcmtoken, data = null) => {
       })
       await saveNotification.save()
     }
-    // console.log(payload)
+    console.log(payload)
     var option = {
       priority: "high",
       timeToLive: 60 * 60 * 24

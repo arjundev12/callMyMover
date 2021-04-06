@@ -5,6 +5,9 @@ var OrderSchema = new Schema({
   estimateTime: {
     type: { any: [Schema.Types.Mixed] }
   },
+  estimateDistance: {
+    type: { any: [Schema.Types.Mixed] }
+  },
   pickupLocation: {
     type: { any: [Schema.Types.Mixed] }
   },

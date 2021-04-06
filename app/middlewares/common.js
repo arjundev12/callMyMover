@@ -4,6 +4,7 @@ const constant = require('../utils/constant')
 console.log("api key1111", process.env.SENDGRID_API_KEY)
 sgMail.setApiKey(process.env.SENDGRID_API_KEY)
 const geocoder = require('../utils/geocoder')
+const walletModel = require('../models/wallet')
 
 const request = require('request');
 
@@ -14,7 +15,8 @@ class common {
             _coordinatesInToArray: this._coordinatesInToArray.bind(this),
             _coordinatesInToObj: this._coordinatesInToObj.bind(this),
             _sendMail: this._sendMail.bind(this),
-            _getLocationName: this._getLocationName.bind(this)
+            _getLocationName: this._getLocationName.bind(this),
+            _createWallet: this._createWallet.bind(this)
 
         }
     }
@@ -56,6 +58,7 @@ class common {
         }
 
     }
+   
     async _sendMail(toMail, text = constant.defaultMsg, subject = constant.defaultSub) {
         try {
             const msg = {
@@ -68,12 +71,26 @@ class common {
 
             let sendMail = await sgMail.send(msg)
             console.log("sendMail", sendMail)
-            return true
         } catch (error) {
             console.error("hiiii", error)
-            // throw error
-            return
+            
         }
+        return true
+    }
+    async _createWallet(id , type) {
+        try {
+            let saveData1 = {}
+             type == 'driver' ? saveData1.driver_id = id : saveData1.customer_id = id ;
+             saveData1.wallet_type = type;
+             saveData1.status = 'active'
+
+            let saveData = new walletModel(saveData1)
+            await saveData.save();
+            console.log("wallet create successfully")
+        } catch (error) {
+            console.error("error in _createWallet", error)
+        }
+        return true
 
     }
 
