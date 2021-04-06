@@ -8,7 +8,6 @@ const walletModel = require('../models/wallet')
 
 const request = require('request');
 
-
 class common {
     constructor() {
         return {
@@ -72,8 +71,7 @@ class common {
             let sendMail = await sgMail.send(msg)
             console.log("sendMail", sendMail)
         } catch (error) {
-            console.error("hiiii", error)
-            
+            console.error("error in _sendMail", error)
         }
         return true
     }
@@ -96,4 +94,3 @@ class common {
 
 }
 module.exports = new common();
-

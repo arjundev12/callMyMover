@@ -43,15 +43,15 @@ updateOrder = async (req, res) => {
                 return res.send({ code: 200, success: true, message: `${data.status} successfully`, data: data.orderInfo })
             } 
             else {
-                return res.send({ code: 500, success: false, message: "Somthing went wrong", data: null })
+                return res.send({ code: 500, success: false, message: "Somthing went wrong", })
             }
         } else {
-            return res.send({ code: 400, success: false, message: `This order is allready ${order.status} by someone`, data: null })
+            return res.send({ code: 400, success: false, message: `This order is allready ${order.status} by someone`, })
         }
 
     } catch (error) {
         console.log("error in catch", error)
-        res.status(500).json({ code: 500, success: false, message: "Internal server error", data: null })
+        res.status(500).json({ code: 500, success: false, message: "Internal server error", })
     }
 
 }
@@ -75,7 +75,7 @@ getOrders = async (req, res) => {
         res.status(200).json({ code: 200, success: true, message: "Get Successfully list", data: data })
     } catch (error) {
         console.log("error in catch", error)
-        res.status(500).json({ code: 500, success: false, message: "Internal server error", data: null })
+        res.status(500).json({ code: 500, success: false, message: "Internal server error", })
     }
 }
 getOrdersDetails = async (req, res) => {
@@ -85,13 +85,24 @@ getOrdersDetails = async (req, res) => {
             // status: 'new'
         }
         let data = await Orders.findOne(query).populate('owner', 'number location name ride_otp').lean()
-        data.dropLocation = await commonFunction._coordinatesInToObj(data.dropLocation)
-        data.pickupLocation = await commonFunction._coordinatesInToObj(data.pickupLocation)
+        // data.dropLocation = await commonFunction._coordinatesInToObj(data.dropLocation)
+        // data.pickupLocation = await commonFunction._coordinatesInToObj(data.pickupLocation)
         data.stoppage = await commonFunction._coordinatesInToObj(data.stoppage)
+        console.log(data)
+        data.dropLocation = {
+            address: data.dropLocation[0].address,
+            lat : data.dropLocation[0].coordinates[0].toString(),
+            long : data.dropLocation[0].coordinates[1].toString(),
+        }
+        data.pickupLocation={
+            address: data.pickupLocation[0].address,
+            lat : data.pickupLocation[0].coordinates[0].toString(),
+            long : data.pickupLocation[0].coordinates[1].toString(),
+        }
         res.status(200).json({ code: 200, success: true, message: "Get Successfully details", data: data })
     } catch (error) {
         console.log("error in catch", error)
-        res.status(500).json({ code: 500, success: false, message: "Internal server error", data: null })
+        res.status(500).json({ code: 500, success: false, message: "Internal server error",  })
     }
 }
 verifyRideOtp = async (req, res) => {
@@ -109,7 +120,7 @@ verifyRideOtp = async (req, res) => {
 
     } catch (error) {
         console.log("error in catch", error)
-        res.status(500).json({ code: 500, success: false, message: "Internal server error", data: null })
+        res.status(500).json({ code: 500, success: false, message: "Internal server error", })
     }
 }
 completeRide = async (req, res) => {
@@ -132,15 +143,15 @@ completeRide = async (req, res) => {
                 let sendnotification = await Notification._sendPushNotification(message, fcmToken, data )
                 return res.send({ code: 200, success: true, message: "completed successfully", data: sendnotification })
             } else {
-                return res.send({ code: 500, success: false, message: "Somthing went wrong", data: null })
+                return res.send({ code: 500, success: false, message: "Somthing went wrong", })
             }
         } else {
-            return res.send({ code: 400, success: false, message: "Somthing went wrong", data: null })
+            return res.send({ code: 400, success: false, message: "Somthing went wrong", })
         }
 
     } catch (error) {
         console.log("error in catch", error)
-        res.status(500).json({ code: 500, success: false, message: "Internal server error", data: null })
+        res.status(500).json({ code: 500, success: false, message: "Internal server error", })
     }
 }
 getCompleteOrders = async (req, res) => {
@@ -167,7 +178,7 @@ getCompleteOrders = async (req, res) => {
         res.status(200).json({ code: 200, success: true, message: "Get Successfully list", data: data })
     } catch (error) {
         console.log("error in catch", error)
-        res.status(500).json({ code: 500, success: false, message: "Internal server error", data: null })
+        res.status(500).json({ code: 500, success: false, message: "Internal server error", })
     }
 }
 cancelOrder = async (req, res) => {
@@ -192,7 +203,7 @@ cancelOrder = async (req, res) => {
         
     } catch (error) {
         console.log("error in catch", error)
-        res.status(500).json({ code: 500, success: false, message: "Internal server error", data: null })
+        res.status(500).json({ code: 500, success: false, message: "Internal server error", })
     }
 }
 
