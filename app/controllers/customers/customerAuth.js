@@ -3,6 +3,7 @@ let commenFunction = require('../../middlewares/common')
 const UsersModel = require('../../models/customer/customers');
 const VehicleModel = require('../../models/customer/vehicleDetails');
 const DriverModel = require('../../models/customer/driver')
+const walletModel = require('../../models/wallet')
 const Mongoose = require('mongoose')
 const authConfig = require('../../authConfig/auth')
 const jwt = require('jsonwebtoken')
@@ -23,7 +24,8 @@ class users {
             getNearestDriver: this.getNearestDriver.bind(this),
             getCustomerDetails: this.getCustomerDetails.bind(this),
             customerUpdate: this.customerUpdate.bind(this),
-            getLocationName: this.getLocationName.bind(this)
+            getLocationName: this.getLocationName.bind(this),
+            getWallet : this.getWallet.bind(this)
         }
     }
 
@@ -364,6 +366,17 @@ class users {
         try {
             console.log("lat, long", req.body)
             let data = await commenFunction._getLocationName(req.body.lat, req.body.long)
+            res.status(200).json({ code: 200, success: true, message: "User update successfully", data: data })
+
+        } catch (error) {
+            console.log("error in catch", error)
+            res.status(500).json({ code: 500, success: false, message: "Internal server error", data: null })
+        }
+    }
+    async getWallet(req, res) {
+        try {
+            console.log("lat, long", req.body)
+            let data = await walletModel.findOne({customer_id : req.query.id})
             res.status(200).json({ code: 200, success: true, message: "User update successfully", data: data })
 
         } catch (error) {

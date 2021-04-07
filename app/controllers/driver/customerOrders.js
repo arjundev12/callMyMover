@@ -23,31 +23,30 @@ findAllOrders = async (req, res) => {
 updateOrder = async (req, res) => {
     try {
         let order = await Orders.findOne({ _id: req.body.orderId })
-        if (order.status == 'new' || order.status == 'canceled') {
+        // if (order.status == 'new' || order.status == 'canceled') {
             let data = await Orders.findOneAndUpdate({ _id: req.body.orderId }, {
                 $set: {
                     driverId: req.body.driverId,
                     status: req.body.status
                 }
             }, { new: true });
-            if (data.status == 'accepted'  ||data.status == 'canceled' ) {
+            // if (data.status == 'accepted'  ||data.status == 'canceled' ) {
                 //send notification on customer divice
+                console.log("data.status",data.status)
                 let message = {
                     title: `your order is ${data.status} by service provider`,
-                    orderId: data._id.toString() ,
-                    orderInfo: JSON.stringify(data.orderInfo),
                     time: Date.now().toString()
                 }
-                let fcmToken = req.body.fcmToken ?req.body.fcmToken :'cujP55WHQ1CAnv9WSmwj7J:APA91bGPu05dJ6zDrSREMbmFSSVw5QMD5zTPioGbj2CQIVYBrP3D8YpqaO9ObdPf3Apb3Nz79jSTpoUiOCjR91V6e8JSEodlrQkRqsafT_bdyzftwsKd6C48FjjVI3xQJ1sSYZieT1lt'
+                let fcmToken = req.body.fcmToken ?req.body.fcmToken :'dJGkGbfsTQOp2SeCkwlHHz:APA91bFz0qNQdunI0umBjuLxnqAIQ9OC7LTeOL9mNPGJHQXjI8ZLC5KVfs-OULu1QoBbVNXfYZxUPO2QsgKD78KcfJqL0KE4ZM542fmcc9lVcBN03zt1SoHp5xmANDMVfHImdzQOfj2D'
                 let sendnotification = await Notification._sendPushNotification(message, fcmToken,data)
                 return res.send({ code: 200, success: true, message: `${data.status} successfully`, data: data.orderInfo })
-            } 
-            else {
-                return res.send({ code: 500, success: false, message: "Somthing went wrong", })
-            }
-        } else {
-            return res.send({ code: 400, success: false, message: `This order is allready ${order.status} by someone`, })
-        }
+            // } 
+            // else {
+            //     return res.send({ code: 500, success: false, message: "Somthing went wrong", })
+            // }
+        // } else {
+        //     return res.send({ code: 400, success: false, message: `This order is allready ${order.status} by someone`, })
+        // }
 
     } catch (error) {
         console.log("error in catch", error)
@@ -139,7 +138,7 @@ completeRide = async (req, res) => {
                     title: 'your order is completed by service provider',
                     time: Date.now().toString()
                 }
-                let fcmToken = req.body.fcmToken ? req.body.fcmToken :'cujP55WHQ1CAnv9WSmwj7J:APA91bGPu05dJ6zDrSREMbmFSSVw5QMD5zTPioGbj2CQIVYBrP3D8YpqaO9ObdPf3Apb3Nz79jSTpoUiOCjR91V6e8JSEodlrQkRqsafT_bdyzftwsKd6C48FjjVI3xQJ1sSYZieT1lt'
+                let fcmToken = req.body.fcmToken ? req.body.fcmToken :'dJGkGbfsTQOp2SeCkwlHHz:APA91bFz0qNQdunI0umBjuLxnqAIQ9OC7LTeOL9mNPGJHQXjI8ZLC5KVfs-OULu1QoBbVNXfYZxUPO2QsgKD78KcfJqL0KE4ZM542fmcc9lVcBN03zt1SoHp5xmANDMVfHImdzQOfj2D'
                 let sendnotification = await Notification._sendPushNotification(message, fcmToken, data )
                 return res.send({ code: 200, success: true, message: "completed successfully", data: sendnotification })
             } else {
@@ -197,7 +196,7 @@ cancelOrder = async (req, res) => {
                 time: Date.now().toString(),
                 // body: data
             }
-            let fcmToken = req.body.fcmToken ?req.body.fcmToken :'cujP55WHQ1CAnv9WSmwj7J:APA91bGPu05dJ6zDrSREMbmFSSVw5QMD5zTPioGbj2CQIVYBrP3D8YpqaO9ObdPf3Apb3Nz79jSTpoUiOCjR91V6e8JSEodlrQkRqsafT_bdyzftwsKd6C48FjjVI3xQJ1sSYZieT1lt'
+            let fcmToken = req.body.fcmToken ?req.body.fcmToken :'dJGkGbfsTQOp2SeCkwlHHz:APA91bFz0qNQdunI0umBjuLxnqAIQ9OC7LTeOL9mNPGJHQXjI8ZLC5KVfs-OULu1QoBbVNXfYZxUPO2QsgKD78KcfJqL0KE4ZM542fmcc9lVcBN03zt1SoHp5xmANDMVfHImdzQOfj2D'
             let sendnotification = await Notification._sendPushNotification(message, fcmToken,data)
             res.status(200).json({ code: 200, success: true, message: "Order canceled successfully", data: data.orderInfo })
         
