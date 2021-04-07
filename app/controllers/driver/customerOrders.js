@@ -86,7 +86,7 @@ getOrdersDetails = async (req, res) => {
         let data = await Orders.findOne(query).populate('owner', 'number location name ride_otp').lean()
         // data.dropLocation = await commonFunction._coordinatesInToObj(data.dropLocation)
         // data.pickupLocation = await commonFunction._coordinatesInToObj(data.pickupLocation)
-        data.stoppage = await commonFunction._coordinatesInToObj(data.stoppage)
+        // data.stoppage = await commonFunction._coordinatesInToObj(data.stoppage)
         console.log(data)
         data.dropLocation = {
             address: data.dropLocation[0].address,
@@ -98,6 +98,13 @@ getOrdersDetails = async (req, res) => {
             lat : data.pickupLocation[0].coordinates[0].toString(),
             long : data.pickupLocation[0].coordinates[1].toString(),
         }
+        data.stoppage = data.stoppage.map((item)=>{
+            return {
+                address : item.address,
+                lat : item.coordinates[0].toString(),
+                long: item.coordinates[1].toString()
+            }
+        })
         res.status(200).json({ code: 200, success: true, message: "Get Successfully details", data: data })
     } catch (error) {
         console.log("error in catch", error)
