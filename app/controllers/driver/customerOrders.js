@@ -102,7 +102,8 @@ getOrdersDetails = async (req, res) => {
             return {
                 address : item.address,
                 lat : item.coordinates[0].toString(),
-                long: item.coordinates[1].toString()
+                long: item.coordinates[1].toString(),
+                estimateDistance : "5 km"
             }
         })
         res.status(200).json({ code: 200, success: true, message: "Get Successfully details", data: data })
