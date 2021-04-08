@@ -35,6 +35,7 @@ router.put('/cancel-order',driverOrders.cancelOrder);
 
 
 
+
 router.post('/update-location',Validator.locationUpdate,driver.updateDriverLocation);
 router.post('/get-location',Validator.location,driver.getDriverLocation);
 

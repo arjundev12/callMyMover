@@ -24,26 +24,26 @@ updateOrder = async (req, res) => {
     try {
         let order = await Orders.findOne({ _id: req.body.orderId })
         // if (order.status == 'new' || order.status == 'canceled') {
-            let data = await Orders.findOneAndUpdate({ _id: req.body.orderId }, {
-                $set: {
-                    driverId: req.body.driverId,
-                    status: req.body.status
-                }
-            }, { new: true });
-            // if (data.status == 'accepted'  ||data.status == 'canceled' ) {
-                //send notification on customer divice
-                console.log("data.status",data.status)
-                let message = {
-                    title: `your order is ${data.status} by service provider`,
-                    time: Date.now().toString()
-                }
-                let fcmToken = req.body.fcmToken ?req.body.fcmToken :'dJGkGbfsTQOp2SeCkwlHHz:APA91bFz0qNQdunI0umBjuLxnqAIQ9OC7LTeOL9mNPGJHQXjI8ZLC5KVfs-OULu1QoBbVNXfYZxUPO2QsgKD78KcfJqL0KE4ZM542fmcc9lVcBN03zt1SoHp5xmANDMVfHImdzQOfj2D'
-                let sendnotification = await Notification._sendPushNotification(message, fcmToken,data)
-                return res.send({ code: 200, success: true, message: `${data.status} successfully`, data: data.orderInfo })
-            // } 
-            // else {
-            //     return res.send({ code: 500, success: false, message: "Somthing went wrong", })
-            // }
+        let data = await Orders.findOneAndUpdate({ _id: req.body.orderId }, {
+            $set: {
+                driverId: req.body.driverId,
+                status: req.body.status
+            }
+        }, { new: true });
+        // if (data.status == 'accepted'  ||data.status == 'canceled' ) {
+        //send notification on customer divice
+        console.log("data.status", data.status)
+        let message = {
+            title: `your order is ${data.status} by service provider`,
+            time: Date.now().toString()
+        }
+        let fcmToken = req.body.fcmToken ? req.body.fcmToken : 'dJGkGbfsTQOp2SeCkwlHHz:APA91bFz0qNQdunI0umBjuLxnqAIQ9OC7LTeOL9mNPGJHQXjI8ZLC5KVfs-OULu1QoBbVNXfYZxUPO2QsgKD78KcfJqL0KE4ZM542fmcc9lVcBN03zt1SoHp5xmANDMVfHImdzQOfj2D'
+        let sendnotification = await Notification._sendPushNotification(message, fcmToken, data)
+        return res.send({ code: 200, success: true, message: `${data.status} successfully`, data: data.orderInfo })
+        // } 
+        // else {
+        //     return res.send({ code: 500, success: false, message: "Somthing went wrong", })
+        // }
         // } else {
         //     return res.send({ code: 400, success: false, message: `This order is allready ${order.status} by someone`, })
         // }
@@ -90,26 +90,26 @@ getOrdersDetails = async (req, res) => {
         console.log(data)
         data.dropLocation = {
             address: data.dropLocation[0].address,
-            lat : data.dropLocation[0].coordinates[0].toString(),
-            long : data.dropLocation[0].coordinates[1].toString(),
+            lat: data.dropLocation[0].coordinates[0].toString(),
+            long: data.dropLocation[0].coordinates[1].toString(),
         }
-        data.pickupLocation={
+        data.pickupLocation = {
             address: data.pickupLocation[0].address,
-            lat : data.pickupLocation[0].coordinates[0].toString(),
-            long : data.pickupLocation[0].coordinates[1].toString(),
+            lat: data.pickupLocation[0].coordinates[0].toString(),
+            long: data.pickupLocation[0].coordinates[1].toString(),
         }
-        data.stoppage = data.stoppage.map((item)=>{
+        data.stoppage = data.stoppage.map((item) => {
             return {
-                address : item.address,
-                lat : item.coordinates[0].toString(),
+                address: item.address,
+                lat: item.coordinates[0].toString(),
                 long: item.coordinates[1].toString(),
-                estimateDistance : "5 km"
+                estimateDistance: "5 km"
             }
         })
         res.status(200).json({ code: 200, success: true, message: "Get Successfully details", data: data })
     } catch (error) {
         console.log("error in catch", error)
-        res.status(500).json({ code: 500, success: false, message: "Internal server error",  })
+        res.status(500).json({ code: 500, success: false, message: "Internal server error", })
     }
 }
 verifyRideOtp = async (req, res) => {
@@ -132,9 +132,9 @@ verifyRideOtp = async (req, res) => {
 }
 completeRide = async (req, res) => {
     try {
-       
-        if ( req.body.status == 'completed') {
-              let getOrder =await Orders.findOne({ _id: req.body.orderId })
+
+        if (req.body.status == 'completed') {
+            let getOrder = await Orders.findOne({ _id: req.body.orderId })
             let data = await Orders.findOneAndUpdate({ _id: req.body.orderId }, {
                 $set: {
                     status: req.body.status
@@ -146,8 +146,8 @@ completeRide = async (req, res) => {
                     title: 'your order is completed by service provider',
                     time: Date.now().toString()
                 }
-                let fcmToken = req.body.fcmToken ? req.body.fcmToken :'dJGkGbfsTQOp2SeCkwlHHz:APA91bFz0qNQdunI0umBjuLxnqAIQ9OC7LTeOL9mNPGJHQXjI8ZLC5KVfs-OULu1QoBbVNXfYZxUPO2QsgKD78KcfJqL0KE4ZM542fmcc9lVcBN03zt1SoHp5xmANDMVfHImdzQOfj2D'
-                let sendnotification = await Notification._sendPushNotification(message, fcmToken, data )
+                let fcmToken = req.body.fcmToken ? req.body.fcmToken : 'dJGkGbfsTQOp2SeCkwlHHz:APA91bFz0qNQdunI0umBjuLxnqAIQ9OC7LTeOL9mNPGJHQXjI8ZLC5KVfs-OULu1QoBbVNXfYZxUPO2QsgKD78KcfJqL0KE4ZM542fmcc9lVcBN03zt1SoHp5xmANDMVfHImdzQOfj2D'
+                let sendnotification = await Notification._sendPushNotification(message, fcmToken, data)
                 return res.send({ code: 200, success: true, message: "completed successfully", data: sendnotification })
             } else {
                 return res.send({ code: 500, success: false, message: "Somthing went wrong", })
@@ -172,12 +172,12 @@ getCompleteOrders = async (req, res) => {
             select: 'status updatedAt dropLocation pickupLocation orderInfo driverId ',
         }
         let query = {
-            $and:[{status: req.body.status},
-            {driverId:mongoose.Types.ObjectId(req.body.driverId) }]
+            $and: [{ status: req.body.status },
+            { driverId: mongoose.Types.ObjectId(req.body.driverId) }]
         }
         let data = await Orders.paginate(query, options)
         for (let item of data.docs) {
-            let owner = { name : item.owner.name }
+            let owner = { name: item.owner.name }
             item.dropLocation = await commonFunction._coordinatesInToObj(item.dropLocation)
             item.pickupLocation = await commonFunction._coordinatesInToObj(item.pickupLocation)
             item.owner = owner
@@ -190,29 +190,40 @@ getCompleteOrders = async (req, res) => {
 }
 cancelOrder = async (req, res) => {
     try {
-            let data = await Orders.findOneAndUpdate({ _id: req.body.orderId }, {
+        let query1 = {}
+        if (req.body.status == 'canceled') {
+            query1.status = req.body.status
+        }
+        if (req.body.reason) {
+            query1 = {
                 $set: {
-                    driverId: req.body.driverId,
-                    status: 'canceled'
+                    status: req.body.status
+                },
+                $addToSet: {
+                    cancel_reasons: {
+                        driverId: req.body.driverId,
+                        reason: req.body.reason
+                    },
+                    cancel_by: req.body.driverId
                 }
-            }, { new: true });
-            await Orders.findOneAndUpdate({_id: req.body.orderId}, {$addToSet:{cancel_by: req.body.driverId}})
-            let message = {
-                title: `your order is ${data.status} by service provider please try again`,
-                orderId: data._id.toString() ,
-                // orderInfo: JSON.stringify(data.orderInfo),
-                time: Date.now().toString(),
-                // body: data
             }
-            let fcmToken = req.body.fcmToken ?req.body.fcmToken :'dJGkGbfsTQOp2SeCkwlHHz:APA91bFz0qNQdunI0umBjuLxnqAIQ9OC7LTeOL9mNPGJHQXjI8ZLC5KVfs-OULu1QoBbVNXfYZxUPO2QsgKD78KcfJqL0KE4ZM542fmcc9lVcBN03zt1SoHp5xmANDMVfHImdzQOfj2D'
-            let sendnotification = await Notification._sendPushNotification(message, fcmToken,data)
-            res.status(200).json({ code: 200, success: true, message: "Order canceled successfully", data: data.orderInfo })
-        
+        }
+        let data = await Orders.findOneAndUpdate({ _id: req.body.orderId }, query1, { new: true });
+        let message = {
+            title: `your order is ${data.status} by service provider please try again`,
+            orderId: data._id.toString(),
+            time: Date.now().toString(),
+        }
+        let fcmToken = req.body.fcmToken ? req.body.fcmToken : 'dJGkGbfsTQOp2SeCkwlHHz:APA91bFz0qNQdunI0umBjuLxnqAIQ9OC7LTeOL9mNPGJHQXjI8ZLC5KVfs-OULu1QoBbVNXfYZxUPO2QsgKD78KcfJqL0KE4ZM542fmcc9lVcBN03zt1SoHp5xmANDMVfHImdzQOfj2D'
+        let sendnotification = await Notification._sendPushNotification(message, fcmToken, data)
+        res.status(200).json({ code: 200, success: true, message: "Order canceled successfully", data: data.orderInfo })
+
     } catch (error) {
         console.log("error in catch", error)
         res.status(500).json({ code: 500, success: false, message: "Internal server error", })
     }
 }
+
 
 module.exports = {
     findAllOrders,
@@ -222,5 +233,5 @@ module.exports = {
     verifyRideOtp,
     completeRide,
     getCompleteOrders,
-    cancelOrder
+    cancelOrder,
 }

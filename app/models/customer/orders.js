@@ -42,6 +42,9 @@ var OrderSchema = new Schema({
   },
   cancel_by: {
     type: { any: [Schema.Types.Mixed] }
+  },
+  cancel_reasons: {
+    type: { any: [Schema.Types.Mixed] }
   }
 }, { timestamps: true });
 OrderSchema.plugin(mongoosePaginate);
