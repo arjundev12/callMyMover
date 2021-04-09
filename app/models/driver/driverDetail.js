@@ -1,28 +1,28 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-const crypto=require('crypto');
+const crypto = require('crypto');
 const driverSchema = Schema({
   Name: {
     type: Number,
-    default: ""
+    default: "service provider"
   },
-    ownVechile:{  
+  ownVechile: {
     type: String,
-    enum:["yes","no"]
+    enum: ["yes", "no"]
 
   },
   cityId: {
     type: Schema.Types.ObjectId,
-    ref:'City'
-},
-zipCodeId: {
-  type: Schema.Types.ObjectId,
-  ref:'zipCode'
-},
+    ref: 'City'
+  },
+  zipCodeId: {
+    type: Schema.Types.ObjectId,
+    ref: 'zipCode'
+  },
 },
   {
     timestamps: true
 
   });
-  const Driver = mongoose.model('Driver', driverSchema);
+const Driver = mongoose.model('Driver', driverSchema);
 module.exports = Driver;

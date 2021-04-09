@@ -35,9 +35,10 @@ app.use(function (req, res, next) { // Website you wish to allow to connect
 });
 app.use('/api/customer', require('./app/routes/customerRouts'));
 app.use('/api/driver', require('./app/routes/driverRouts'));
+app.use('/api/admin', require('./app/routes/adminRouts'));
 
 // listen for requests   
-const io = require('./socket').listen(http);
+// const io = require('./socket').listen(http);
 
 http.listen(3000, () => {
     console.log("Server is listening on port 3000");

@@ -11,7 +11,6 @@ var VechileSchema = new Schema({
     type: String,
     trim: true,
     require: true
-
   },
   vechilType:{
     type:String,

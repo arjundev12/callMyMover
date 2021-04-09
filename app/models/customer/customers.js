@@ -4,13 +4,18 @@ const Schema = mongoose.Schema;
 var UsersSchema = new Schema({
   name: {
     type: String,
-    trim: true
+    trim: true,
+    default: 'customer'
   },
   number: {
     type: String,
     trim: true,
     require: true
 
+  },
+  countryCode: {
+    type: String,
+    default: "91"
   },
   // type: { type: String },
   // coordinates: [Number],

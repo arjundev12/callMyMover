@@ -177,6 +177,10 @@ class customerValidation {
                         notEmpty: true, 
                         errorMessage: { "field_name": "estimateTime", "error_msg": 'estimateTime is required' },
                     },
+                    estimateDistance: {
+                        notEmpty: true, 
+                        errorMessage: { "field_name": "estimateDistance", "error_msg": 'estimateDistance is required' },
+                    },
                     pickupLocation: {
                         isArray: true,
                         errorMessage: { "field_name": "pickupLocation", "error_msg": 'pickupLocation is required as an array' },

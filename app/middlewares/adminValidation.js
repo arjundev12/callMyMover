@@ -3,11 +3,12 @@
 //     validationResult
 // } =  require('express-validator');
 
-class FrontEntValidator {
+class adminValidation {
     constructor() {
         return {
-            signUp: this.signUp.bind(this),
+            createAdmin: this.createAdmin.bind(this),
             verifyOtp: this.verifyOtp.bind(this)
+            
 
         }
     }
@@ -28,18 +29,21 @@ class FrontEntValidator {
     }
 
     
-    async signUp(req, res, next) {
+    async createAdmin(req, res, next) {
         // return next();
         if (Object.keys(req.body).length <= 12) {
                 req.checkBody({
-                    number: {
+                    email: {
                         notEmpty: true,
-                        matches: {
+                        isEmail: {
                             // more than one options must be passed as arrays
-                            options: /^[0-9]{6,10}$/i,
-                            // errorMessage: 'Mobile number should contain minimum 10 number'
-                            errorMessage: { "field_name": "number", "error_msg": 'Mobile number should contain minimum 6 number' },
+                            // errorMessage: 'Invalid email'
+                            errorMessage: { "field_name": "email", "error_msg": 'Fill a valid email' },
                         },
+                        errorMessage: { "field_name": "email", "error_msg": 'Email address is required' },
+                    },
+                    password: {
+                        notEmpty: true,
                         errorMessage: { "field_name": "number", "error_msg": 'Contact Number is required' },
                     },
                     
@@ -100,4 +104,4 @@ class FrontEntValidator {
     }
 }
 
-module.exports = new FrontEntValidator();
+module.exports = new adminValidation();
