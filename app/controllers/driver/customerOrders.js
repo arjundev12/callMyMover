@@ -1,5 +1,6 @@
 const Orders = require('../../models/customer/orders');
-const commonFunction = require('../../middlewares/common')
+const FcmToken = require('../../models/fcmToken');
+const commonFunction = require('../../middlewares/common');
 const Notification = require('../../middlewares/notification');
 const { verifyOtp } = require('../../middlewares/driverValidation');
 const mongoose = require('mongoose')
@@ -224,7 +225,35 @@ cancelOrder = async (req, res) => {
     }
 }
 
+setFcmToken = async (req, res) => {
+    try {
+       
+       if (req.body.fcmToken){
+        let data
+        let query = { status: 'active' }
+        let setData = {fcmToken :req.body.fcmToken }
+        if(req.body.userId){
+            setData.userId = req.body.userId
+            query.userId = req.body.userId
+        }
+        console.log("query", query, "setData", setData)
+        data = await FcmToken.findOne(query);
+        if (data){
+         data = await FcmToken.findOneAndUpdate(query, {$set :setData}, { new: true });
+        }else{
+            let saveData = new FcmToken(setData)
+            data = await saveData.save();
+        }
+        res.status(200).json({ code: 200, success: true, message: "Token set successfully", data:data })
+       }else{
+        res.json({ code: 403, success: false, message: "Fcm token is required", })
+       }        
 
+    } catch (error) {
+        console.log("error in catch", error)
+        res.status(500).json({ code: 500, success: false, message: "Internal server error", })
+    }
+}
 module.exports = {
     findAllOrders,
     updateOrder,
@@ -234,4 +263,5 @@ module.exports = {
     completeRide,
     getCompleteOrders,
     cancelOrder,
+    setFcmToken
 }

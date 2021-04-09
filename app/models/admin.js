@@ -1,16 +1,22 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const crypto=require('crypto');
-const userSchema = Schema({
+const adminSchema = Schema({
   email: {
-    type: Number,
-    default: ""
+    type: String,
+    trim : true
   },
   password:{
-    type: Number,
-    default: ""
+    type: String,
+    trim : true
   },
- token:{
+  type: {
+    type: String,
+    enum : ['superadmin','admin', 'subadmin'],
+    default: 'admin',
+    trim : true
+  },
+  token:{
     type:String
   },
   Status: {
@@ -46,5 +52,5 @@ const userSchema = Schema({
   //      return this.hash === hash; 
   //  }; 
    
-    const User = mongoose.model('User', userSchema);
+    const User = mongoose.model('admin', adminSchema);
 module.exports = User;

@@ -28,6 +28,8 @@ router.get('/verify-ride',Validator.getOrderDetails,driverOrders.verifyRideOtp);
 router.put('/complete-order',Validator.orderUpdate,driverOrders.completeRide);
 router.post('/get-driver-order',driverOrders.getCompleteOrders);
 router.put('/cancel-order',driverOrders.cancelOrder);
+router.post('/set-token',driverOrders.setFcmToken);
+
 
 
 
