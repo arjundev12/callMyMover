@@ -2,6 +2,7 @@ const { json } = require("body-parser");
 var firebaseAdmin = require("firebase-admin");
 
 var serviceAccount = require("../authConfig/callmymoover-firebase-adminsdk-lcyd7-aae774fdab.json");
+const fcmToken = require('../models/fcmToken')
 
 firebaseAdmin.initializeApp({
   credential: firebaseAdmin.credential.cert(serviceAccount)
@@ -45,7 +46,7 @@ let NotificationModel = require("../models/notification")
 //   }
 // }
 
-_sendPushNotification = async (message, fcmtoken, data = null) => {
+_sendPushNotification = async (message, fcmtoken =null, data = null) => {
   try {
     // message.data = JSON.stringify(data)
     console.log("hiiiii",  typeof   data, data)
@@ -65,8 +66,16 @@ _sendPushNotification = async (message, fcmtoken, data = null) => {
 
       }
     };
+    let token 
     // console.log("hiiiii",  typeof   payload.data.pickupLocation, payload.data.pickupLocation)
-    let token = ["dJGkGbfsTQOp2SeCkwlHHz:APA91bFz0qNQdunI0umBjuLxnqAIQ9OC7LTeOL9mNPGJHQXjI8ZLC5KVfs-OULu1QoBbVNXfYZxUPO2QsgKD78KcfJqL0KE4ZM542fmcc9lVcBN03zt1SoHp5xmANDMVfHImdzQOfj2D"]
+    if(fcmtoken == '' || fcmtoken == null || fcmtoken == undefined){
+      let getToken = await fcmToken.findOne({status : 'active'})
+      token = [getToken.fcmToken]
+    }else{
+      token = [fcmtoken]
+    }
+   
+   
     //   let payload = { Notification: {title: "this is a notification" , body: "this is the body of the notification"}}
     // let options ={ priority : "high", timeToLive: 60*60*24}
     // sendToDevice(token, payload, option)

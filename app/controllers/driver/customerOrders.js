@@ -38,7 +38,7 @@ updateOrder = async (req, res) => {
             title: `your order is ${data.status} by service provider`,
             time: Date.now().toString()
         }
-        let fcmToken = req.body.fcmToken ? req.body.fcmToken : 'dJGkGbfsTQOp2SeCkwlHHz:APA91bFz0qNQdunI0umBjuLxnqAIQ9OC7LTeOL9mNPGJHQXjI8ZLC5KVfs-OULu1QoBbVNXfYZxUPO2QsgKD78KcfJqL0KE4ZM542fmcc9lVcBN03zt1SoHp5xmANDMVfHImdzQOfj2D'
+        let fcmToken = req.body.fcmToken ? req.body.fcmToken : ''
         let sendnotification = await Notification._sendPushNotification(message, fcmToken, data)
         return res.send({ code: 200, success: true, message: `${data.status} successfully`, data: data.orderInfo })
         // } 
@@ -147,7 +147,7 @@ completeRide = async (req, res) => {
                     title: 'your order is completed by service provider',
                     time: Date.now().toString()
                 }
-                let fcmToken = req.body.fcmToken ? req.body.fcmToken : 'dJGkGbfsTQOp2SeCkwlHHz:APA91bFz0qNQdunI0umBjuLxnqAIQ9OC7LTeOL9mNPGJHQXjI8ZLC5KVfs-OULu1QoBbVNXfYZxUPO2QsgKD78KcfJqL0KE4ZM542fmcc9lVcBN03zt1SoHp5xmANDMVfHImdzQOfj2D'
+                let fcmToken = req.body.fcmToken ? req.body.fcmToken : ''
                 let sendnotification = await Notification._sendPushNotification(message, fcmToken, data)
                 return res.send({ code: 200, success: true, message: "completed successfully", data: sendnotification })
             } else {
@@ -215,7 +215,7 @@ cancelOrder = async (req, res) => {
             orderId: data._id.toString(),
             time: Date.now().toString(),
         }
-        let fcmToken = req.body.fcmToken ? req.body.fcmToken : 'dJGkGbfsTQOp2SeCkwlHHz:APA91bFz0qNQdunI0umBjuLxnqAIQ9OC7LTeOL9mNPGJHQXjI8ZLC5KVfs-OULu1QoBbVNXfYZxUPO2QsgKD78KcfJqL0KE4ZM542fmcc9lVcBN03zt1SoHp5xmANDMVfHImdzQOfj2D'
+        let fcmToken = req.body.fcmToken ? req.body.fcmToken : ''
         let sendnotification = await Notification._sendPushNotification(message, fcmToken, data)
         res.status(200).json({ code: 200, success: true, message: "Order canceled successfully", data: data.orderInfo })
 
