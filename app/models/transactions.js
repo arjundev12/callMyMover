@@ -24,6 +24,7 @@ var transactionSchema = new Schema({
         trim: true
     },
     status: {
+        type: String,
         enum: ['pending', 'complete', 'cancel'],
     },
     order_id: {

@@ -7,7 +7,9 @@ class adminValidation {
     constructor() {
         return {
             createAdmin: this.createAdmin.bind(this),
-            verifyOtp: this.verifyOtp.bind(this)
+            verifyOtp: this.verifyOtp.bind(this),
+            insertReasons: this.insertReasons.bind(this)
+            
             
 
         }
@@ -85,6 +87,34 @@ class adminValidation {
                             errorMessage: { "field_name": "otp", "error_msg": 'Otp should contain minimum 4 number' },
                         },
                         errorMessage: { "field_name": "otp", "error_msg": 'Otp is required' },
+                    },
+                    
+                })
+
+           
+
+            const errors = await this._validationErrorsFormat(req);
+            if (errors) {
+                // return res.json({ code : 422 ,success: false, message: errors[0] });
+                return res.status(422).json({ code: 422, success: false, message: "Resolve these errors", errors: errors });
+            } else {
+                return next();
+            }
+        } else {
+            res.status(422).json({ code: 422, success: false, message: "Please send proper parameters", errors: null })
+        }
+    }
+    async insertReasons(req, res, next) {
+        // return next();
+        if (Object.keys(req.body).length <= 12) {
+                req.checkBody({
+                    toType: {
+                        notEmpty: true,
+                        errorMessage: { "field_name": "toType", "error_msg": 'toType is required' },
+                    },
+                    message: {
+                        notEmpty: true,
+                        errorMessage: { "field_name": "message", "error_msg": 'message is required' },
                     },
                     
                 })

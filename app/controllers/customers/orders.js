@@ -18,6 +18,7 @@ class Orders {
 
             let obj = {}
             obj.estimateTime = req.body.estimateTime
+            obj.estimateDistance = req.body.estimateDistance
             obj.pickupLocation = await commenFunction._coordinatesInToArray(req.body.pickupLocation)
             obj.stoppage = await commenFunction._coordinatesInToArray(req.body.stoppage)
             obj.dropLocation = await commenFunction._coordinatesInToArray(req.body.dropLocation)

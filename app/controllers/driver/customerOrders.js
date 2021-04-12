@@ -1,5 +1,6 @@
 const Orders = require('../../models/customer/orders');
 const FcmToken = require('../../models/fcmToken');
+const CancelReasons = require('../../models/cancelReason')
 const commonFunction = require('../../middlewares/common');
 const Notification = require('../../middlewares/notification');
 const { verifyOtp } = require('../../middlewares/driverValidation');
@@ -254,6 +255,19 @@ setFcmToken = async (req, res) => {
         res.status(500).json({ code: 500, success: false, message: "Internal server error", })
     }
 }
+cancelReasons = async (req, res) => {
+    try {
+       let data = await CancelReasons.find({toType : 'driver'});
+        if (data.length> 0){
+            res.status(200).json({ code: 200, success: true, message: "message get successfully", data:data })
+        }else{
+            res.status(200).json({ code: 200, success: true, message: "Token set successfully", data:data })
+        }
+    } catch (error) {
+        console.log("error in catch", error)
+        res.status(500).json({ code: 500, success: false, message: "Internal server error", })
+    }
+}
 module.exports = {
     findAllOrders,
     updateOrder,
@@ -263,5 +277,6 @@ module.exports = {
     completeRide,
     getCompleteOrders,
     cancelOrder,
-    setFcmToken
+    setFcmToken,
+    cancelReasons
 }
