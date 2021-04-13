@@ -117,21 +117,20 @@ getOrdersDetails = async (req, res) => {
 verifyRideOtp = async (req, res) => {
     try {
         let query = {
-            _id: req.query.orderId,
+            _id: req.body.orderId,
             // status: 'new'
         }
-        
         let data = await Orders.findOne(query, { owner: 1 }).populate('owner', 'number location name ride_otp').lean()
         let UpdateData = {
             pickupLocation : [{
                 coordinates : [req.body.LAT,req.body.LONG],
                 type: "point",
-                address:req.body.address
+                address:req.body.ADDRESS
             }]
         }
         console.log("dataaa",query,UpdateData.pickupLocation )
       let data1 = await Orders.findOneAndUpdate(query, { $set :{pickupLocation: UpdateData.pickupLocation}}, {new:true}).lean()
-        if (req.query.otp == data.owner.ride_otp) {
+        if (req.body.otp == data.owner.ride_otp) {
             data1.dropLocation = {
                 address: data1.dropLocation[0].address,
                 lat: data1.dropLocation[0].coordinates[0].toString(),

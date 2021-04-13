@@ -203,7 +203,7 @@ class driverValidation {
     async getOrderDetails(req, res, next) {
         // return next();
         if (Object.keys(req.body).length <= 6) {
-                req.checkQuery({
+                req.checkBody({
                     orderId: {
                         notEmpty: true,
                       
@@ -212,7 +212,20 @@ class driverValidation {
                     otp: {
                         notEmpty: true,
                         errorMessage: { "field_name": "ride_otp", "error_msg": 'ride_otp is required' },
-                    }
+                    },
+                    LAT: {
+                        notEmpty: true,
+                      
+                        errorMessage: { "field_name": "LAT", "error_msg": 'LAT is required' },
+                    },
+                    LONG: {
+                        notEmpty: true,
+                        errorMessage: { "field_name": "LONG", "error_msg": 'LONG is required' },
+                    },
+                    ADDRESS: {
+                        notEmpty: true,
+                        errorMessage: { "field_name": "ADDRESS", "error_msg": 'ADDRESS is required' },
+                    },
                     
                 })
 
