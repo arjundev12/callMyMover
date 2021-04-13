@@ -134,13 +134,10 @@ class users {
             } else {
                 res.status(200).json({ code: 200, success: true, message: successMessage, data: token })
             }
-
-
         } catch (error) {
             console.log("error in catch", error)
             res.status(500).json({ code: 500, success: false, message: "Internal server error", data: null })
         }
-
     }
     async getDriver(req, res) {
         try {

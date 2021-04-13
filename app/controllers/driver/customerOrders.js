@@ -120,9 +120,37 @@ verifyRideOtp = async (req, res) => {
             _id: req.query.orderId,
             // status: 'new'
         }
+        
         let data = await Orders.findOne(query, { owner: 1 }).populate('owner', 'number location name ride_otp').lean()
+        let UpdateData = {
+            pickupLocation : [{
+                coordinates : [req.body.LAT,req.body.LONG],
+                type: "point",
+                address:req.body.address
+            }]
+        }
+        console.log("dataaa",query,UpdateData.pickupLocation )
+      let data1 = await Orders.findOneAndUpdate(query, { $set :{pickupLocation: UpdateData.pickupLocation}}, {new:true}).lean()
         if (req.query.otp == data.owner.ride_otp) {
-            res.status(200).json({ code: 200, success: true, message: "Otp verify Successfully", })
+            data1.dropLocation = {
+                address: data1.dropLocation[0].address,
+                lat: data1.dropLocation[0].coordinates[0].toString(),
+                long: data1.dropLocation[0].coordinates[1].toString(),
+            }
+            data1.pickupLocation = {
+                address: data1.pickupLocation[0].address,
+                lat: data1.pickupLocation[0].coordinates[0].toString(),
+                long: data1.pickupLocation[0].coordinates[1].toString(),
+            }
+            data1.stoppage = data1.stoppage.map((item) => {
+                return {
+                    address: item.address,
+                    lat: item.coordinates[0].toString(),
+                    long: item.coordinates[1].toString(),
+                    estimateDistance: "5 km"
+                }
+            })
+            res.status(200).json({ code: 200, success: true, message: "Otp verify Successfully",data: data1 })
         } else {
             res.status(400).json({ code: 400, success: false, message: "Invalid otp", })
         }

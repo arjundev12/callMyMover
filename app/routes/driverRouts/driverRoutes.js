@@ -29,7 +29,7 @@ router.put('/verify-otp', validationData.verifyOtp, driverAuth.verifyOtp);
 router.put('/update-order',Validator.orderUpdate,driverOrders.updateOrder);
 router.post('/get-orders',driverOrders.getOrders);
 router.get('/order-details',driverOrders.getOrdersDetails);
-router.get('/verify-ride',Validator.getOrderDetails,driverOrders.verifyRideOtp);
+router.put('/verify-ride',Validator.getOrderDetails,driverOrders.verifyRideOtp);
 router.put('/complete-order',Validator.orderUpdate,driverOrders.completeRide);
 router.post('/get-driver-order',driverOrders.getCompleteOrders);
 router.put('/cancel-order',driverOrders.cancelOrder);
