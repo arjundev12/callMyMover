@@ -15,9 +15,20 @@ class common {
             _coordinatesInToObj: this._coordinatesInToObj.bind(this),
             _sendMail: this._sendMail.bind(this),
             _getLocationName: this._getLocationName.bind(this),
-            _createWallet: this._createWallet.bind(this)
+            _createWallet: this._createWallet.bind(this),
+            _randomOTP: this._randomOTP.bind(this)
 
         }
+    }
+    async _randomOTP() {
+        try {
+            let fourDigitsRandom = Math.floor(1000 + Math.random() * 9000);
+            return fourDigitsRandom
+
+        } catch (error) {
+            throw error
+        }
+
     }
     async _coordinatesInToArray(array) {
         try {

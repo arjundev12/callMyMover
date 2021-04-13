@@ -1,6 +1,7 @@
 const Orders = require('../../models/customer/orders');
 const FcmToken = require('../../models/fcmToken');
 const CancelReasons = require('../../models/cancelReason')
+const UsersModel = require('../../models/customer/customers')
 const commonFunction = require('../../middlewares/common');
 const Notification = require('../../middlewares/notification');
 const { verifyOtp } = require('../../middlewares/driverValidation');
@@ -295,6 +296,29 @@ cancelReasons = async (req, res) => {
         res.status(500).json({ code: 500, success: false, message: "Internal server error", })
     }
 }
+confirmPickup = async (req, res) => {
+    try {
+        if (req.body.status == 'completed') {
+                //send notification on customer divice
+                let data = await Orders.findOne({ _id: req.body.orderId });
+                let otp = await commonFunction._randomOTP()
+                let updateData = await UsersModel.findOneAndUpdate({ _id: data.owner }, {$set :{ride_otp: otp}}, { new: true })
+                let message = {
+                    title: `driver reached to pickup location this is your confirmation otp :${otp} `,
+                    time: Date.now().toString(),
+                    OTP: otp
+                }
+                let fcmToken = req.body.fcmToken ? req.body.fcmToken : ''
+                let sendnotification = await Notification._sendPushNotification(message, fcmToken, data)
+                return res.send({ code: 200, success: true, message: "completed successfully", data: message })
+            }else{
+                return res.send({ code: 404, success: false, message: "Please fill the correct status", })
+            }
+    } catch (error) {
+        console.log("error in catch", error)
+        res.status(500).json({ code: 500, success: false, message: "Internal server error", })
+    }
+}
 module.exports = {
     findAllOrders,
     updateOrder,
@@ -305,5 +329,6 @@ module.exports = {
     getCompleteOrders,
     cancelOrder,
     setFcmToken,
-    cancelReasons
+    cancelReasons,
+    confirmPickup
 }

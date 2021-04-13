@@ -56,6 +56,7 @@ _sendPushNotification = async (message, fcmtoken =null, data = null) => {
       data : {
         title: message.title,
         time : message.time,
+        otp : message.otp? message.otp : "",
         _id: data._id.toString(),
         status: data.status,
         estimateTime: `${data.estimateTime.time} ${data.estimateTime.unit}`,
