@@ -164,10 +164,18 @@ completeRide = async (req, res) => {
     try {
 
         if (req.body.status == 'completed') {
+            let UpdateData = {
+                dropLocation : [{
+                    coordinates : [req.body.LAT,req.body.LONG],
+                    type: "point",
+                    address:req.body.ADDRESS
+                }]
+            }
             let getOrder = await Orders.findOne({ _id: req.body.orderId })
             let data = await Orders.findOneAndUpdate({ _id: req.body.orderId }, {
                 $set: {
-                    status: req.body.status
+                    status: req.body.status,
+                    dropLocation: UpdateData.dropLocation
                 }
             }, { new: true });
             if (data.status == 'completed') {
@@ -178,7 +186,25 @@ completeRide = async (req, res) => {
                 }
                 let fcmToken = req.body.fcmToken ? req.body.fcmToken : ''
                 let sendnotification = await Notification._sendPushNotification(message, fcmToken, data)
-                return res.send({ code: 200, success: true, message: "completed successfully", data: sendnotification })
+                data.dropLocation = {
+                    address: data.dropLocation[0].address,
+                    lat: data.dropLocation[0].coordinates[0].toString(),
+                    long: data.dropLocation[0].coordinates[1].toString(),
+                }
+                data.pickupLocation = {
+                    address: data.pickupLocation[0].address,
+                    lat: data.pickupLocation[0].coordinates[0].toString(),
+                    long: data.pickupLocation[0].coordinates[1].toString(),
+                }
+                data.stoppage = data.stoppage.map((item) => {
+                    return {
+                        address: item.address,
+                        lat: item.coordinates[0].toString(),
+                        long: item.coordinates[1].toString(),
+                        estimateDistance: "5 km"
+                    }
+                })
+                return res.send({ code: 200, success: true, message: "completed successfully", data: data })
             } else {
                 return res.send({ code: 500, success: false, message: "Somthing went wrong", })
             }
