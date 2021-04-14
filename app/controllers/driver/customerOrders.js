@@ -64,15 +64,35 @@ getOrders = async (req, res) => {
             limit: req.body.limit || 10,
             sort: { createdAt: -1 },
             lean: true,
-            select: 'status updatedAt dropLocation pickupLocation orderInfo',
+            select: 'status updatedAt dropLocation pickupLocation orderInfo owner ',
         }
         let query = {
             status: 'new'
         }
         let data = await Orders.paginate(query, options)
+        // console.log("data", data)
         for (let item of data.docs) {
-            item.dropLocation = await commonFunction._coordinatesInToObj(item.dropLocation)
-            item.pickupLocation = await commonFunction._coordinatesInToObj(item.pickupLocation)
+            // item.dropLocation = await commonFunction._coordinatesInToObj(item.dropLocation)
+            // item.pickupLocation = await commonFunction._coordinatesInToObj(item.pickupLocation)
+            item.dropLocation = {
+                address: item.dropLocation[0].address,
+                lat: item.dropLocation[0].coordinates[0].toString(),
+                long: item.dropLocation[0].coordinates[1].toString(),
+            }
+            item.pickupLocation = {
+                address: item.pickupLocation[0].address,
+                lat: item.pickupLocation[0].coordinates[0].toString(),
+                long: item.pickupLocation[0].coordinates[1].toString(),
+            }
+            // console.log("item.stopage", item.stoppage , typeof item.stoppage)
+            // item.stoppage = item.stoppage.map((item) => {
+            //     return {
+            //         address: item.address,
+            //         lat: item.coordinates[0].toString(),
+            //         long: item.coordinates[1].toString(),
+            //         estimateDistance: "5 km"
+            //     }
+            // })
         }
         res.status(200).json({ code: 200, success: true, message: "Get Successfully list", data: data })
     } catch (error) {
@@ -233,9 +253,19 @@ getCompleteOrders = async (req, res) => {
         }
         let data = await Orders.paginate(query, options)
         for (let item of data.docs) {
-            let owner = { name: item.owner.name }
-            item.dropLocation = await commonFunction._coordinatesInToObj(item.dropLocation)
-            item.pickupLocation = await commonFunction._coordinatesInToObj(item.pickupLocation)
+            let owner = { name: item.owner.name , _id :item.owner._id }
+            // item.dropLocation = await commonFunction._coordinatesInToObj(item.dropLocation)
+            // item.pickupLocation = await commonFunction._coordinatesInToObj(item.pickupLocation)
+            item.dropLocation = {
+                address: item.dropLocation[0].address,
+                lat: item.dropLocation[0].coordinates[0].toString(),
+                long: item.dropLocation[0].coordinates[1].toString(),
+            }
+            item.pickupLocation = {
+                address: item.pickupLocation[0].address,
+                lat: item.pickupLocation[0].coordinates[0].toString(),
+                long: item.pickupLocation[0].coordinates[1].toString(),
+            }
             item.owner = owner
         }
         res.status(200).json({ code: 200, success: true, message: "Get Successfully list", data: data })
