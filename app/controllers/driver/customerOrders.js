@@ -85,7 +85,7 @@ getOrders = async (req, res) => {
             item.LiveStatus = false
         }
         let getliveOrder = await Orders.findOne(
-            { $and: [{ driverId: req.body.driverId }, { status: 'completed' }] },
+            { $and: [{ driverId: req.body.driverId }, { status: 'accepted' }] },
             { updatedAt: 1, pickupLocation: 1, dropLocation: 1, status:1, orderInfo:1 }).lean()
                console.log('',  )
                if(getliveOrder){
