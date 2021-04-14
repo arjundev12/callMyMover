@@ -86,7 +86,7 @@ getOrders = async (req, res) => {
         }
         let getliveOrder = await Orders.findOne(
             { $and: [{ driverId: req.body.driverId }, { status: 'accepted' }] },
-            { updatedAt: 1, pickupLocation: 1, dropLocation: 1, status:1, orderInfo:1 }).lean()
+            { updatedAt: 1, pickupLocation: 1, dropLocation: 1, status:1, orderInfo:1,owner:1 }).lean()
                console.log('',  )
                if(getliveOrder){
                 getliveOrder.dropLocation = {
@@ -103,11 +103,13 @@ getOrders = async (req, res) => {
                 data.docs.unshift(getliveOrder)
                }else{
                 data.docs.unshift({
+                    _id: "",
                     dropLocation: "",
                     pickupLocation: "",
                     status: "",
                     orderInfo: "",
                     updatedAt: "",
+                    owner: "",
                     LiveStatus: true
                 })
                }
