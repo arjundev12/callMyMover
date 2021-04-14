@@ -5,6 +5,7 @@ const UsersModel = require('../../models/customer/customers')
 const commonFunction = require('../../middlewares/common');
 const Notification = require('../../middlewares/notification');
 const { verifyOtp } = require('../../middlewares/driverValidation');
+const geolib = require('geolib');
 const mongoose = require('mongoose')
 
 
@@ -64,16 +65,13 @@ getOrders = async (req, res) => {
             limit: req.body.limit || 10,
             sort: { createdAt: -1 },
             lean: true,
-            select: 'status updatedAt dropLocation pickupLocation orderInfo owner ',
+            select: 'status updatedAt dropLocation pickupLocation orderInfo owner updatedAt ',
         }
         let query = {
             status: 'new'
         }
         let data = await Orders.paginate(query, options)
-        // console.log("data", data)
         for (let item of data.docs) {
-            // item.dropLocation = await commonFunction._coordinatesInToObj(item.dropLocation)
-            // item.pickupLocation = await commonFunction._coordinatesInToObj(item.pickupLocation)
             item.dropLocation = {
                 address: item.dropLocation[0].address,
                 lat: item.dropLocation[0].coordinates[0].toString(),
@@ -84,17 +82,37 @@ getOrders = async (req, res) => {
                 lat: item.pickupLocation[0].coordinates[0].toString(),
                 long: item.pickupLocation[0].coordinates[1].toString(),
             }
-            // console.log("item.stopage", item.stoppage , typeof item.stoppage)
-            // item.stoppage = item.stoppage.map((item) => {
-            //     return {
-            //         address: item.address,
-            //         lat: item.coordinates[0].toString(),
-            //         long: item.coordinates[1].toString(),
-            //         estimateDistance: "5 km"
-            //     }
-            // })
+            item.LiveStatus = false
         }
-        res.status(200).json({ code: 200, success: true, message: "Get Successfully list", data: data })
+        let getliveOrder = await Orders.findOne(
+            { $and: [{ driverId: req.body.driverId }, { status: 'completed' }] },
+            { updatedAt: 1, pickupLocation: 1, dropLocation: 1, status:1, orderInfo:1 }).lean()
+               console.log('',  )
+               if(getliveOrder){
+                getliveOrder.dropLocation = {
+                    address: getliveOrder.dropLocation[0].address,
+                    lat: getliveOrder.dropLocation[0].coordinates[0].toString(),
+                    long: getliveOrder.dropLocation[0].coordinates[1].toString(),
+                }
+                getliveOrder.pickupLocation = {
+                    address: getliveOrder.pickupLocation[0].address,
+                    lat: getliveOrder.pickupLocation[0].coordinates[0].toString(),
+                    long: getliveOrder.pickupLocation[0].coordinates[1].toString(),
+                }
+                getliveOrder.LiveStatus = true
+                data.docs.unshift(getliveOrder)
+               }else{
+                data.docs.unshift({
+                    dropLocation: "",
+                    pickupLocation: "",
+                    status: "",
+                    orderInfo: "",
+                    updatedAt: "",
+                    LiveStatus: true
+                })
+               }
+       
+        res.status(200).json({ code: 200, success: true, message: "Get list successfully ", data: data })
     } catch (error) {
         console.log("error in catch", error)
         res.status(500).json({ code: 500, success: false, message: "Internal server error", })
@@ -143,14 +161,14 @@ verifyRideOtp = async (req, res) => {
         }
         let data = await Orders.findOne(query, { owner: 1 }).populate('owner', 'number location name ride_otp').lean()
         let UpdateData = {
-            pickupLocation : [{
-                coordinates : [req.body.LAT,req.body.LONG],
+            pickupLocation: [{
+                coordinates: [req.body.LAT, req.body.LONG],
                 type: "point",
-                address:req.body.ADDRESS
+                address: req.body.ADDRESS
             }]
         }
-        console.log("dataaa",query,UpdateData.pickupLocation )
-      let data1 = await Orders.findOneAndUpdate(query, { $set :{pickupLocation: UpdateData.pickupLocation}}, {new:true}).lean()
+        console.log("dataaa", query, UpdateData.pickupLocation)
+        let data1 = await Orders.findOneAndUpdate(query, { $set: { pickupLocation: UpdateData.pickupLocation } }, { new: true }).lean()
         if (req.body.otp == data.owner.ride_otp) {
             data1.dropLocation = {
                 address: data1.dropLocation[0].address,
@@ -170,7 +188,7 @@ verifyRideOtp = async (req, res) => {
                     estimateDistance: "5 km"
                 }
             })
-            res.status(200).json({ code: 200, success: true, message: "Otp verify Successfully",data: data1 })
+            res.status(200).json({ code: 200, success: true, message: "Otp verify Successfully", data: data1 })
         } else {
             res.status(400).json({ code: 400, success: false, message: "Invalid otp", })
         }
@@ -185,10 +203,10 @@ completeRide = async (req, res) => {
 
         if (req.body.status == 'completed') {
             let UpdateData = {
-                dropLocation : [{
-                    coordinates : [req.body.LAT,req.body.LONG],
+                dropLocation: [{
+                    coordinates: [req.body.LAT, req.body.LONG],
                     type: "point",
-                    address:req.body.ADDRESS
+                    address: req.body.ADDRESS
                 }]
             }
             let getOrder = await Orders.findOne({ _id: req.body.orderId })
@@ -253,7 +271,7 @@ getCompleteOrders = async (req, res) => {
         }
         let data = await Orders.paginate(query, options)
         for (let item of data.docs) {
-            let owner = { name: item.owner.name , _id :item.owner._id }
+            let owner = { name: item.owner.name, _id: item.owner._id }
             // item.dropLocation = await commonFunction._coordinatesInToObj(item.dropLocation)
             // item.pickupLocation = await commonFunction._coordinatesInToObj(item.pickupLocation)
             item.dropLocation = {
@@ -312,27 +330,27 @@ cancelOrder = async (req, res) => {
 
 setFcmToken = async (req, res) => {
     try {
-       
-       if (req.body.fcmToken){
-        let data
-        let query = { status: 'active' }
-        let setData = {fcmToken :req.body.fcmToken }
-        if(req.body.userId){
-            setData.userId = req.body.userId
-            query.userId = req.body.userId
+
+        if (req.body.fcmToken) {
+            let data
+            let query = { status: 'active' }
+            let setData = { fcmToken: req.body.fcmToken }
+            if (req.body.userId) {
+                setData.userId = req.body.userId
+                query.userId = req.body.userId
+            }
+            console.log("query", query, "setData", setData)
+            data = await FcmToken.findOne(query);
+            if (data) {
+                data = await FcmToken.findOneAndUpdate(query, { $set: setData }, { new: true });
+            } else {
+                let saveData = new FcmToken(setData)
+                data = await saveData.save();
+            }
+            res.status(200).json({ code: 200, success: true, message: "Token set successfully", data: data })
+        } else {
+            res.json({ code: 403, success: false, message: "Fcm token is required", })
         }
-        console.log("query", query, "setData", setData)
-        data = await FcmToken.findOne(query);
-        if (data){
-         data = await FcmToken.findOneAndUpdate(query, {$set :setData}, { new: true });
-        }else{
-            let saveData = new FcmToken(setData)
-            data = await saveData.save();
-        }
-        res.status(200).json({ code: 200, success: true, message: "Token set successfully", data:data })
-       }else{
-        res.json({ code: 403, success: false, message: "Fcm token is required", })
-       }        
 
     } catch (error) {
         console.log("error in catch", error)
@@ -341,11 +359,11 @@ setFcmToken = async (req, res) => {
 }
 cancelReasons = async (req, res) => {
     try {
-       let data = await CancelReasons.find({toType : 'driver'});
-        if (data.length> 0){
-            res.status(200).json({ code: 200, success: true, message: "message get successfully", data:data })
-        }else{
-            res.status(200).json({ code: 200, success: true, message: "Token set successfully", data:data })
+        let data = await CancelReasons.find({ toType: 'driver' });
+        if (data.length > 0) {
+            res.status(200).json({ code: 200, success: true, message: "message get successfully", data: data })
+        } else {
+            res.status(200).json({ code: 200, success: true, message: "Token set successfully", data: data })
         }
     } catch (error) {
         console.log("error in catch", error)
@@ -355,21 +373,21 @@ cancelReasons = async (req, res) => {
 confirmPickup = async (req, res) => {
     try {
         if (req.body.status == 'completed') {
-                //send notification on customer divice
-                let data = await Orders.findOne({ _id: req.body.orderId });
-                let otp = await commonFunction._randomOTP()
-                let updateData = await UsersModel.findOneAndUpdate({ _id: data.owner }, {$set :{ride_otp: otp}}, { new: true })
-                let message = {
-                    title: `driver reached to pickup location this is your confirmation otp :${otp} `,
-                    time: Date.now().toString(),
-                    OTP: otp
-                }
-                let fcmToken = req.body.fcmToken ? req.body.fcmToken : ''
-                let sendnotification = await Notification._sendPushNotification(message, fcmToken, data)
-                return res.send({ code: 200, success: true, message: "completed successfully", data: message })
-            }else{
-                return res.send({ code: 404, success: false, message: "Please fill the correct status", })
+            //send notification on customer divice
+            let data = await Orders.findOne({ _id: req.body.orderId });
+            let otp = await commonFunction._randomOTP()
+            let updateData = await UsersModel.findOneAndUpdate({ _id: data.owner }, { $set: { ride_otp: otp } }, { new: true })
+            let message = {
+                title: `driver reached to pickup location this is your confirmation otp :${otp} `,
+                time: Date.now().toString(),
+                OTP: otp
             }
+            let fcmToken = req.body.fcmToken ? req.body.fcmToken : ''
+            let sendnotification = await Notification._sendPushNotification(message, fcmToken, data)
+            return res.send({ code: 200, success: true, message: "completed successfully", data: message })
+        } else {
+            return res.send({ code: 404, success: false, message: "Please fill the correct status", })
+        }
     } catch (error) {
         console.log("error in catch", error)
         res.status(500).json({ code: 500, success: false, message: "Internal server error", })
