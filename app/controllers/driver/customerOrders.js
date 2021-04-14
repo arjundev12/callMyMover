@@ -265,7 +265,7 @@ getCompleteOrders = async (req, res) => {
             sort: { createdAt: -1 },
             lean: true,
             populate: 'owner',
-            select: 'status updatedAt dropLocation pickupLocation orderInfo driverId ',
+            select: 'status updatedAt dropLocation pickupLocation orderInfo driverId estimateDistance ',
         }
         let query = {
             $and: [{ status: req.body.status },
