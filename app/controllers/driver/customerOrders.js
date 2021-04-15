@@ -83,38 +83,42 @@ getOrders = async (req, res) => {
                 long: item.pickupLocation[0].coordinates[1].toString(),
             }
             item.LiveStatus = "upcomming"
+            item.pickupTime = item.updatedAt
         }
         let getliveOrder = await Orders.findOne(
             { $and: [{ driverId: req.body.driverId }, { status: 'accepted' }] },
-            { updatedAt: 1, pickupLocation: 1, dropLocation: 1, status:1, orderInfo:1,owner:1 }).lean()
-               console.log('',  )
-               if(getliveOrder){
-                getliveOrder.dropLocation = {
-                    address: getliveOrder.dropLocation[0].address,
-                    lat: getliveOrder.dropLocation[0].coordinates[0].toString(),
-                    long: getliveOrder.dropLocation[0].coordinates[1].toString(),
-                }
-                getliveOrder.pickupLocation = {
-                    address: getliveOrder.pickupLocation[0].address,
-                    lat: getliveOrder.pickupLocation[0].coordinates[0].toString(),
-                    long: getliveOrder.pickupLocation[0].coordinates[1].toString(),
-                }
-                getliveOrder.LiveStatus = "online"
-                data.docs.unshift(getliveOrder)
-               }else{
-                data.docs.unshift({
-                    _id: "",
-                    dropLocation: "",
-                    pickupLocation: "",
-                    status: "",
-                    orderInfo: "",
-                    updatedAt: "",
-                    owner: "",
-                    LiveStatus: "offline"
-                })
-               }
-       
-        res.status(200).json({ code: 200, success: true, message: "Get list successfully ", data: data })
+            { updatedAt: 1, pickupLocation: 1, dropLocation: 1, status: 1, orderInfo: 1, owner: 1 }).lean()
+        console.log('',)
+        if (getliveOrder) {
+            getliveOrder.dropLocation = {
+                address: getliveOrder.dropLocation[0].address,
+                lat: getliveOrder.dropLocation[0].coordinates[0].toString(),
+                long: getliveOrder.dropLocation[0].coordinates[1].toString(),
+            }
+            getliveOrder.pickupLocation = {
+                address: getliveOrder.pickupLocation[0].address,
+                lat: getliveOrder.pickupLocation[0].coordinates[0].toString(),
+                long: getliveOrder.pickupLocation[0].coordinates[1].toString(),
+            }
+            getliveOrder.LiveStatus = "online"
+            getliveOrder.pickupTime = getliveOrder.updatedAt
+            getliveOrder.start_date = getliveOrder.updatedAt
+        } else {
+            getliveOrder = {
+                _id: "",
+                dropLocation: "",
+                pickupLocation: "",
+                pickupTime: "",
+                status: "",
+                orderInfo: "",
+                updatedAt: "",
+                start_date: "",
+                owner: "",
+                LiveStatus: "offline"
+            }
+        }
+
+        res.status(200).json({ code: 200, success: true, message: "Get list successfully ", live_data: getliveOrder, data: data })
     } catch (error) {
         console.log("error in catch", error)
         res.status(500).json({ code: 500, success: false, message: "Internal server error", })

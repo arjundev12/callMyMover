@@ -10,6 +10,11 @@ var walletSchema = new Schema({
         default: "0",
         trim: true
     },
+    Currency_type: {
+        type: String,
+        default: "rs",
+        trim: true
+    },
     referral_ammount: {
         type: String,
         default: "0",
