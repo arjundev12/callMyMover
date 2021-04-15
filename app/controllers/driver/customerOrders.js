@@ -280,6 +280,12 @@ getCompleteOrders = async (req, res) => {
             let owner = { name: item.owner.name, _id: item.owner._id }
             // item.dropLocation = await commonFunction._coordinatesInToObj(item.dropLocation)
             // item.pickupLocation = await commonFunction._coordinatesInToObj(item.pickupLocation)
+            let distence = await  geolib.getDistance(
+                { latitude: item.dropLocation[0].coordinates[0], longitude: item.dropLocation[0].coordinates[1] },
+                { latitude: item.pickupLocation[0].coordinates[0], longitude: item.pickupLocation[0].coordinates[1] },
+            )
+            console.log("distence ", distence/1000)
+            item.estimateDistance.distance = (distence/1000).toString()
             item.dropLocation = {
                 address: item.dropLocation[0].address,
                 lat: item.dropLocation[0].coordinates[0].toString(),
@@ -290,7 +296,10 @@ getCompleteOrders = async (req, res) => {
                 lat: item.pickupLocation[0].coordinates[0].toString(),
                 long: item.pickupLocation[0].coordinates[1].toString(),
             }
+            item.pickupTime = item.updatedAt
             item.owner = owner
+            item.commission = ((item.orderInfo.job_cost *10)/100).toString()
+            item.totalEarning = (item.orderInfo.job_cost - item.commission).toString()
         }
         res.status(200).json({ code: 200, success: true, message: "Get Successfully list", data: data })
     } catch (error) {
