@@ -82,7 +82,7 @@ getOrders = async (req, res) => {
                 lat: item.pickupLocation[0].coordinates[0].toString(),
                 long: item.pickupLocation[0].coordinates[1].toString(),
             }
-            item.LiveStatus = false
+            item.LiveStatus = "upcomming"
         }
         let getliveOrder = await Orders.findOne(
             { $and: [{ driverId: req.body.driverId }, { status: 'accepted' }] },
@@ -99,7 +99,7 @@ getOrders = async (req, res) => {
                     lat: getliveOrder.pickupLocation[0].coordinates[0].toString(),
                     long: getliveOrder.pickupLocation[0].coordinates[1].toString(),
                 }
-                getliveOrder.LiveStatus = true
+                getliveOrder.LiveStatus = "online"
                 data.docs.unshift(getliveOrder)
                }else{
                 data.docs.unshift({
@@ -110,7 +110,7 @@ getOrders = async (req, res) => {
                     orderInfo: "",
                     updatedAt: "",
                     owner: "",
-                    LiveStatus: true
+                    LiveStatus: "offline"
                 })
                }
        
