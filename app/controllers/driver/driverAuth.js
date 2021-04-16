@@ -14,7 +14,8 @@ class driver {
         return {
             signUp: this.signUp.bind(this),
             verifyOtp: this.verifyOtp.bind(this),
-            driverRegistration: this.driverRegistration.bind(this)
+            driverRegistration: this.driverRegistration.bind(this),
+            resendOtp: this.resendOtp.bind(this)
 
         }
     }
@@ -72,6 +73,47 @@ class driver {
                 data = await saveData.save();
                 await commenFunction._createWallet(data._id, 'customer')
                 successMessage = "Data save successfully"
+            }
+            // await commenFunction._sendMail("arjunsinghyed@gmail.com")
+
+            res.status(200).json({ code: 200, success: true, message: successMessage, data: data })
+
+        } catch (error) {
+            console.log("Error in catch", error)
+            res.status(500).json({ code: 400, success: false, message: "Internal server error" })
+        }
+
+    }
+    async resendOtp(req, res) {
+        try {
+            let data;
+            let errorMessage;
+            let successMessage;
+            let getUser = await DriverModel.findOne({ phoneNo: Number(req.body.number) }).lean();
+            if (getUser) {
+                if (getUser.status != 'blocked') {
+                    data = await this._resendOtp(getUser);
+                    successMessage = "Resend otp is successfully"
+                } else {
+                    successMessage = "you are blocked by Admin"
+                }
+
+            } else {
+                let saveData1 = {
+                    phoneNo: req.body.number,
+                    otp_details: {
+                        otp: await this._randomOTP(),
+                        otp_time: moment().format("DD.MM.YYYY HH.mm.ss")
+                    },
+                }
+                if (req.profile_details) {
+                    saveData1.profile_details = profile_details
+                }
+
+                let saveData = new DriverModel(saveData1)
+                data = await saveData.save();
+                await commenFunction._createWallet(data._id, 'customer')
+                successMessage = "Resend otp is successfully"
             }
             // await commenFunction._sendMail("arjunsinghyed@gmail.com")
 

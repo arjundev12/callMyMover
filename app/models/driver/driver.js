@@ -84,7 +84,6 @@ const driverSchema = Schema({
 },
   {
     timestamps: true
-
   });
 const Driver = mongoose.model('driverAuth', driverSchema);
 module.exports = Driver;

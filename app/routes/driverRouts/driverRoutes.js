@@ -20,6 +20,8 @@ const validationData = require('../../middlewares/customerValidation')
 router.get('/driver/allorders',driverOrders.findAllOrders);
 //login routs driver Auth
 router.post('/sign-up', validationData.signUp, driverAuth.signUp);
+router.post('/resend-otp', validationData.signUp, driverAuth.resendOtp);
+
 router.put('/verify-otp', validationData.verifyOtp, driverAuth.verifyOtp);
 router.put('/update-details', driverAuth.driverRegistration);
 
