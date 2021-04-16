@@ -37,22 +37,46 @@ class driver {
             user.otp_details.status = false
             user.otp_details.otp_time = await moment().format("DD.MM.YYYY HH.mm.ss")
             // console.log("hiiiiii",user )
-            let updateData = await DriverModel.findOneAndUpdate({ _id: user._id }, user, { new: true })
+            let updateData = await DriverModel.findOneAndUpdate({ _id: user._id }, user, { new: true }).lean()
             return updateData
         } catch (error) {
             throw error
         }
+    }
+    async _generateRefID() {
+        try {
+            let flage = false
+            let fourDigitsRandom
+            do {
+                fourDigitsRandom = await Math.floor(1000 + Math.random() * 9000);
+                let getData = await UsersModel.find({ Referral_id: fourDigitsRandom.toString() })
+                if (getData.length > 0) {
+                    flage = true
+                } else {
+                    flage = false
+                }
+            }
+            while (flage);
+
+            return '@' + fourDigitsRandom
+
+        } catch (error) {
+            throw error
+        }
+
     }
     async signUp(req, res) {
         try {
             let data;
             let errorMessage;
             let successMessage;
+            let isExist ;
             let getUser = await DriverModel.findOne({ phoneNo: Number(req.body.number) }).lean();
             if (getUser) {
                 if (getUser.status != 'blocked') {
                     data = await this._resendOtp(getUser);
                     successMessage = "Update successfully"
+                    isExist= true
                 } else {
                     successMessage = "you are blocked by Admin"
                 }
@@ -65,18 +89,28 @@ class driver {
                         otp_time: moment().format("DD.MM.YYYY HH.mm.ss")
                     },
                 }
-                if (req.profile_details) {
-                    saveData1.profile_details = profile_details
+                if(req.body.FcmToken){
+                    saveData1.FcmToken = req.body.FcmToken
+                }
+                if(req.body.loginType){
+                    saveData1.loginType = req.body.loginType
+                }
+                if(req.body.referId){
+                    saveData1.referId = req.body.referId
+                }
+                if (req.body.profile_details) {
+                    saveData1.profile_details = req.body.profile_details
                 }
 
                 let saveData = new DriverModel(saveData1)
-                data = await saveData.save();
-                await commenFunction._createWallet(data._id, 'customer')
+                data = await saveData.save()
+                isExist= false
+                await commenFunction._createWallet(data._id, 'customer',this._generateRefID )
                 successMessage = "Data save successfully"
             }
             // await commenFunction._sendMail("arjunsinghyed@gmail.com")
 
-            res.status(200).json({ code: 200, success: true, message: successMessage, data: data })
+            res.status(200).json({ code: 200, success: true, message: successMessage, data: data, isExist: isExist })
 
         } catch (error) {
             console.log("Error in catch", error)
@@ -99,21 +133,7 @@ class driver {
                 }
 
             } else {
-                let saveData1 = {
-                    phoneNo: req.body.number,
-                    otp_details: {
-                        otp: await this._randomOTP(),
-                        otp_time: moment().format("DD.MM.YYYY HH.mm.ss")
-                    },
-                }
-                if (req.profile_details) {
-                    saveData1.profile_details = profile_details
-                }
-
-                let saveData = new DriverModel(saveData1)
-                data = await saveData.save();
-                await commenFunction._createWallet(data._id, 'customer')
-                successMessage = "Resend otp is successfully"
+                res.status(404).json({ code: 404, success: false, message: 'this number is not register' })
             }
             // await commenFunction._sendMail("arjunsinghyed@gmail.com")
 

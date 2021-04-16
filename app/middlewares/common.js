@@ -86,13 +86,13 @@ class common {
         }
         return true
     }
-    async _createWallet(id , type) {
+    async _createWallet(id , type, Referral_id= "") {
         try {
             let saveData1 = {}
              type == 'driver' ? saveData1.driver_id = id : saveData1.customer_id = id ;
              saveData1.wallet_type = type;
              saveData1.status = 'active'
-
+             saveData1.referral_id = Referral_id
             let saveData = new walletModel(saveData1)
             await saveData.save();
             console.log("wallet create successfully")

@@ -49,9 +49,18 @@ const driverSchema = Schema({
     default: "1234"
   },
   token: {
-    type: String
+    type: String,
+    trim:true
   },
-  userType: {
+  FcmToken: {
+    type: String,
+    trim: true
+  },
+  referId:{
+    type: String,
+    trim: true
+  },
+  loginType: {
     type: String,
     enum: ["driver", "fleetpartner"],
     default: "driver"
@@ -73,8 +82,8 @@ const driverSchema = Schema({
   },
   isDocumentVerify: { // for document verification 
     type: String,
-    enum: ["Uploade", "verified", 'rejected'],
-    default: "Uploade"
+    enum: ["notupload","uploade", "verified", 'rejected'],
+    default: "notupload"
   },
   driverStatus: {
     type: String,
