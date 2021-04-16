@@ -62,8 +62,8 @@ const driverSchema = Schema({
   },
   loginType: {
     type: String,
-    enum: ["driver", "fleetpartner"],
-    default: "driver"
+    enum: ["Driver_partner", "Fleet_partner"],
+    // default: "driver"
   },
   Documents :{
     type: { any: [Schema.Types.Mixed] }
