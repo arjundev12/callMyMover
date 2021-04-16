@@ -17,9 +17,13 @@ const driverSchema = Schema({
   address: {
     type: { any: [Schema.Types.Mixed] }
   },
+  pincode:{
+    type: String,
+    trim: true
+  },
   is_owner_vehicle: {
-    type: Boolean,
-    default: false
+    type: String,
+    trim: true
   },
   phoneNo: {
     type: String,

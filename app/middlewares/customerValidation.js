@@ -247,6 +247,7 @@ class customerValidation {
             res.status(422).json({ code: 422, success: false, message: "Please send proper parameters", errors: null })
         }
     }
+    
 }
 
 module.exports = new customerValidation();

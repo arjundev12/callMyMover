@@ -23,7 +23,7 @@ router.post('/sign-up', validationData.signUp, driverAuth.signUp);
 router.post('/resend-otp', validationData.signUp, driverAuth.resendOtp);
 
 router.put('/verify-otp', validationData.verifyOtp, driverAuth.verifyOtp);
-router.put('/update-details', driverAuth.driverRegistration);
+router.put('/update-details',Validator.driverRegistration, driverAuth.driverRegistration);
 
 
 

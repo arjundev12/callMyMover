@@ -1,102 +1,61 @@
 const City=require('../../models/driver/city');
+const citiesModel = require('../../models/city')
+let commenFunction = require('../../middlewares/common')
+const Mongoose = require('mongoose')
+const authConfig = require('../../authConfig/auth')
+const jwt = require('jsonwebtoken')
+const constant = require('../../utils/constant')
+// const db = require('../models')
+const moment = require("moment");
+class city {
+    constructor() {
+        return {
+            CityList: this.CityList.bind(this)
 
-createCity = async (req, res) => {
-    if (!req.body.name) {
-        return res.send("name required")
-    };
-    try {
-       let city = await new City({
-           name:req.body.name
-       }).save();
-        return res.send(city);
-
-    } catch (error) {
-        return res.json({
-            message: error.message
-        })
+        }
     }
-};
 
-findOne = (req, res) => {
-    City.findById(req.params.cityId)
-    .then(city => {
-        if(!city) {
-            return res.status(404).send({
-                message: "city not found with id " + req.params.cityId
-            });            
+    //create vehicleRegistration Api
+    async CityList(req, res){
+        try {
+            let getData = await citiesModel.find()
+            res.send({code :200, success : true, message: "Get list successfully", data : getData })
+        } catch (error) {
+            console.log("Error in catch", error)
+            res.status(500).json({ code: 400, success: false, message: "Internal server error", })
         }
-        res.send(city);
-    }).catch(err => {
-        if(err.kind === 'ObjectId') {
-            return res.status(404).send({
-                message: "city not found with id " + req.params.cityId
-            });                
-        }
-        return res.status(500).send({
-            message: "Error retrieving languge with id " + req.params.cityId
-        });
-    });
-};
 
-updateCity = (req, res) => {
-    City.findByIdAndUpdate(req.params.cityId, {
-        name: req.body.name,
-        }, {new: true})
-    .then(city => {
-        if(!city) {
-            return res.status(404).send({
-                message: "city not found with id " + req.params.cityId
-            });
-        }
-        res.send(city);
-    }).catch(err => {
-        if(err.kind === 'ObjectId') {
-            return res.status(404).send({
-                message: "city not found with id " + req.params.cityId
-            });c
-        }
-        return res.status(500).send({
-            message: "Error updating city with id " + req.params.cityId
-        });
-    });
-};
+    } 
+    // async vehicleRegistration(req, res) {
+    //     try {
+    //         let { id, vehicle_type, vehicle_number, self_driver } = req.body
+    //         let getUser = await City.findOne({ vehicle_number: vehicle_number }).lean()
+    //         if (getUser) {
+    //             return res.status(404).json({ code: 404, success: false, message: "vehicle is already register by someone" })
+    //         } else {
+    //             let obj = {
+    //                 vehicle_name: vehicle_name,
+    //                 vehicle_number: vehicle_number,
+    //                 vehicle_type: vehicle_type,
+    //             }
+    //             if (self_driver == true || self_driver == 'true') {
+    //                 obj.vehicle_owner = id
+    //                 obj.vehicle_driver = id
+    //             } else {
+    //                 obj.vehicle_owner = id
+    //             }
+    //             let savedata = await new City(obj)
+    //           let data = await savedata.save()
+    //             return res.status(200).json({ code: 200, success: true, message: "Data save successfully", data: data })
+    //         }
 
-deleteCity = (req, res) => {
-    City.findByIdAndRemove(req.params.cityId)
-    .then(city => {
-        if(!city) {
-            return res.status(404).send({
-                message: "city not found with id " + req.params.cityId
-            });
-        }
-        res.send({message: "city deleted successfully!"});
-    }).catch(err => {
-        if(err.kind === 'ObjectId' || err.name === 'NotFound') {
-            return res.status(404).send({
-                message: "vechile not found with id " + req.params.cityId
-            });                
-        }
-        return res.status(500).send({
-            message: "Could not delete city with id " + req.params.cityId
-        });
-    });
-};
 
-findAll=async(req,res)=>{
-    const limit = req.body.limit ? req.body.limit : 10;
-    const skip = req.body.skip ? req.body.skip : 0;
-    City.countDocuments().then(total => {
-        City.find().limit(limit).skip(skip * limit).then(result => {
-            res.json({success: true, message: 'ALl', data: result, total:total})
-        })
-    })
+    //     } catch (error) {
+    //         console.log("Error in catch", error)
+    //         res.status(500).json({ code: 400, success: false, message: "Internal server error", })
+    //     }
+    // }
 
-};
+}
 
-module.exports = {
-    createCity,
-    findOne,
-    updateCity,
-    deleteCity,
-    findAll
-};
+module.exports = new city();

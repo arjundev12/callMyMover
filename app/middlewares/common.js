@@ -93,6 +93,7 @@ class common {
              saveData1.wallet_type = type;
              saveData1.status = 'active'
              saveData1.referral_id = Referral_id
+             console.log("hiiii", Referral_id)
             let saveData = new walletModel(saveData1)
             await saveData.save();
             console.log("wallet create successfully")

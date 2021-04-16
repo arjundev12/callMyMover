@@ -12,6 +12,7 @@ class driverValidation {
             location : this.location.bind(this),
             orderUpdate: this.orderUpdate.bind(this),
             getOrderDetails: this.getOrderDetails.bind(this),
+            driverRegistration: this.driverRegistration.bind(this)
             
 
         }
@@ -230,6 +231,61 @@ class driverValidation {
                 })
 
            
+
+            const errors = await this._validationErrorsFormat(req);
+            if (errors) {
+                // return res.json({ code : 422 ,success: false, message: errors[0] });
+                return res.status(422).json({ code: 422, success: false, message: "Resolve these errors", errors: errors });
+            } else {
+                return next();
+            }
+        } else {
+            res.status(422).json({ code: 422, success: false, message: "Please send proper parameters", errors: null })
+        }
+    }
+    async driverRegistration (req, res, next) {
+        // return next();
+        if (Object.keys(req.body).length <=12) {
+                req.checkBody({
+                    id: {
+                        notEmpty: true, 
+                        errorMessage: { "field_name": "id", "error_msg": 'id is required' },
+                    },
+                    name: {
+                        notEmpty: true, 
+                        errorMessage: { "field_name": "name", "error_msg": 'name is required' },
+                    },
+                    city: {
+                        notEmpty: true, 
+                        errorMessage: { "field_name": "city", "error_msg": 'city is required ' },
+                    },
+                    address: {
+                        notEmpty: true, 
+                        errorMessage: { "field_name": "address", "error_msg": 'address is required ' },
+                    },
+                    pincode: {
+                        notEmpty: true, 
+                        errorMessage: { "field_name": "pincode", "error_msg": 'pincode is required' },
+                    },
+                    own_vehicle: {
+                        notEmpty: true,
+                        errorMessage: { "field_name": "own_vehicle", "error_msg": 'own_vehicle is required' },
+                    },
+                    /////////////////////
+                    vehicle_number: {
+                        notEmpty: true, 
+                        errorMessage: { "field_name": "vehicle_number", "error_msg": 'vehicle_number is required ' },
+                    },
+                    vehicle_type: {
+                        notEmpty: true, 
+                        errorMessage: { "field_name": "vehicle_type", "error_msg": 'vehicle_type is required' },
+                    },
+                    self_drive : {
+                        notEmpty: true,
+                        errorMessage: { "field_name": "self_drive", "error_msg": 'self_drive is required' },
+                    }
+                })
+
 
             const errors = await this._validationErrorsFormat(req);
             if (errors) {

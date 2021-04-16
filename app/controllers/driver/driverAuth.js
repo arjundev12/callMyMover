@@ -1,12 +1,13 @@
 let commenFunction = require('../../middlewares/common')
 const UsersModel = require('../../models/customer/customers');
-const VehicleModel = require('../../models/customer/vehicleDetails');
+const VehicleModel = require('../../models/driver/vechileDetail');
 const DriverModel = require('../../models/driver/driver')
 const walletModel = require('../../models/wallet')
 const Mongoose = require('mongoose')
 const authConfig = require('../../authConfig/auth')
 const jwt = require('jsonwebtoken')
 const constant = require('../../utils/constant')
+const pincodModel = require('../../models/pincodes')
 // const db = require('../models')
 const moment = require("moment");
 class driver {
@@ -49,7 +50,7 @@ class driver {
             let fourDigitsRandom
             do {
                 fourDigitsRandom = await Math.floor(1000 + Math.random() * 9000);
-                let getData = await UsersModel.find({ Referral_id: fourDigitsRandom.toString() })
+                let getData = await walletModel.find({ referral_id: fourDigitsRandom.toString() })
                 if (getData.length > 0) {
                     flage = true
                 } else {
@@ -70,13 +71,13 @@ class driver {
             let data;
             let errorMessage;
             let successMessage;
-            let isExist ;
+            let isExist;
             let getUser = await DriverModel.findOne({ phoneNo: Number(req.body.number) }).lean();
             if (getUser) {
                 if (getUser.status != 'blocked') {
                     data = await this._resendOtp(getUser);
                     successMessage = "Update successfully"
-                    isExist= true
+                    isExist = true
                 } else {
                     successMessage = "you are blocked by Admin"
                 }
@@ -89,13 +90,13 @@ class driver {
                         otp_time: moment().format("DD.MM.YYYY HH.mm.ss")
                     },
                 }
-                if(req.body.FcmToken){
+                if (req.body.FcmToken) {
                     saveData1.FcmToken = req.body.FcmToken
                 }
-                if(req.body.loginType){
+                if (req.body.loginType) {
                     saveData1.loginType = req.body.loginType
                 }
-                if(req.body.referId){
+                if (req.body.referId) {
                     saveData1.referId = req.body.referId
                 }
                 if (req.body.profile_details) {
@@ -104,8 +105,8 @@ class driver {
 
                 let saveData = new DriverModel(saveData1)
                 data = await saveData.save()
-                isExist= false
-                await commenFunction._createWallet(data._id, 'customer',this._generateRefID )
+                isExist = false
+                await commenFunction._createWallet(data._id, 'driver', this._generateRefID())
                 successMessage = "Data save successfully"
             }
             // await commenFunction._sendMail("arjunsinghyed@gmail.com")
@@ -167,7 +168,7 @@ class driver {
                     getUser.otp_details.status = true
                     getUser.otp_details.otp = 0
                     getUser.status = 'active'
-                    getUser.isNumberVerify =true
+                    getUser.isNumberVerify = true
                     data = await DriverModel.findOneAndUpdate({ _id: getUser._id }, getUser, { new: true }).lean()
                     var token = '';
                     let stoken = {
@@ -193,30 +194,51 @@ class driver {
         }
 
     }
+    async _registerVehicle(obj) {
+        try {
+            let getUser = await VehicleModel.findOne({ vehicle_number: obj.vehicle_number }).lean()
+            if (getUser) {
+                throw { code: 404, success: false, message: "vehicle is already register by someone" }
+            } else {
+                let savedata = await new VehicleModel(obj)
+                let data = await savedata.save()
+                return data
+            }
+
+        } catch (error) {
+            throw error
+        }
+
+    }
     async driverRegistration(req, res) {
         try {
-            let {id ,name, city, address, own_vehicle, vehicle_name,vehicle_number,vehicle_type,self_driver} = req.body
+            let { id, name, city, address, pincode, own_vehicle,  vehicle_number, vehicle_type, self_drive } = req.body
+            let checkPin = await pincodModel.findOne({ cityid: city, name: pincode })
+            if(!checkPin){
+                return res.status(404).json({ code: 404, success: false, message: "please fill the correct pincode" })
+            }
             let getUser = await DriverModel.findOne({ _id: id }).lean()
-            if(getUser){
+            if (getUser) {
                 getUser.name = name
                 getUser.city = city
                 getUser.address = address
                 getUser.is_owner_vehicle = own_vehicle
                 getUser.isProfileCompleted = true
+                getUser.pincode = pincode
                 let obj = {
-                    vehicle_name: vehicle_name,
                     vehicle_number: vehicle_number,
                     vehicle_type: vehicle_type,
                 }
-                if (self_driver == true || self_driver == 'true') {
+                if (self_drive == 'yes') {
                     obj.vehicle_owner = id
                     obj.vehicle_driver = id
                 } else {
                     obj.vehicle_owner = id
                 }
-                let updateData = await DriverModel.findOneAndUpdate({ _id: user._id }, getUser, { new: true })
+                await this._registerVehicle(obj)
+                let updateData = await DriverModel.findOneAndUpdate({ _id: getUser._id }, getUser, { new: true })
                 return res.status(200).json({ code: 200, success: true, message: "Data save successfully", data: updateData })
-            }else{
+            } else {
                 return res.status(404).json({ code: 404, success: false, message: "Something went wrong " })
             }
 
@@ -226,7 +248,7 @@ class driver {
             res.status(500).json({ code: 400, success: false, message: "Internal server error", })
         }
     }
-   
+
 
 }
 

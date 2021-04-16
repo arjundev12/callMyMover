@@ -13,12 +13,15 @@ const router = express.Router();
 
 // create login routes
 const vechile=require('../../controllers/driver/vechile');
+const vehicleTyps = require('../../controllers/driver/vehicleDetails')
 
 router.post('/create/newvechile',vechile.create);
 router.put('/update/:vechileId',vechile.update);
 router.get('/vechile/:vechileId',vechile.findOne);
 router.delete('/delete/:vechileId',vechile.deleteData);
 router.get('/vechiledata',vechile.findAll)
+router.get('/get-vehicle-type',vehicleTyps.getVehicleTyps)
+
 
 
 module.exports = router;
