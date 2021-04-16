@@ -168,13 +168,14 @@ class driver {
                     getUser.otp_details.otp = 0
                     getUser.status = 'active'
                     getUser.isNumberVerify =true
-                    data = await DriverModel.findOneAndUpdate({ _id: getUser._id }, getUser, { new: true })
+                    data = await DriverModel.findOneAndUpdate({ _id: getUser._id }, getUser, { new: true }).lean()
                     var token = '';
                     let stoken = {
                         _id: data._id,
                     }
 
                     token = await jwt.sign(stoken, authConfig.secret, { expiresIn: '7d' });
+                    data.token
                     successMessage = "Otp verified successfully"
                 }
             } else {
@@ -183,7 +184,7 @@ class driver {
             if (errorMessage) {
                 res.status(400).json({ code: 400, success: false, message: errorMessage })
             } else {
-                res.status(200).json({ code: 200, success: true, message: successMessage, data: token })
+                res.status(200).json({ code: 200, success: true, message: successMessage, data: data })
             }
 
         } catch (error) {
@@ -194,7 +195,7 @@ class driver {
     }
     async driverRegistration(req, res) {
         try {
-            let {id ,name, city, address, own_vehicle} = req.body
+            let {id ,name, city, address, own_vehicle, vehicle_name,vehicle_number,vehicle_type,self_driver} = req.body
             let getUser = await DriverModel.findOne({ _id: id }).lean()
             if(getUser){
                 getUser.name = name
@@ -202,6 +203,17 @@ class driver {
                 getUser.address = address
                 getUser.is_owner_vehicle = own_vehicle
                 getUser.isProfileCompleted = true
+                let obj = {
+                    vehicle_name: vehicle_name,
+                    vehicle_number: vehicle_number,
+                    vehicle_type: vehicle_type,
+                }
+                if (self_driver == true || self_driver == 'true') {
+                    obj.vehicle_owner = id
+                    obj.vehicle_driver = id
+                } else {
+                    obj.vehicle_owner = id
+                }
                 let updateData = await DriverModel.findOneAndUpdate({ _id: user._id }, getUser, { new: true })
                 return res.status(200).json({ code: 200, success: true, message: "Data save successfully", data: updateData })
             }else{
@@ -214,28 +226,7 @@ class driver {
             res.status(500).json({ code: 400, success: false, message: "Internal server error", })
         }
     }
-    async vehicleRegistration(req, res) {
-        try {
-            let {id ,name, city, address, own_vehicle} = req.body
-            let getUser = await DriverModel.findOne({ _id: id }).lean()
-            if(getUser){
-                getUser.name = name
-                getUser.city = city
-                getUser.address = address
-                getUser.is_owner_vehicle = own_vehicle
-                getUser.isProfileCompleted = true
-                let updateData = await DriverModel.findOneAndUpdate({ _id: user._id }, getUser, { new: true })
-                return res.status(200).json({ code: 200, success: true, message: "Data save successfully", data: updateData })
-            }else{
-                return res.status(404).json({ code: 404, success: false, message: "Something went wrong " })
-            }
-
-
-        } catch (error) {
-            console.log("Error in catch", error)
-            res.status(500).json({ code: 400, success: false, message: "Internal server error", })
-        }
-    }
+   
 
 }
 
