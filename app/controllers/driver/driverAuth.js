@@ -14,7 +14,8 @@ class driver {
         return {
             signUp: this.signUp.bind(this),
             verifyOtp: this.verifyOtp.bind(this),
-           
+            driverRegistration: this.driverRegistration.bind(this)
+
         }
     }
 
@@ -69,7 +70,7 @@ class driver {
 
                 let saveData = new DriverModel(saveData1)
                 data = await saveData.save();
-                await commenFunction._createWallet(data._id, 'customer' )
+                await commenFunction._createWallet(data._id, 'customer')
                 successMessage = "Data save successfully"
             }
             // await commenFunction._sendMail("arjunsinghyed@gmail.com")
@@ -78,7 +79,7 @@ class driver {
 
         } catch (error) {
             console.log("Error in catch", error)
-            res.status(500).json({ code: 400, success: false, message: "Internal server error", data: null })
+            res.status(500).json({ code: 400, success: false, message: "Internal server error" })
         }
 
     }
@@ -104,6 +105,7 @@ class driver {
                     getUser.otp_details.status = true
                     getUser.otp_details.otp = 0
                     getUser.status = 'active'
+                    getUser.isNumberVerify =true
                     data = await DriverModel.findOneAndUpdate({ _id: getUser._id }, getUser, { new: true })
                     var token = '';
                     let stoken = {
@@ -124,9 +126,53 @@ class driver {
 
         } catch (error) {
             console.log("error in catch", error)
-            res.status(500).json({ code: 500, success: false, message: "Internal server error", data: null })
+            res.status(500).json({ code: 500, success: false, message: "Internal server error" })
         }
 
+    }
+    async driverRegistration(req, res) {
+        try {
+            let {id ,name, city, address, own_vehicle} = req.body
+            let getUser = await DriverModel.findOne({ _id: id }).lean()
+            if(getUser){
+                getUser.name = name
+                getUser.city = city
+                getUser.address = address
+                getUser.is_owner_vehicle = own_vehicle
+                getUser.isProfileCompleted = true
+                let updateData = await DriverModel.findOneAndUpdate({ _id: user._id }, getUser, { new: true })
+                return res.status(200).json({ code: 200, success: true, message: "Data save successfully", data: updateData })
+            }else{
+                return res.status(404).json({ code: 404, success: false, message: "Something went wrong " })
+            }
+
+
+        } catch (error) {
+            console.log("Error in catch", error)
+            res.status(500).json({ code: 400, success: false, message: "Internal server error", })
+        }
+    }
+    async vehicleRegistration(req, res) {
+        try {
+            let {id ,name, city, address, own_vehicle} = req.body
+            let getUser = await DriverModel.findOne({ _id: id }).lean()
+            if(getUser){
+                getUser.name = name
+                getUser.city = city
+                getUser.address = address
+                getUser.is_owner_vehicle = own_vehicle
+                getUser.isProfileCompleted = true
+                let updateData = await DriverModel.findOneAndUpdate({ _id: user._id }, getUser, { new: true })
+                return res.status(200).json({ code: 200, success: true, message: "Data save successfully", data: updateData })
+            }else{
+                return res.status(404).json({ code: 404, success: false, message: "Something went wrong " })
+            }
+
+
+        } catch (error) {
+            console.log("Error in catch", error)
+            res.status(500).json({ code: 400, success: false, message: "Internal server error", })
+        }
     }
 
 }

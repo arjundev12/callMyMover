@@ -20,22 +20,7 @@ var mongoosePaginate = require('mongoose-paginate');
 const Schema = mongoose.Schema;
 var vehicleSchema = new Schema({
     location: {
-        lat: {
-            type: String,
-            trim: true,
-        },
-        long: {
-            type: String,
-            trim: true,
-        },
-        city: {
-            type: String,
-            trim: true,
-        },
-        country: {
-            type: String,
-            trim: true,
-        }
+        type: { any: [Schema.Types.Mixed] }
     },
     vehicle_name: {
         type: String,
@@ -48,15 +33,30 @@ var vehicleSchema = new Schema({
     vehicle_details: {
         type: { any: [Schema.Types.Mixed] }
     },
-    vehicle_type: {
+    vehicle_type: {    // mini micro etc
         type: String,
         trim: true,
     },
+    vehicle_rate:{
+        type: { any: [Schema.Types.Mixed] }
+    },
     vehicle_owner: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Driver"
-    }
-}, { timestamps:true});
+        ref: "driverAuth"
+    },
+    vehicle_driver: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "driverAuth"
+    },
+    isDocumentComplete : {
+        type: Boolean,
+        trim: true,
+        default: false
+    },
+    documents: {
+        type: { any: [Schema.Types.Mixed] }
+    },
+}, { timestamps:true, versionKey: false});
 vehicleSchema.plugin(mongoosePaginate);
-let vehicleModel = mongoose.model('vehicle', vehicleSchema);
+let vehicleModel = mongoose.model('vehicledetails', vehicleSchema);
 module.exports = vehicleModel;

@@ -1,4 +1,5 @@
 const Vechile = require('../../models/driver/vechile');
+const vehicleModel = require('../../models/driver/vechileDetail')
 
 create = async (req, res) => {
     if (!req.body.vechileNumber) {

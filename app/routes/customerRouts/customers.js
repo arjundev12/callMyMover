@@ -9,6 +9,8 @@ let validationData= require('../../middlewares/customerValidation');
 
 router.post('/sign-up', validationData.signUp, user_controller.signUp);
 router.put('/verify-otp', validationData.verifyOtp, user_controller.verifyOtp);
+router.post('/resend-otp', validationData.signUp, user_controller.resendOtp);
+
 router.get('/user-details', validationData.checkQuery, user_controller.getCustomerDetails);
 router.put('/user-update', user_controller.customerUpdate);
 

@@ -10,6 +10,17 @@ const driverSchema = Schema({
     type: String,
     default: "service provider"
   },
+  city: {
+    type: String,
+    trim: true
+  },
+  address: {
+    type: { any: [Schema.Types.Mixed] }
+  },
+  is_owner_vehicle: {
+    type: Boolean,
+    default: false
+  },
   phoneNo: {
     type: String,
     trim: true,
@@ -40,24 +51,30 @@ const driverSchema = Schema({
   token: {
     type: String
   },
-
   userType: {
     type: String,
     enum: ["driver", "fleetpartner"],
-    default : "driver"
-
+    default: "driver"
   },
-  isProfileCompleted: {
+  Documents :{
+    type: { any: [Schema.Types.Mixed] }
+  },
+  isProfileCompleted: {  // for profile complete verification 
     type: Boolean,
     default: false
   },
-  totalEaring: {
-    type: Number,
-    default: 10
+  isVehicleComplete: {  // for Vehicle complete verification 
+    type: Boolean,
+    default: false
   },
-  recentComissionCharges: {
-    type: Number,
-    default: 4
+  isNumberVerify: { // for number verification 
+    type: Boolean,
+    default: false
+  },
+  isDocumentVerify: { // for document verification 
+    type: String,
+    enum: ["Uploade", "verified", 'rejected'],
+    default: "Uploade"
   },
   driverStatus: {
     type: String,

@@ -25,7 +25,8 @@ class users {
             getCustomerDetails: this.getCustomerDetails.bind(this),
             customerUpdate: this.customerUpdate.bind(this),
             getLocationName: this.getLocationName.bind(this),
-            getWallet : this.getWallet.bind(this)
+            getWallet : this.getWallet.bind(this),
+            resendOtp: this.resendOtp.bind(this)
         }
     }
 
@@ -94,6 +95,48 @@ class users {
             res.status(500).json({ code: 400, success: false, message: "Internal server error", data: null })
         }
 
+    }
+    async resendOtp (req, res){
+        try {
+            let data;
+            let errorMessage;
+            let successMessage;
+            let getUser = await UsersModel.findOne({ number: Number(req.body.number) }).lean();
+            if (getUser) {
+                if (getUser.status != 'blocked') {
+                    data = await this._resendOtp(getUser);
+                    successMessage = "Resend otp is successfully"
+                } else {
+                    successMessage = "You are blocked by Admin"
+                }
+
+            } else {
+                let saveData1 = {
+                    number: req.body.number,
+                    location: req.body.location,
+                    otp_details: {
+                        otp: await this._randomOTP(),
+                        otp_time: moment().format("DD.MM.YYYY HH.mm.ss")
+                    },
+                    ride_otp:  await this._randomOTP()
+                }
+                if (req.profile_details) {
+                    saveData1.profile_details = profile_details
+                }
+
+                let saveData = new UsersModel(saveData1)
+                data = await saveData.save();
+                await commenFunction._createWallet(data._id, 'customer' )
+                successMessage = "Resend otp is successfully"
+            }
+            // await commenFunction._sendMail("arjunsinghyed@gmail.com")
+
+            res.status(200).json({ code: 200, success: true, message: successMessage, data: data })
+
+        } catch (error) {
+            console.log("Error in catch", error)
+            res.status(500).json({ code: 400, success: false, message: "Internal server error", data: null })
+        }
     }
     async verifyOtp(req, res) {
         try {

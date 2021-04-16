@@ -16,15 +16,14 @@ const driverAuth=require('../../controllers/driver/driverAuth');
 const driver=require('../../controllers/driver/driver');
 const Validator = require('../../middlewares/driverValidation')
 const validationData = require('../../middlewares/customerValidation')
-router.post('/driver/register',driver.registerDriver);
-router.post('/verifyDriver',driver.driverVerification);
-router.post('/login/driver',driver.loginDriver);
-router.post('/users/resend',driver.resend);
-router.get('/alldrivers',driver.findAll);
+
 router.get('/driver/allorders',driverOrders.findAllOrders);
-//login routs
+//login routs driver Auth
 router.post('/sign-up', validationData.signUp, driverAuth.signUp);
 router.put('/verify-otp', validationData.verifyOtp, driverAuth.verifyOtp);
+router.put('/update-details', driverAuth.driverRegistration);
+
+
 
 router.put('/update-order',Validator.orderUpdate,driverOrders.updateOrder);
 router.post('/get-orders',driverOrders.getOrders);
