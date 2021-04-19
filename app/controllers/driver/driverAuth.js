@@ -22,7 +22,9 @@ class driver {
             driverRegistration: this.driverRegistration.bind(this),
             resendOtp: this.resendOtp.bind(this),
             pincodeVerify: this.pincodeVerify.bind(this),
-            uploadId: this.uploadId.bind(this)
+            uploadId: this.uploadId.bind(this),
+            uploadRc: this.uploadRc.bind(this),
+            uploadDl : this.uploadDl.bind(this)
 
         }
     }
@@ -295,6 +297,90 @@ class driver {
             } else {
                 let savedata = await new DocumentModel({
                     identity_card: [
+                        {
+                            _id: new ObjectID(),
+                            front_Id: path,
+                            back_Id: path2,
+                            status: 'new'
+                        }
+                    ],
+                    owner: ID
+                })
+                data = await savedata.save()
+            }
+            await DriverModel.findOneAndUpdate({ _id: ID }, { $set: { Documents: data._id, isDocumentVerify: 'uploade' } })
+            return res.json({ code: 200, success: true, message: "document uploaded successfully", data: data })
+
+        } catch (error) {
+            console.log("error in catch", error)
+            res.json({ code: 500, success: false, message: "Internal server error" })
+        }
+    }
+    async uploadRc(req, res) {
+        try {
+            let data
+            let { ID, BID, FID } = req.body
+            let getdata = await DocumentModel.findOne({ owner: ID })
+
+            let path = await commenFunction._uploadBase64(FID, 'driver')
+            let path2 = await commenFunction._uploadBase64(BID, 'driver')
+
+            if (getdata) {
+                data = await DocumentModel.findOneAndUpdate({ owner: ID }, {
+                    $addToSet: {
+                        registration_certificate: {
+                            _id: new ObjectID(),
+                            front_Id: path,
+                            back_Id: path2,
+                            status: 'new'
+                        }
+                    }
+                }, { new: true })
+            } else {
+                let savedata = await new DocumentModel({
+                    registration_certificate: [
+                        {
+                            _id: new ObjectID(),
+                            front_Id: path,
+                            back_Id: path2,
+                            status: 'new'
+                        }
+                    ],
+                    owner: ID
+                })
+                data = await savedata.save()
+            }
+            await DriverModel.findOneAndUpdate({ _id: ID }, { $set: { Documents: data._id, isDocumentVerify: 'uploade' } })
+            return res.json({ code: 200, success: true, message: "document uploaded successfully", data: data })
+
+        } catch (error) {
+            console.log("error in catch", error)
+            res.json({ code: 500, success: false, message: "Internal server error" })
+        }
+    }
+    async uploadDl(req, res) {
+        try {
+            let data
+            let { ID, BID, FID } = req.body
+            let getdata = await DocumentModel.findOne({ owner: ID })
+
+            let path = await commenFunction._uploadBase64(FID, 'driver')
+            let path2 = await commenFunction._uploadBase64(BID, 'driver')
+
+            if (getdata) {
+                data = await DocumentModel.findOneAndUpdate({ owner: ID }, {
+                    $addToSet: {
+                        driving_licence: {
+                            _id: new ObjectID(),
+                            front_Id: path,
+                            back_Id: path2,
+                            status: 'new'
+                        }
+                    }
+                }, { new: true })
+            } else {
+                let savedata = await new DocumentModel({
+                    driving_licence: [
                         {
                             _id: new ObjectID(),
                             front_Id: path,
