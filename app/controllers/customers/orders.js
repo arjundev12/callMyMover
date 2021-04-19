@@ -34,11 +34,11 @@ class Orders {
             data.dropLocation = await commenFunction._coordinatesInToObj(req.body.dropLocation)
 
             successMessage = "Data save successfully"
-            res.status(200).json({ code: 200, success: true, message: successMessage, data: data })
+           res.json({ code: 200, success: true, message: successMessage, data: data })
 
         } catch (error) {
             console.log("Error in catch", error)
-            res.status(500).json({ code: 400, success: false, message: "Internal server error", data: null })
+            res.json({ code: 400, success: false, message: "Internal server error", data: null })
         }
 
     }
@@ -57,11 +57,11 @@ class Orders {
             data.stoppage = await commenFunction._coordinatesInToObj(data.stoppage)
             data.dropLocation = await commenFunction._coordinatesInToObj(data.dropLocation)
 
-            res.status(200).json({ code: 200, success: true, message: successMessage, data: data })
+           res.json({ code: 200, success: true, message: successMessage, data: data })
 
         } catch (error) {
             console.log("Error in catch", error)
-            res.status(500).json({ code: 400, success: false, message: "Internal server error", data: null })
+            res.json({ code: 400, success: false, message: "Internal server error", data: null })
         }
 
     }
@@ -79,11 +79,11 @@ class Orders {
             // data.stoppage = await commenFunction._coordinatesInToObj(data.stoppage)
             // data.dropLocation = await commenFunction._coordinatesInToObj(data.dropLocation)
 
-            res.status(200).json({ code: 200, success: true, message: successMessage, data: data })
+           res.json({ code: 200, success: true, message: successMessage, data: data })
 
         } catch (error) {
             console.log("Error in catch", error)
-            res.status(500).json({ code: 500, success: false, message: "Internal server error", data: null })
+            res.json({ code: 500, success: false, message: "Internal server error", data: null })
         }
 
     }

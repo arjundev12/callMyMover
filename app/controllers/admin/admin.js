@@ -17,7 +17,7 @@ class AdminAuth {
             let data
             let getAdmin = await AdminModel.findOne({ email: req.body.email })
             if (getAdmin) {
-                res.status(400).json({ code: 400, success: true, message: "email all ready exist", })
+               res.json({ code: 400, success: true, message: "email all ready exist", })
             } else {
                 const salt = bcrypt.genSaltSync(10);
                 const hash = bcrypt.hashSync(password, salt);
@@ -26,13 +26,13 @@ class AdminAuth {
                     password: hash
                 })
                 data = await saveData.save();
-                res.status(200).json({ code: 200, success: true, message: "Data save successfully", data: data })
+               res.json({ code: 200, success: true, message: "Data save successfully", data: data })
 
             }
 
         } catch (error) {
             console.log("Error in catch", error)
-            res.status(500).json({ code: 400, success: false, message: "Internal server error", data: null })
+            res.json({ code: 400, success: false, message: "Internal server error", data: null })
         }
 
     }
@@ -43,16 +43,16 @@ class AdminAuth {
             if (data) {
                 let check = await bcrypt.compareSync(password, data.password);
                 if (check) {
-                    res.status(200).json({ code: 200, success: true, message: "Login successfully", data: data })
+                   res.json({ code: 200, success: true, message: "Login successfully", data: data })
                 } else {
-                    res.status(404).json({ code: 404, success: false, message: "Password is wrong", })
+                   res.json({ code: 404, success: false, message: "Password is wrong", })
                 }
             } else {
-                res.status(404).json({ code: 404, success: false, message: "Authentication failed", })
+               res.json({ code: 404, success: false, message: "Authentication failed", })
             }
         } catch (error) {
             console.log("Error in catch", error)
-            res.status(500).json({ code: 500, success: false, message: "Internal server error", data: null })
+            res.json({ code: 500, success: false, message: "Internal server error", data: null })
         }
 
     }

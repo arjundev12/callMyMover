@@ -35,7 +35,7 @@ updateDriverLocation = async (req, res) => {
         }
     } catch (error) {
         console.log("Error in catch", error)
-        res.status(500).json({ code: 500, success: false, message: "Internal server error", data: null })
+        res.json({ code: 500, success: false, message: "Internal server error", data: null })
     }
 }
 getDriverLocation = async (req, res) => {
@@ -47,7 +47,7 @@ getDriverLocation = async (req, res) => {
         
     } catch (error) {
         console.log("Error in catch", error)
-        res.status(500).json({ code: 500, success: false, message: "Internal server error", data: null })
+        res.json({ code: 500, success: false, message: "Internal server error", data: null })
     }
 }
 

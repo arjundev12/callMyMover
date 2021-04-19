@@ -21,18 +21,18 @@ findOne = (req, res) => {
     Language.findById(req.params.languageId)
     .then(languge => {
         if(!languge) {
-            return res.status(404).send({
+            returnres.send({
                 message: "languge not found with id " + req.params.languageId
             });            
         }
         res.send(languge);
     }).catch(err => {
         if(err.kind === 'ObjectId') {
-            return res.status(404).send({
+            returnres.send({
                 message: "languge not found with id " + req.params.languageId
             });                
         }
-        return res.status(500).send({
+        return res.send({
             message: "Error retrieving languge with id " + req.params.languageId
         });
     });
@@ -44,18 +44,18 @@ update = (req, res) => {
         }, {new: true})
     .then(language => {
         if(!language) {
-            return res.status(404).send({
+            returnres.send({
                 message: "language not found with id " + req.params.languageId
             });
         }
         res.send(language);
     }).catch(err => {
         if(err.kind === 'ObjectId') {
-            return res.status(404).send({
+            returnres.send({
                 message: "language not found with id " + req.params.languageId
             });                
         }
-        return res.status(500).send({
+        return res.send({
             message: "Error updating language with id " + req.params.languageId
         });
     });
@@ -65,18 +65,18 @@ deleteData = (req, res) => {
     Language.findByIdAndRemove(req.params.languageId)
     .then(languge => {
         if(!language) {
-            return res.status(404).send({
+            returnres.send({
                 message: "language not found with id " + req.params.languageId
             });
         }
         res.send({message: "language deleted successfully!"});
     }).catch(err => {
         if(err.kind === 'ObjectId' || err.name === 'NotFound') {
-            return res.status(404).send({
+            returnres.send({
                 message: "vechile not found with id " + req.params.languageId
             });                
         }
-        return res.status(500).send({
+        return res.send({
             message: "Could not delete language with id " + req.params.languageId
         });
     });

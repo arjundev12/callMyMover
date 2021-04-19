@@ -39,18 +39,18 @@ findOne = (req, res) => {
     Vechile.findById(req.params.vechileId)
     .then(vechile => {
         if(!vechile) {
-            return res.status(404).send({
+            returnres.send({
                 message: "vechile not found with id " + req.params.vechileId
             });            
         }
         res.send(vechile);
     }).catch(err => {
         if(err.kind === 'ObjectId') {
-            return res.status(404).send({
+            returnres.send({
                 message: "vechile not found with id " + req.params.vechileId
             });                
         }
-        return res.status(500).send({
+        return res.send({
             message: "Error retrieving vechile with id " + req.params.vechileId
         });
     });
@@ -71,18 +71,18 @@ update = (req, res) => {
     }, {new: true})
     .then(vechile => {
         if(!vechile) {
-            return res.status(404).send({
+            returnres.send({
                 message: "vechile not found with id " + req.params.vechileId
             });
         }
         res.send(vechile);
     }).catch(err => {
         if(err.kind === 'ObjectId') {
-            return res.status(404).send({
+            returnres.send({
                 message: "vechile not found with id " + req.params.vechileId
             });                
         }
-        return res.status(500).send({
+        return res.send({
             message: "Error updating vechile with id " + req.params.vechileId
         });
     });
@@ -92,18 +92,18 @@ deleteData = (req, res) => {
     Vechile.findByIdAndRemove(req.params.vechileId)
     .then(vechile => {
         if(!vechile) {
-            return res.status(404).send({
+            returnres.send({
                 message: "vechile not found with id " + req.params.vechileId
             });
         }
         res.send({message: "vechile deleted successfully!"});
     }).catch(err => {
         if(err.kind === 'ObjectId' || err.name === 'NotFound') {
-            return res.status(404).send({
+            returnres.send({
                 message: "vechile not found with id " + req.params.vechileId
             });                
         }
-        return res.status(500).send({
+        return res.send({
             message: "Could not delete note with id " + req.params.vechileId
         });
     });

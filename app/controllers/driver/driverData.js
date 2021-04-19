@@ -27,13 +27,13 @@ class driverdata {
             data = await saveData.save();
             successMessage = "Data save successfully"
             if (errorMessage) {
-                res.status(400).json({ code: 400, success: false, message: errorMessage })
+               res.json({ code: 400, success: false, message: errorMessage })
             } else {
-                res.status(200).json({ code: 200, success: true, message: successMessage, data: data })
+               res.json({ code: 200, success: true, message: successMessage, data: data })
             }
         } catch (error) {
             console.log("error in catch", error)
-            res.status(500).json({ code: 500, success: false, message: "Internal server error", data: null })
+            res.json({ code: 500, success: false, message: "Internal server error", data: null })
         }
 
     }
@@ -49,13 +49,13 @@ class driverdata {
             },{new:true});
             successMessage = "Data update successfully"
             if (errorMessage) {
-                res.status(400).json({ code: 400, success: false, message: errorMessage })
+               res.json({ code: 400, success: false, message: errorMessage })
             } else {
-                res.status(200).json({ code: 200, success: true, message: successMessage, data: data })
+               res.json({ code: 200, success: true, message: successMessage, data: data })
             }
         } catch (error) {
             console.log("error in catch", error)
-            res.status(500).json({ code: 500, success: false, message: "Internal server error", data: null })
+            res.json({ code: 500, success: false, message: "Internal server error", data: null })
         }
 
     }

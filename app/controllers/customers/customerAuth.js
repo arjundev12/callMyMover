@@ -88,11 +88,11 @@ class users {
             }
             // await commenFunction._sendMail("arjunsinghyed@gmail.com")
 
-            res.status(200).json({ code: 200, success: true, message: successMessage, data: data })
+            res.json({ code: 200, success: true, message: successMessage, data: data })
 
         } catch (error) {
             console.log("Error in catch", error)
-            res.status(500).json({ code: 400, success: false, message: "Internal server error", data: null })
+            res.json({ code: 400, success: false, message: "Internal server error", data: null })
         }
 
     }
@@ -131,11 +131,11 @@ class users {
             }
             // await commenFunction._sendMail("arjunsinghyed@gmail.com")
 
-            res.status(200).json({ code: 200, success: true, message: successMessage, data: data })
+            res.json({ code: 200, success: true, message: successMessage, data: data })
 
         } catch (error) {
             console.log("Error in catch", error)
-            res.status(500).json({ code: 400, success: false, message: "Internal server error", data: null })
+            res.json({ code: 400, success: false, message: "Internal server error", data: null })
         }
     }
     async verifyOtp(req, res) {
@@ -173,13 +173,13 @@ class users {
                 errorMessage = "Authentication is Failed"
             }
             if (errorMessage) {
-                res.status(400).json({ code: 400, success: false, message: errorMessage })
+                res.json({ code: 400, success: false, message: errorMessage })
             } else {
-                res.status(200).json({ code: 200, success: true, message: successMessage, data: token })
+                res.json({ code: 200, success: true, message: successMessage, data: token })
             }
         } catch (error) {
             console.log("error in catch", error)
-            res.status(500).json({ code: 500, success: false, message: "Internal server error", data: null })
+            res.json({ code: 500, success: false, message: "Internal server error", data: null })
         }
     }
     async getDriver(req, res) {
@@ -190,13 +190,13 @@ class users {
             data = await DriverModel.find()
             successMessage = "Data get successfully"
             if (errorMessage) {
-                res.status(400).json({ code: 400, success: false, message: errorMessage })
+                res.json({ code: 400, success: false, message: errorMessage })
             } else {
-                res.status(200).json({ code: 200, success: true, message: successMessage, data: data })
+                res.json({ code: 200, success: true, message: successMessage, data: data })
             }
         } catch (error) {
             console.log("error in catch", error)
-            res.status(500).json({ code: 400, success: false, message: "Internal server error", data: null })
+            res.json({ code: 400, success: false, message: "Internal server error", data: null })
         }
 
     }
@@ -212,13 +212,13 @@ class users {
             }
             successMessage = "Data get successfully"
             if (errorMessage) {
-                res.status(400).json({ code: 400, success: false, message: errorMessage })
+                res.json({ code: 400, success: false, message: errorMessage })
             } else {
-                res.status(200).json({ code: 200, success: true, message: successMessage, data: data })
+                res.json({ code: 200, success: true, message: successMessage, data: data })
             }
         } catch (error) {
             console.log("error in catch", error)
-            res.status(500).json({ code: 400, success: false, message: "Internal server error", data: null })
+            res.json({ code: 400, success: false, message: "Internal server error", data: null })
         }
 
     }
@@ -235,13 +235,13 @@ class users {
             data = await saveData.save();
             successMessage = "Data save successfully"
             if (errorMessage) {
-                res.status(400).json({ code: 400, success: false, message: errorMessage })
+                res.json({ code: 400, success: false, message: errorMessage })
             } else {
-                res.status(200).json({ code: 200, success: true, message: successMessage, data: data })
+                res.json({ code: 200, success: true, message: successMessage, data: data })
             }
         } catch (error) {
             console.log("error in catch", error)
-            res.status(500).json({ code: 500, success: false, message: "Internal server error", data: null })
+            res.json({ code: 500, success: false, message: "Internal server error", data: null })
         }
 
     }
@@ -257,13 +257,13 @@ class users {
             data = await saveData.save();
             successMessage = "Data save successfully"
             if (errorMessage) {
-                res.status(400).json({ code: 400, success: false, message: errorMessage })
+                res.json({ code: 400, success: false, message: errorMessage })
             } else {
-                res.status(200).json({ code: 200, success: true, message: successMessage, data: data })
+                res.json({ code: 200, success: true, message: successMessage, data: data })
             }
         } catch (error) {
             console.log("error in catch", error)
-            res.status(500).json({ code: 500, success: false, message: "Internal server error", data: null })
+            res.json({ code: 500, success: false, message: "Internal server error", data: null })
         }
 
     }
@@ -287,13 +287,13 @@ class users {
             ])
             successMessage = "Data save successfully"
             if (errorMessage) {
-                res.status(400).json({ code: 400, success: false, message: errorMessage })
+                res.json({ code: 400, success: false, message: errorMessage })
             } else {
-                res.status(200).json({ code: 200, success: true, message: successMessage, data: data })
+                res.json({ code: 200, success: true, message: successMessage, data: data })
             }
         } catch (error) {
             console.log("error in catch", error)
-            res.status(500).json({ code: 500, success: false, message: "Internal server error", data: null })
+            res.json({ code: 500, success: false, message: "Internal server error", data: null })
         }
 
     }
@@ -335,10 +335,10 @@ class users {
             let distenceInKm = Number(req.query.distence_km)
 
             data = await this._estimate(basePrice, timePerKmInMin, distenceInKm)
-            res.status(200).json({ code: 200, success: true, message: "get estimate successfully", data: data })
+            res.json({ code: 200, success: true, message: "get estimate successfully", data: data })
         } catch (error) {
             console.log("error in catch", error)
-            res.status(500).json({ code: 500, success: false, message: "Internal server error", data: null })
+            res.json({ code: 500, success: false, message: "Internal server error", data: null })
         }
 
     }
@@ -351,10 +351,10 @@ class users {
             let data1 = await VehicleModel.findOne({ vehicle_owner: data[0]._id }).populate('vehicle_owner').lean()
             let getlocation = await commenFunction._coordinatesInToObj([data1.location])
             data1.location = getlocation[0]
-            res.status(200).json({ code: 200, success: true, message: "get driver successfully", data: data1 })
+            res.json({ code: 200, success: true, message: "get driver successfully", data: data1 })
         } catch (error) {
             console.log("error in catch", error)
-            res.status(500).json({ code: 500, success: false, message: "Internal server error", data: null })
+            res.json({ code: 500, success: false, message: "Internal server error", data: null })
         }
 
     }
@@ -363,10 +363,10 @@ class users {
             let data;
             data = await UsersModel.findOne({ _id: req.query._id }).sort()
 
-            res.status(200).json({ code: 200, success: true, message: "get user successfully", data: data })
+            res.json({ code: 200, success: true, message: "get user successfully", data: data })
         } catch (error) {
             console.log("error in catch", error)
-            res.status(500).json({ code: 500, success: false, message: "Internal server error", data: null })
+            res.json({ code: 500, success: false, message: "Internal server error", data: null })
         }
 
     }
@@ -375,7 +375,7 @@ class users {
             let data;
             let getData = await UsersModel.findOne({ _id: req.query._id }).lean()
             if (getData.status != 'active') {
-                res.status(400).json({ code: 400, success: false, message: "Otp is not verify " })
+                res.json({ code: 400, success: false, message: "Otp is not verify " })
             }
             if (req.body.name) {
                 getData.name = req.body.name
@@ -395,10 +395,10 @@ class users {
 
             data = await UsersModel.findOneAndUpdate({ _id: getData._id }, getData, { new: true })
 
-            res.status(200).json({ code: 200, success: true, message: "User update successfully", data: data })
+            res.json({ code: 200, success: true, message: "User update successfully", data: data })
         } catch (error) {
             console.log("error in catch", error)
-            res.status(500).json({ code: 500, success: false, message: "Internal server error", data: null })
+            res.json({ code: 500, success: false, message: "Internal server error", data: null })
         }
 
     }
@@ -406,22 +406,22 @@ class users {
         try {
             console.log("lat, long", req.body)
             let data = await commenFunction._getLocationName(req.body.lat, req.body.long)
-            res.status(200).json({ code: 200, success: true, message: "User update successfully", data: data })
+            res.json({ code: 200, success: true, message: "User update successfully", data: data })
 
         } catch (error) {
             console.log("error in catch", error)
-            res.status(500).json({ code: 500, success: false, message: "Internal server error", data: null })
+            res.json({ code: 500, success: false, message: "Internal server error", data: null })
         }
     }
     async getWallet(req, res) {
         try {
             console.log("lat, long", req.body)
             let data = await walletModel.findOne({customer_id : req.query.id})
-            res.status(200).json({ code: 200, success: true, message: "User update successfully", data: data })
+            res.json({ code: 200, success: true, message: "User update successfully", data: data })
 
         } catch (error) {
             console.log("error in catch", error)
-            res.status(500).json({ code: 500, success: false, message: "Internal server error", data: null })
+            res.json({ code: 500, success: false, message: "Internal server error", data: null })
         }
     }
 

@@ -49,18 +49,18 @@ find = (req, res) => {
     Term.findById(req.params.termId)
     .then(term => {
         if(!term) {
-            return res.status(404).send({
+            returnres.send({
                 message: "term not found with id " + req.params.termId
             });            
         }
         res.send(term);
     }).catch(err => {
         if(err.kind === 'ObjectId') {
-            return res.status(404).send({
+            returnres.send({
                 message: "Term not found with id " + req.params.termId
             });                
         }
-        return res.status(500).send({
+        return res.send({
             message: "Error retrieving term with id " + req.params.termId
         });
     });
@@ -83,18 +83,18 @@ deleteData = (req, res) => {
     Term.findByIdAndRemove(req.params.termId)
     .then(term => {
         if(!term) {
-            return res.status(404).send({
+            returnres.send({
                 message: "term not found with id " + req.params.termId
             });
         }
         res.send({message: "term deleted successfully!"});
     }).catch(err => {
         if(err.kind === 'ObjectId' || err.name === 'NotFound') {
-            return res.status(404).send({
+            returnres.send({
                 message: "term not found with id " + req.params.termId
             });                
         }
-        return res.status(500).send({
+        return res.send({
             message: "Could not delete term with id " + req.params.termId
         });
     });

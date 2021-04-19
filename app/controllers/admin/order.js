@@ -16,17 +16,17 @@ class Orders {
             let { toType, message } = req.body
                     let getmessage = await CancelReasons.findOne({toType: toType,message: message})
                     if(getmessage){
-                       return res.status(200).json({ code: 200, success: true, message: "message already in list ", data: getmessage })
+                       returnres.json({ code: 200, success: true, message: "message already in list ", data: getmessage })
                     }
                 let saveData = new CancelReasons({
                     toType: toType,
                     message: message
                 })
                let data = await saveData.save();
-                res.status(200).json({ code: 200, success: true, message: "Data save successfully", data: data })
+               res.json({ code: 200, success: true, message: "Data save successfully", data: data })
         } catch (error) {
             console.log("Error in catch", error)
-            res.status(500).json({ code: 400, success: false, message: "Internal server error", data: null })
+            res.json({ code: 400, success: false, message: "Internal server error", data: null })
         }
 
     }

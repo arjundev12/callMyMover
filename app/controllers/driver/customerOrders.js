@@ -54,7 +54,7 @@ updateOrder = async (req, res) => {
 
     } catch (error) {
         console.log("error in catch", error)
-        res.status(500).json({ code: 500, success: false, message: "Internal server error", })
+        res.json({ code: 500, success: false, message: "Internal server error", })
     }
 
 }
@@ -118,10 +118,10 @@ getOrders = async (req, res) => {
             }
         }
 
-        res.status(200).json({ code: 200, success: true, message: "Get list successfully ", live_data: getliveOrder, data: data })
+        res.json({ code: 200, success: true, message: "Get list successfully ", live_data: getliveOrder, data: data })
     } catch (error) {
         console.log("error in catch", error)
-        res.status(500).json({ code: 500, success: false, message: "Internal server error", })
+        res.json({ code: 500, success: false, message: "Internal server error", })
     }
 }
 getOrdersDetails = async (req, res) => {
@@ -153,10 +153,10 @@ getOrdersDetails = async (req, res) => {
                 estimateDistance: "5 km"
             }
         })
-        res.status(200).json({ code: 200, success: true, message: "Get Successfully details", data: data })
+        res.json({ code: 200, success: true, message: "Get Successfully details", data: data })
     } catch (error) {
         console.log("error in catch", error)
-        res.status(500).json({ code: 500, success: false, message: "Internal server error", })
+        res.json({ code: 500, success: false, message: "Internal server error", })
     }
 }
 verifyRideOtp = async (req, res) => {
@@ -194,14 +194,14 @@ verifyRideOtp = async (req, res) => {
                     estimateDistance: "5 km"
                 }
             })
-            res.status(200).json({ code: 200, success: true, message: "Otp verify Successfully", data: data1 })
+            res.json({ code: 200, success: true, message: "Otp verify Successfully", data: data1 })
         } else {
-            res.status(400).json({ code: 400, success: false, message: "Invalid otp", })
+            res.json({ code: 400, success: false, message: "Invalid otp", })
         }
 
     } catch (error) {
         console.log("error in catch", error)
-        res.status(500).json({ code: 500, success: false, message: "Internal server error", })
+        res.json({ code: 500, success: false, message: "Internal server error", })
     }
 }
 completeRide = async (req, res) => {
@@ -258,7 +258,7 @@ completeRide = async (req, res) => {
 
     } catch (error) {
         console.log("error in catch", error)
-        res.status(500).json({ code: 500, success: false, message: "Internal server error", })
+        res.json({ code: 500, success: false, message: "Internal server error", })
     }
 }
 getCompleteOrders = async (req, res) => {
@@ -301,10 +301,10 @@ getCompleteOrders = async (req, res) => {
             item.commission = ((item.orderInfo.job_cost *10)/100).toString()
             item.totalEarning = (item.orderInfo.job_cost - item.commission).toString()
         }
-        res.status(200).json({ code: 200, success: true, message: "Get Successfully list", data: data })
+        res.json({ code: 200, success: true, message: "Get Successfully list", data: data })
     } catch (error) {
         console.log("error in catch", error)
-        res.status(500).json({ code: 500, success: false, message: "Internal server error", })
+        res.json({ code: 500, success: false, message: "Internal server error", })
     }
 }
 cancelOrder = async (req, res) => {
@@ -335,11 +335,11 @@ cancelOrder = async (req, res) => {
         }
         let fcmToken = req.body.fcmToken ? req.body.fcmToken : ''
         let sendnotification = await Notification._sendPushNotification(message, fcmToken, data)
-        res.status(200).json({ code: 200, success: true, message: "Order canceled successfully", data: data.orderInfo })
+        res.json({ code: 200, success: true, message: "Order canceled successfully", data: data.orderInfo })
 
     } catch (error) {
         console.log("error in catch", error)
-        res.status(500).json({ code: 500, success: false, message: "Internal server error", })
+        res.json({ code: 500, success: false, message: "Internal server error", })
     }
 }
 
@@ -362,27 +362,27 @@ setFcmToken = async (req, res) => {
                 let saveData = new FcmToken(setData)
                 data = await saveData.save();
             }
-            res.status(200).json({ code: 200, success: true, message: "Token set successfully", data: data })
+            res.json({ code: 200, success: true, message: "Token set successfully", data: data })
         } else {
             res.json({ code: 403, success: false, message: "Fcm token is required", })
         }
 
     } catch (error) {
         console.log("error in catch", error)
-        res.status(500).json({ code: 500, success: false, message: "Internal server error", })
+        res.json({ code: 500, success: false, message: "Internal server error", })
     }
 }
 cancelReasons = async (req, res) => {
     try {
         let data = await CancelReasons.find({ toType: 'driver' });
         if (data.length > 0) {
-            res.status(200).json({ code: 200, success: true, message: "message get successfully", data: data })
+            res.json({ code: 200, success: true, message: "message get successfully", data: data })
         } else {
-            res.status(200).json({ code: 200, success: true, message: "Token set successfully", data: data })
+            res.json({ code: 200, success: true, message: "Token set successfully", data: data })
         }
     } catch (error) {
         console.log("error in catch", error)
-        res.status(500).json({ code: 500, success: false, message: "Internal server error", })
+        res.json({ code: 500, success: false, message: "Internal server error", })
     }
 }
 confirmPickup = async (req, res) => {
@@ -405,7 +405,7 @@ confirmPickup = async (req, res) => {
         }
     } catch (error) {
         console.log("error in catch", error)
-        res.status(500).json({ code: 500, success: false, message: "Internal server error", })
+        res.json({ code: 500, success: false, message: "Internal server error", })
     }
 }
 module.exports = {
