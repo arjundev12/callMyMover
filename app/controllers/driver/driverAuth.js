@@ -10,6 +10,7 @@ const constant = require('../../utils/constant')
 const pincodModel = require('../../models/pincodes')
 // const db = require('../models')
 const moment = require("moment");
+
 class driver {
     constructor() {
         return {
@@ -17,7 +18,8 @@ class driver {
             verifyOtp: this.verifyOtp.bind(this),
             driverRegistration: this.driverRegistration.bind(this),
             resendOtp: this.resendOtp.bind(this),
-            pincodeVerify: this.pincodeVerify.bind(this)
+            pincodeVerify: this.pincodeVerify.bind(this),
+            uploadId: this.uploadId.bind(this)
 
         }
     }
@@ -252,6 +254,24 @@ class driver {
     async pincodeVerify (req, res){
         try {
             let {city, pincode} = req.body
+            let checkPin = await pincodModel.findOne({ cityid: city, name: pincode })
+            if(!checkPin){
+                return res.status(400).json({ code: 400, success: false, message: "please fill the correct pincode" })
+            }else{
+                return res.status(200).json({ code: 200, success: true, message: "pincode verifed successfully", data : checkPin }) 
+            }
+        } catch (error) {
+            console.log("error in catch", error)
+            res.status(500).json({ code: 500, success: false, message: "Internal server error" })
+        }
+    }
+    async uploadId (req, res){
+        try {
+            let {ID , BID,FID} = req.body
+          
+             
+             let path = await commenFunction._uploadBase64(FID, 'driver')
+             return
             let checkPin = await pincodModel.findOne({ cityid: city, name: pincode })
             if(!checkPin){
                 return res.status(404).json({ code: 404, success: false, message: "please fill the correct pincode" })

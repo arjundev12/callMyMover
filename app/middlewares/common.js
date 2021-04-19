@@ -5,6 +5,8 @@ console.log("api key1111", process.env.SENDGRID_API_KEY)
 sgMail.setApiKey(process.env.SENDGRID_API_KEY)
 const geocoder = require('../utils/geocoder')
 const walletModel = require('../models/wallet')
+const base64Img = require('base64-img')
+const fs = require('fs')
 
 const request = require('request');
 
@@ -16,7 +18,8 @@ class common {
             _sendMail: this._sendMail.bind(this),
             _getLocationName: this._getLocationName.bind(this),
             _createWallet: this._createWallet.bind(this),
-            _randomOTP: this._randomOTP.bind(this)
+            _randomOTP: this._randomOTP.bind(this),
+            _uploadBase64: this._uploadBase64.bind(this)
 
         }
     }
@@ -68,7 +71,7 @@ class common {
         }
 
     }
-   
+
     async _sendMail(toMail, text = constant.defaultMsg, subject = constant.defaultSub) {
         try {
             const msg = {
@@ -86,14 +89,14 @@ class common {
         }
         return true
     }
-    async _createWallet(id , type, Referral_id= "") {
+    async _createWallet(id, type, Referral_id = "") {
         try {
             let saveData1 = {}
-             type == 'driver' ? saveData1.driver_id = id : saveData1.customer_id = id ;
-             saveData1.wallet_type = type;
-             saveData1.status = 'active'
-             saveData1.referral_id = Referral_id
-             console.log("hiiii", Referral_id)
+            type == 'driver' ? saveData1.driver_id = id : saveData1.customer_id = id;
+            saveData1.wallet_type = type;
+            saveData1.status = 'active'
+            saveData1.referral_id = Referral_id
+            console.log("hiiii", Referral_id)
             let saveData = new walletModel(saveData1)
             await saveData.save();
             console.log("wallet create successfully")
@@ -102,6 +105,26 @@ class common {
         }
         return true
 
+    }
+
+    async _uploadBase64(base64,child_path) {
+        try {
+            console.log(global.globalPath, "............", child_path)
+            let parant_path = 'public'
+            let storagePath = `${parant_path}/${child_path}`;
+            if (!fs.existsSync(parant_path)) {
+                fs.mkdirSync(parant_path);
+            }
+            if(!fs.existsSync(storagePath)){
+                fs.mkdirSync(storagePath);
+             }
+            console.log(global.globalPath,"............",'driver', storagePath)
+            let filepath = await base64Img.imgSync(base64, storagePath, '1');
+            console.log("filepath", filepath)
+            return filepath
+        } catch (error) {
+            console.error("error in _createWallet", error)
+        }
     }
 
 }

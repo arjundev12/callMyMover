@@ -8,7 +8,7 @@ let validationData= require('../../middlewares/adminValidation');
 // let api_Auth = require('../../middlewares/apiTokenAuth')
 
 router.post('/create', validationData.createAdmin, admin_controller.adminCreate);
-router.post('/login', validationData.createAdmin, admin_controller.loginAdmin);
+router.post('/login',  admin_controller.loginAdmin);
 
 
 module.exports = router;
