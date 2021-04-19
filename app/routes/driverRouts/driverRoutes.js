@@ -25,7 +25,7 @@ router.post('/resend-otp', validationData.signUp, driverAuth.resendOtp);
 router.put('/verify-otp', validationData.verifyOtp, driverAuth.verifyOtp);
 router.put('/update-details',Validator.driverRegistration, driverAuth.driverRegistration);
 router.put('/pin-verification',Validator.pincodeVerify, driverAuth.pincodeVerify);
-router.post('/upload-id', driverAuth.uploadId);
+router.post('/upload-id',Validator.uploadId, driverAuth.uploadId);
 
 
 

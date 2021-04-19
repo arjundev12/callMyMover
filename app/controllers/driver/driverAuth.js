@@ -3,6 +3,7 @@ const UsersModel = require('../../models/customer/customers');
 const VehicleModel = require('../../models/driver/vechileDetail');
 const DriverModel = require('../../models/driver/driver')
 const walletModel = require('../../models/wallet')
+const DocumentModel = require('../../models/driver/driverDocuments')
 const Mongoose = require('mongoose')
 const authConfig = require('../../authConfig/auth')
 const jwt = require('jsonwebtoken')
@@ -10,6 +11,8 @@ const constant = require('../../utils/constant')
 const pincodModel = require('../../models/pincodes')
 // const db = require('../models')
 const moment = require("moment");
+const { findOne, findOneAndUpdate } = require('../../models/wallet');
+var ObjectID = require('mongodb').ObjectID;
 
 class driver {
     constructor() {
@@ -215,9 +218,9 @@ class driver {
     }
     async driverRegistration(req, res) {
         try {
-            let { id, name, city, address, pincode, own_vehicle,  vehicle_number, vehicle_type, self_drive } = req.body
+            let { id, name, city, address, pincode, own_vehicle, vehicle_number, vehicle_type, self_drive } = req.body
             let checkPin = await pincodModel.findOne({ cityid: city, name: pincode })
-            if(!checkPin){
+            if (!checkPin) {
                 return res.json({ code: 404, success: false, message: "please fill the correct pincode" })
             }
             let getUser = await DriverModel.findOne({ _id: id }).lean()
@@ -248,40 +251,64 @@ class driver {
 
         } catch (error) {
             console.log("Error in catch", error)
-            if (error.message){
+            if (error.message) {
                 res.json({ code: 400, success: false, message: error.message, })
-            }else{
+            } else {
                 res.json({ code: 400, success: false, message: "Internal server error", })
             }
         }
     }
-    async pincodeVerify (req, res){
+    async pincodeVerify(req, res) {
         try {
-            let {city, pincode} = req.body
+            let { city, pincode } = req.body
             let checkPin = await pincodModel.findOne({ cityid: city, name: pincode })
-            if(!checkPin){
+            if (!checkPin) {
                 return res.json({ code: 400, success: false, message: "please fill the correct pincode" })
-            }else{
-                return res.json({ code: 200, success: true, message: "pincode verifed successfully", data : checkPin }) 
+            } else {
+                return res.json({ code: 200, success: true, message: "pincode verifed successfully", data: checkPin })
             }
         } catch (error) {
             console.log("error in catch", error)
             res.json({ code: 500, success: false, message: "Internal server error" })
         }
     }
-    async uploadId (req, res){
+    async uploadId(req, res) {
         try {
-            let {ID , BID,FID} = req.body
-          
-             
-             let path = await commenFunction._uploadBase64(FID, 'driver')
-             return
-            let checkPin = await pincodModel.findOne({ cityid: city, name: pincode })
-            if(!checkPin){
-                return res.json({ code: 404, success: false, message: "please fill the correct pincode" })
-            }else{
-                return res.json({ code: 200, success: true, message: "pincode verifed successfully", data : checkPin }) 
+            let data
+            let { ID, BID, FID } = req.body
+            let getdata = await DocumentModel.findOne({ owner: ID })
+
+            let path = await commenFunction._uploadBase64(FID, 'driver')
+            let path2 = await commenFunction._uploadBase64(BID, 'driver')
+
+            if (getdata) {
+                data = await DocumentModel.findOneAndUpdate({ owner: ID }, {
+                    $addToSet: {
+                        identity_card: {
+                            _id: new ObjectID(),
+                            front_Id: path,
+                            back_Id: path2,
+                            status: 'new'
+                        }
+                    }
+                }, { new: true })
+            } else {
+                let savedata = await new DocumentModel({
+                    identity_card: [
+                        {
+                            _id: new ObjectID(),
+                            front_Id: path,
+                            back_Id: path2,
+                            status: 'new'
+                        }
+                    ],
+                    owner: ID
+                })
+                data = await savedata.save()
             }
+            await DriverModel.findOneAndUpdate({ _id: ID }, { $set: { Documents: data._id, isDocumentVerify: 'uploade' } })
+            return res.json({ code: 200, success: true, message: "document uploaded successfully", data: data })
+
         } catch (error) {
             console.log("error in catch", error)
             res.json({ code: 500, success: false, message: "Internal server error" })

@@ -70,7 +70,8 @@ const driverSchema = Schema({
     // default: "driver"
   },
   Documents :{
-    type: { any: [Schema.Types.Mixed] }
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'driverdocuments'
   },
   isProfileCompleted: {  // for profile complete verification 
     type: Boolean,

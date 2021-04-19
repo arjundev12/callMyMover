@@ -119,7 +119,8 @@ class common {
                 fs.mkdirSync(storagePath);
              }
             console.log(global.globalPath,"............",'driver', storagePath)
-            let filepath = await base64Img.imgSync(base64, storagePath, '1');
+            let filename =`${Date.now()}_image`
+            let filepath = await base64Img.imgSync(base64, storagePath, filename);
             console.log("filepath", filepath)
             return filepath
         } catch (error) {
