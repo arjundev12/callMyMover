@@ -16,7 +16,8 @@ class driver {
             signUp: this.signUp.bind(this),
             verifyOtp: this.verifyOtp.bind(this),
             driverRegistration: this.driverRegistration.bind(this),
-            resendOtp: this.resendOtp.bind(this)
+            resendOtp: this.resendOtp.bind(this),
+            pincodeVerify: this.pincodeVerify.bind(this)
 
         }
     }
@@ -246,6 +247,20 @@ class driver {
         } catch (error) {
             console.log("Error in catch", error)
             res.status(500).json({ code: 400, success: false, message: "Internal server error", })
+        }
+    }
+    async pincodeVerify (req, res){
+        try {
+            let {city, pincode} = req.body
+            let checkPin = await pincodModel.findOne({ cityid: city, name: pincode })
+            if(!checkPin){
+                return res.status(404).json({ code: 404, success: false, message: "please fill the correct pincode" })
+            }else{
+                return res.status(200).json({ code: 200, success: true, message: "pincode verifed successfully", data : checkPin }) 
+            }
+        } catch (error) {
+            console.log("error in catch", error)
+            res.status(500).json({ code: 500, success: false, message: "Internal server error" })
         }
     }
 

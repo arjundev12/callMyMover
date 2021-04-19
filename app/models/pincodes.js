@@ -20,7 +20,9 @@ var pincodSchema = new Schema({
      },
      is_deleted :{
         type: String,
+        enum: ["0","1"],
         trim:true,
+        default: "0"
      },
      created_time : { type: Date, default: Date.now },
      modified_time : { type: Date, default: Date.now },
