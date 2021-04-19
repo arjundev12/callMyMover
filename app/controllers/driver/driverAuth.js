@@ -248,7 +248,11 @@ class driver {
 
         } catch (error) {
             console.log("Error in catch", error)
-            res.status(500).json({ code: 400, success: false, message: "Internal server error", })
+            if (error.message){
+                res.status(400).json({ code: 400, success: false, message: error.message, })
+            }else{
+                res.status(500).json({ code: 400, success: false, message: "Internal server error", })
+            }
         }
     }
     async pincodeVerify (req, res){
