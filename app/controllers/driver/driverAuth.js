@@ -114,11 +114,11 @@ class driver {
             }
             // await commenFunction._sendMail("arjunsinghyed@gmail.com")
 
-            res.status(200).json({ code: 200, success: true, message: successMessage, data: data, isExist: isExist })
+            res.json({ code: 200, success: true, message: successMessage, data: data, isExist: isExist })
 
         } catch (error) {
             console.log("Error in catch", error)
-            res.status(500).json({ code: 400, success: false, message: "Internal server error" })
+            res.json({ code: 400, success: false, message: "Internal server error" })
         }
 
     }
@@ -137,15 +137,15 @@ class driver {
                 }
 
             } else {
-                res.status(404).json({ code: 404, success: false, message: 'this number is not register' })
+                res.json({ code: 404, success: false, message: 'this number is not register' })
             }
             // await commenFunction._sendMail("arjunsinghyed@gmail.com")
 
-            res.status(200).json({ code: 200, success: true, message: successMessage, data: data })
+            res.json({ code: 200, success: true, message: successMessage, data: data })
 
         } catch (error) {
             console.log("Error in catch", error)
-            res.status(500).json({ code: 400, success: false, message: "Internal server error" })
+            res.json({ code: 400, success: false, message: "Internal server error" })
         }
 
     }
@@ -186,14 +186,14 @@ class driver {
                 errorMessage = "Authentication is Failed"
             }
             if (errorMessage) {
-                res.status(400).json({ code: 400, success: false, message: errorMessage })
+                res.json({ code: 400, success: false, message: errorMessage })
             } else {
-                res.status(200).json({ code: 200, success: true, message: successMessage, data: data })
+                res.json({ code: 200, success: true, message: successMessage, data: data })
             }
 
         } catch (error) {
             console.log("error in catch", error)
-            res.status(500).json({ code: 500, success: false, message: "Internal server error" })
+            res.json({ code: 500, success: false, message: "Internal server error" })
         }
 
     }
@@ -218,7 +218,7 @@ class driver {
             let { id, name, city, address, pincode, own_vehicle,  vehicle_number, vehicle_type, self_drive } = req.body
             let checkPin = await pincodModel.findOne({ cityid: city, name: pincode })
             if(!checkPin){
-                return res.status(404).json({ code: 404, success: false, message: "please fill the correct pincode" })
+                return res.json({ code: 404, success: false, message: "please fill the correct pincode" })
             }
             let getUser = await DriverModel.findOne({ _id: id }).lean()
             if (getUser) {
@@ -240,18 +240,18 @@ class driver {
                 }
                 await this._registerVehicle(obj)
                 let updateData = await DriverModel.findOneAndUpdate({ _id: getUser._id }, getUser, { new: true })
-                return res.status(200).json({ code: 200, success: true, message: "Data save successfully", data: updateData })
+                return res.json({ code: 200, success: true, message: "Data save successfully", data: updateData })
             } else {
-                return res.status(404).json({ code: 404, success: false, message: "Something went wrong " })
+                return res.json({ code: 404, success: false, message: "Something went wrong " })
             }
 
 
         } catch (error) {
             console.log("Error in catch", error)
             if (error.message){
-                res.status(400).json({ code: 400, success: false, message: error.message, })
+                res.json({ code: 400, success: false, message: error.message, })
             }else{
-                res.status(500).json({ code: 400, success: false, message: "Internal server error", })
+                res.json({ code: 400, success: false, message: "Internal server error", })
             }
         }
     }
@@ -260,13 +260,13 @@ class driver {
             let {city, pincode} = req.body
             let checkPin = await pincodModel.findOne({ cityid: city, name: pincode })
             if(!checkPin){
-                return res.status(400).json({ code: 400, success: false, message: "please fill the correct pincode" })
+                return res.json({ code: 400, success: false, message: "please fill the correct pincode" })
             }else{
-                return res.status(200).json({ code: 200, success: true, message: "pincode verifed successfully", data : checkPin }) 
+                return res.json({ code: 200, success: true, message: "pincode verifed successfully", data : checkPin }) 
             }
         } catch (error) {
             console.log("error in catch", error)
-            res.status(500).json({ code: 500, success: false, message: "Internal server error" })
+            res.json({ code: 500, success: false, message: "Internal server error" })
         }
     }
     async uploadId (req, res){
@@ -278,13 +278,13 @@ class driver {
              return
             let checkPin = await pincodModel.findOne({ cityid: city, name: pincode })
             if(!checkPin){
-                return res.status(404).json({ code: 404, success: false, message: "please fill the correct pincode" })
+                return res.json({ code: 404, success: false, message: "please fill the correct pincode" })
             }else{
-                return res.status(200).json({ code: 200, success: true, message: "pincode verifed successfully", data : checkPin }) 
+                return res.json({ code: 200, success: true, message: "pincode verifed successfully", data : checkPin }) 
             }
         } catch (error) {
             console.log("error in catch", error)
-            res.status(500).json({ code: 500, success: false, message: "Internal server error" })
+            res.json({ code: 500, success: false, message: "Internal server error" })
         }
     }
 
