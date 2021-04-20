@@ -28,7 +28,7 @@ router.put('/pin-verification',Validator.pincodeVerify, driverAuth.pincodeVerify
 router.post('/upload-id',Validator.uploadId, driverAuth.uploadId);
 router.post('/upload-rc',Validator.uploadId, driverAuth.uploadRc);
 router.post('/upload-dl',Validator.uploadId, driverAuth.uploadDl);
-
+router.post('/update-doc', driverAuth.updateDoc);
 
 
 

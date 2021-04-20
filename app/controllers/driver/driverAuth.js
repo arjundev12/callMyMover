@@ -13,6 +13,7 @@ const pincodModel = require('../../models/pincodes')
 const moment = require("moment");
 const { findOne, findOneAndUpdate } = require('../../models/wallet');
 var ObjectID = require('mongodb').ObjectID;
+const fs = require('fs')
 
 class driver {
     constructor() {
@@ -24,7 +25,8 @@ class driver {
             pincodeVerify: this.pincodeVerify.bind(this),
             uploadId: this.uploadId.bind(this),
             uploadRc: this.uploadRc.bind(this),
-            uploadDl : this.uploadDl.bind(this)
+            uploadDl: this.uploadDl.bind(this),
+            updateDoc: this.updateDoc.bind(this)
 
         }
     }
@@ -285,9 +287,9 @@ class driver {
 
             if (getdata) {
                 data = await DocumentModel.findOneAndUpdate({ owner: ID }, {
-                    $addToSet: {
+                    $set: {
                         identity_card: {
-                            _id: new ObjectID(),
+                            // _id: new ObjectID(),
                             front_Id: path,
                             back_Id: path2,
                             status: 'new'
@@ -296,14 +298,13 @@ class driver {
                 }, { new: true })
             } else {
                 let savedata = await new DocumentModel({
-                    identity_card: [
-                        {
-                            _id: new ObjectID(),
-                            front_Id: path,
-                            back_Id: path2,
-                            status: 'new'
-                        }
-                    ],
+                    identity_card:
+                    {
+                        // _id: new ObjectID(),
+                        front_Id: path,
+                        back_Id: path2,
+                        status: 'new'
+                    },
                     owner: ID
                 })
                 data = await savedata.save()
@@ -327,9 +328,8 @@ class driver {
 
             if (getdata) {
                 data = await DocumentModel.findOneAndUpdate({ owner: ID }, {
-                    $addToSet: {
+                    $set: {
                         registration_certificate: {
-                            _id: new ObjectID(),
                             front_Id: path,
                             back_Id: path2,
                             status: 'new'
@@ -338,14 +338,12 @@ class driver {
                 }, { new: true })
             } else {
                 let savedata = await new DocumentModel({
-                    registration_certificate: [
-                        {
-                            _id: new ObjectID(),
-                            front_Id: path,
-                            back_Id: path2,
-                            status: 'new'
-                        }
-                    ],
+                    registration_certificate:
+                    {
+                        front_Id: path,
+                        back_Id: path2,
+                        status: 'new'
+                    },
                     owner: ID
                 })
                 data = await savedata.save()
@@ -369,9 +367,8 @@ class driver {
 
             if (getdata) {
                 data = await DocumentModel.findOneAndUpdate({ owner: ID }, {
-                    $addToSet: {
+                    $set: {
                         driving_licence: {
-                            _id: new ObjectID(),
                             front_Id: path,
                             back_Id: path2,
                             status: 'new'
@@ -380,20 +377,64 @@ class driver {
                 }, { new: true })
             } else {
                 let savedata = await new DocumentModel({
-                    driving_licence: [
-                        {
-                            _id: new ObjectID(),
-                            front_Id: path,
-                            back_Id: path2,
-                            status: 'new'
-                        }
-                    ],
+                    driving_licence:
+                    {
+                        front_Id: path,
+                        back_Id: path2,
+                        status: 'new'
+                    },
                     owner: ID
                 })
                 data = await savedata.save()
             }
             await DriverModel.findOneAndUpdate({ _id: ID }, { $set: { Documents: data._id, isDocumentVerify: 'uploade' } })
             return res.json({ code: 200, success: true, message: "document uploaded successfully", data: data })
+
+        } catch (error) {
+            console.log("error in catch", error)
+            res.json({ code: 500, success: false, message: "Internal server error" })
+        }
+    }
+    async _deletImage(path) {
+        try {
+            fs.unlinkSync(path);
+        } catch (error) {
+        console.log("error in catch", error)
+        }
+        return true
+    }
+    async updateDoc(req, res) {
+        try {
+            let { BID, FID, FDL, BDL, FRC, BRC, ID } = req.body
+            let getdata = await DocumentModel.findOne({ owner: ID }).lean()
+            console.log("get data", getdata)
+            if (BID) {
+               this._deletImage(getdata.identity_card.back_Id);
+                getdata.identity_card.back_Id = await commenFunction._uploadBase64(BID, 'driver')
+            }
+            if (FID) {
+                 this._deletImage(getdata.identity_card.front_Id);
+                getdata.identity_card.front_Id = await commenFunction._uploadBase64(FID, 'driver')
+            }
+            if (FDL) {
+                 this._deletImage(getdata.driving_licence.front_Id);
+                getdata.driving_licence.front_Id = await commenFunction._uploadBase64(FDL, 'driver')
+            }
+            if (BDL) {
+                 this._deletImage(getdata.driving_licence.back_Id);
+                getdata.driving_licence.back_Id = await commenFunction._uploadBase64(BDL, 'driver')
+            }
+            if (BRC) {
+                 this._deletImage(getdata.registration_certificate.back_Id);
+                getdata.registration_certificate.back_Id = await commenFunction._uploadBase64(BRC, 'driver')
+            }
+            if (FRC) {
+                 this._deletImage(getdata.registration_certificate.front_Id);
+                getdata.registration_certificate.front_Id = await commenFunction._uploadBase64(FRC, 'driver')
+            }
+            let data = await DocumentModel.findOneAndUpdate({ owner: ID }, getdata, { new: true })
+            await DriverModel.findOneAndUpdate({ _id: ID }, { $set: { Documents: data._id, isDocumentVerify: 'uploade' } })
+            return res.json({ code: 200, success: true, message: "document updated successfully", data: data })
 
         } catch (error) {
             console.log("error in catch", error)
