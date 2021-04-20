@@ -26,7 +26,9 @@ class driver {
             uploadId: this.uploadId.bind(this),
             uploadRc: this.uploadRc.bind(this),
             uploadDl: this.uploadDl.bind(this),
-            updateDoc: this.updateDoc.bind(this)
+            updateDoc: this.updateDoc.bind(this),
+            checkStatus: this.checkStatus.bind(this),
+
 
         }
     }
@@ -399,7 +401,7 @@ class driver {
         try {
             fs.unlinkSync(path);
         } catch (error) {
-        console.log("error in catch", error)
+            console.log("error in catch", error)
         }
         return true
     }
@@ -408,28 +410,28 @@ class driver {
             let { BID, FID, FDL, BDL, FRC, BRC, ID } = req.body
             let getdata = await DocumentModel.findOne({ owner: ID }).lean()
             console.log("get data", getdata)
-            if (BID) {
-               this._deletImage(getdata.identity_card.back_Id);
+            if (BID || BID != "") {
+                this._deletImage(getdata.identity_card.back_Id);
                 getdata.identity_card.back_Id = await commenFunction._uploadBase64(BID, 'driver')
             }
-            if (FID) {
-                 this._deletImage(getdata.identity_card.front_Id);
+            if (FID || FID != "") {
+                this._deletImage(getdata.identity_card.front_Id);
                 getdata.identity_card.front_Id = await commenFunction._uploadBase64(FID, 'driver')
             }
-            if (FDL) {
-                 this._deletImage(getdata.driving_licence.front_Id);
+            if (FDL || FDL != "") {
+                this._deletImage(getdata.driving_licence.front_Id);
                 getdata.driving_licence.front_Id = await commenFunction._uploadBase64(FDL, 'driver')
             }
-            if (BDL) {
-                 this._deletImage(getdata.driving_licence.back_Id);
+            if (BDL || BDL != "") {
+                this._deletImage(getdata.driving_licence.back_Id);
                 getdata.driving_licence.back_Id = await commenFunction._uploadBase64(BDL, 'driver')
             }
-            if (BRC) {
-                 this._deletImage(getdata.registration_certificate.back_Id);
+            if (BRC || BRC != "") {
+                this._deletImage(getdata.registration_certificate.back_Id);
                 getdata.registration_certificate.back_Id = await commenFunction._uploadBase64(BRC, 'driver')
             }
-            if (FRC) {
-                 this._deletImage(getdata.registration_certificate.front_Id);
+            if (FRC || FRC != "") {
+                this._deletImage(getdata.registration_certificate.front_Id);
                 getdata.registration_certificate.front_Id = await commenFunction._uploadBase64(FRC, 'driver')
             }
             let data = await DocumentModel.findOneAndUpdate({ owner: ID }, getdata, { new: true })
@@ -441,7 +443,19 @@ class driver {
             res.json({ code: 500, success: false, message: "Internal server error" })
         }
     }
+    async checkStatus(req, res) {
+        try {
+            let { ID } = req.body
+            let getdata = await DriverModel.findOne({ _id: ID }, {
+                name:1,  isProfileCompleted: 1, isDocumentVerify: 1, isNumberVerify: 1, loginType:1
+            }).lean()
+            return res.json({ code: 200, success: true, message: "document updated successfully", data: getdata })
 
+        } catch (error) {
+            console.log("error in catch", error)
+            res.json({ code: 500, success: false, message: "Internal server error" })
+        }
+    }
 
 }
 
