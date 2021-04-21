@@ -2,6 +2,7 @@
 //     check,
 //     validationResult
 // } =  require('express-validator');
+const isBase64 = require('is-base64');
 
 class driverValidation {
     constructor() {
@@ -21,8 +22,12 @@ class driverValidation {
     }
     async _validationErrorsFormat(req) {
         var errors = req.validationErrors();
+        var response = [];
+        if (req.errors){
+            response.push(req.errors)
+        }
         if (errors) {
-            var response = [];
+           
             var temp = [];
             errors.forEach(function (err) {
                 // check for duplicate error message
@@ -31,6 +36,8 @@ class driverValidation {
                 }
                 temp.push(err.param);
             });
+        }
+        if(response.length>0){
             return response;
         }
     }
@@ -343,8 +350,14 @@ class driverValidation {
                         errorMessage: { "field_name": "FID", "error_msg": 'FID is required' },
                     }
                 })
-
-
+                console.log("hiii",isBase64(req.body.BID, {mimeRequired: true}) ,isBase64(req.body.FID, {mimeRequired: true}))
+                if(!isBase64(req.body.BID, {mimeRequired: true})){
+                    req.errors= { "field_name": "BID", "error_msg": 'BID is not base64' }
+                }
+                if(!isBase64(req.body.FID, {mimeRequired: true})){
+                    req.errors= { "field_name": "FID", "error_msg": 'FID is not base64' }
+                }
+    
             const errors = await this._validationErrorsFormat(req);
             if (errors) {
                 // return res.json({ code : 422 ,success: false, message: errors[0] });
