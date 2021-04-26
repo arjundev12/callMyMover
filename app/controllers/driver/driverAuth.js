@@ -515,16 +515,29 @@ class driver {
             }).populate('Documents').lean()
             // console.log("getdata", getdata)
             let obj = {}
-            obj.form_submit_no = getdata.isProfileCompleted == false ? 'no' : 'yes';
-            obj.Driver_partner = getdata.loginType == 'Driver_partner' ? 'yes' : 'no'
-            obj.isNumberVerify = getdata.isNumberVerify
-            if (getdata.Documents) {
-                obj.dl_yes = getdata.Documents.driving_licence ? 'yes' : 'no';
-                obj.id_yes = getdata.Documents.identity_card ? 'yes' : 'no';
-                obj.rc_yes = getdata.Documents.registration_certificate ? 'yes' : 'no';
+
+            if(getdata.isProfileCompleted == false){
+                obj.Profile_maintanance = "form_submit_no"
+            }else if(!getdata.Documents){
+                obj.Profile_maintanance = "dl_yes"
             }
+            else if(getdata.Documents){
+                if(!getdata.Documents.driving_licence){
+                    obj.Profile_maintanance = "dl_yes"
+                }
+                if(!getdata.Documents.identity_card){
+                    obj.Profile_maintanance = "id_yes"
+                }
+                if(!getdata.Documents.registration_certificate){
+                    obj.Profile_maintanance = "rc_yes"
+                } else {
+                    obj.Profile_maintanance= 'document_yes'
+                }
+            }
+            obj.loginType = getdata.loginType 
+            obj.isNumberVerify = getdata.isNumberVerify
             obj.doc_verification = getdata.isDocumentVerify == 'verified' ? 'yes' : 'no';
-            obj.payment_yes = 'no'
+           
             return res.json({ code: 200, success: true, message: "document updated successfully", data: obj })
 
         } catch (error) {
