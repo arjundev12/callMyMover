@@ -31,6 +31,8 @@ router.post('/upload-dl',Validator.uploadId, driverAuth.uploadDl);
 router.post('/update-doc', driverAuth.updateDoc);
 router.post('/check-status', driverAuth.checkStatus);
 router.get('/get-videos', driverAuth.getVideoData);
+router.get('/get-plans', driverAuth.getplans);
+
 
 
 

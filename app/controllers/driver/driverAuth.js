@@ -5,6 +5,7 @@ const DriverModel = require('../../models/driver/driver')
 const walletModel = require('../../models/wallet')
 const DocumentModel = require('../../models/driver/driverDocuments')
 const VideoModel = require('../../models/videos')
+const PlanModel= require('../../models/plans')
 const Mongoose = require('mongoose')
 const authConfig = require('../../authConfig/auth')
 const jwt = require('jsonwebtoken')
@@ -30,7 +31,9 @@ class driver {
             uploadDl: this.uploadDl.bind(this),
             updateDoc: this.updateDoc.bind(this),
             checkStatus: this.checkStatus.bind(this),
-            getVideoData: this.getVideoData.bind(this)
+            getVideoData: this.getVideoData.bind(this),
+            getplans: this.getplans.bind(this)
+
 
 
         }
@@ -256,7 +259,6 @@ class driver {
             } else {
                 return res.json({ code: 404, success: false, message: "Something went wrong " })
             }
-
 
         } catch (error) {
             console.log("Error in catch", error)
@@ -484,6 +486,18 @@ class driver {
         try {
             let getdata = await VideoModel.find({}, {
                 meta: 0, updatedAt: 0,
+            }).lean()
+            return res.json({ code: 200, success: true, message: "get data successfully", data: getdata })
+
+        } catch (error) {
+            console.log("error in catch", error)
+            res.json({ code: 500, success: false, message: "Internal server error" })
+        }
+    }
+    async getplans(req, res) {
+        try {
+            let getdata = await PlanModel.find({type : 'driver'}, {
+                status: 0, type: 0,
             }).lean()
             return res.json({ code: 200, success: true, message: "get data successfully", data: getdata })
 

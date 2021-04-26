@@ -2,6 +2,7 @@ const AdminModel = require('../../models/admin')
 const commenFunction = require('../../middlewares/common');
 const { findById } = require('../../models/customer/orders');
 const VideoModel = require('../../models/videos')
+const PlanModel = require('../../models/plans')
 var bcrypt = require('bcryptjs');
 
 class AdminAuth {
@@ -9,7 +10,8 @@ class AdminAuth {
         return {
             adminCreate: this.adminCreate.bind(this),
             loginAdmin: this.loginAdmin.bind(this),
-            uploadeVideo: this.uploadeVideo.bind(this)
+            uploadeVideo: this.uploadeVideo.bind(this),
+            addPlans: this.addPlans.bind(this)
         }
     }
 
@@ -71,6 +73,23 @@ class AdminAuth {
                 let saveData = new VideoModel(obj)
                 let data = await saveData.save()
                 res.json({ code: 200, success: true, message: "video save successfully", data: data })
+            }
+        } catch (error) {
+            console.log("Error in catch", error)
+            res.json({ code: 400, success: false, message: "Internal server error", data: null })
+        }
+
+    }
+    async addPlans(req, res) {
+        try {
+            if (req.files) {
+                let obj = {
+                    name: req.body.name,
+                    price: req.body.price,
+                }
+                let saveData = new PlanModel(obj)
+                let data = await saveData.save()
+                res.json({ code: 200, success: true, message: "plan save successfully", data: data })
             }
         } catch (error) {
             console.log("Error in catch", error)
