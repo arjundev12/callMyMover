@@ -350,14 +350,7 @@ class driverValidation {
                         errorMessage: { "field_name": "FID", "error_msg": 'FID is required' },
                     }
                 })
-                console.log("hiii",isBase64(req.body.BID, {mimeRequired: true}) ,isBase64(req.body.FID, {mimeRequired: true}))
-                if(!isBase64(req.body.BID, {mimeRequired: true})){
-                    req.errors= { "field_name": "BID", "error_msg": 'BID is not base64' }
-                }
-                if(!isBase64(req.body.FID, {mimeRequired: true})){
-                    req.errors= { "field_name": "FID", "error_msg": 'FID is not base64' }
-                }
-    
+               
             const errors = await this._validationErrorsFormat(req);
             if (errors) {
                 // return res.json({ code : 422 ,success: false, message: errors[0] });
