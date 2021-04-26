@@ -497,7 +497,7 @@ class driver {
     async checkDashboard(req, res) {
         try {
             let { ID } = req.body
-            if (ID) {
+            if (!ID) {
                 res.json({ code: 400, success: false, message: "Customer does not exist!" })
             }
             let getdata = await DriverModel.findOne({ _id: ID }, {
