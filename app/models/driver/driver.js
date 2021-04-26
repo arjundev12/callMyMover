@@ -90,6 +90,10 @@ const driverSchema = Schema({
     enum: ["notupload","uploade", "verified", 'rejected'],
     default: "notupload"
   },
+  subscription : { // for subscription verification 
+    type: Boolean,
+    default: false
+  },
   driverStatus: {
     type: String,
     enum: ["active", "inactive", "blocked"],

@@ -14,6 +14,7 @@ const driverOrders=require('../../controllers/driver/customerOrders');
 const driverAuth=require('../../controllers/driver/driverAuth');
 // create login routes
 const driver=require('../../controllers/driver/driver');
+const choosePlane=require('../../controllers/driver/choosePlan');
 const Validator = require('../../middlewares/driverValidation')
 const validationData = require('../../middlewares/customerValidation')
 
@@ -31,8 +32,10 @@ router.post('/upload-dl',Validator.uploadId, driverAuth.uploadDl);
 router.post('/update-doc', driverAuth.updateDoc);
 router.post('/check-status', driverAuth.checkStatus);
 router.get('/get-videos', driverAuth.getVideoData);
-router.get('/get-plans', driverAuth.getplans);
+router.get('/get-plans', choosePlane.getplans);
 router.post('/check-dashboard', driverAuth.checkDashboard);
+router.post('/plan-subscription', choosePlane.plan_subscription);
+
 
 
 

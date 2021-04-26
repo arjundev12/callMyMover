@@ -6,12 +6,19 @@ var transactionSchema = new Schema({
         type: String,
         enum: ['credit', 'debit'],
     },
+    transaction_id: {
+        type: String,
+    },
     ammount: {
         type: String,
         default: "0",
         trim: true
     },
     from_type: {                 //upi or bank and paytm or credit debit cart , wallet
+        type: String,
+        trim: true
+    },
+    to_type :{                    //upi or bank and paytm or credit debit cart , wallet
         type: String,
         trim: true
     },
@@ -31,6 +38,10 @@ var transactionSchema = new Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "orders"
     },
+    reason :{
+        type: String,
+        trim: true
+    }
 
 }, { versionKey: false, timestamps: true });
 

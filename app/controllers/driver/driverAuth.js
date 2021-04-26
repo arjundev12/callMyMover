@@ -5,7 +5,6 @@ const DriverModel = require('../../models/driver/driver')
 const walletModel = require('../../models/wallet')
 const DocumentModel = require('../../models/driver/driverDocuments')
 const VideoModel = require('../../models/videos')
-const PlanModel = require('../../models/plans')
 const Mongoose = require('mongoose')
 const authConfig = require('../../authConfig/auth')
 const jwt = require('jsonwebtoken')
@@ -32,7 +31,6 @@ class driver {
             updateDoc: this.updateDoc.bind(this),
             checkStatus: this.checkStatus.bind(this),
             getVideoData: this.getVideoData.bind(this),
-            getplans: this.getplans.bind(this),
             checkDashboard: this.checkDashboard.bind(this)
 
 
@@ -495,21 +493,13 @@ class driver {
             res.json({ code: 500, success: false, message: "Internal server error" })
         }
     }
-    async getplans(req, res) {
-        try {
-            let getdata = await PlanModel.find({ type: 'driver' }, {
-                status: 0, type: 0,
-            }).lean()
-            return res.json({ code: 200, success: true, message: "get data successfully", data: getdata })
-
-        } catch (error) {
-            console.log("error in catch", error)
-            res.json({ code: 500, success: false, message: "Internal server error" })
-        }
-    }
+   
     async checkDashboard(req, res) {
         try {
             let { ID } = req.body
+            if(ID){
+                res.json({ code: 400, success: false, message: "Customer does not exist!" })
+            }
             let getdata = await DriverModel.findOne({ _id: ID }, {
                 name: 1, isProfileCompleted: 1, isDocumentVerify: 1, isNumberVerify: 1, loginType: 1
             }).populate('Documents').lean()
