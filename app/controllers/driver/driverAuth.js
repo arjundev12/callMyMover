@@ -501,7 +501,7 @@ class driver {
                 res.json({ code: 400, success: false, message: "Customer does not exist!" })
             }
             let getdata = await DriverModel.findOne({ _id: ID }, {
-                name: 1, isProfileCompleted: 1, isDocumentVerify: 1, isNumberVerify: 1, loginType: 1
+                name: 1, isProfileCompleted: 1, isDocumentVerify: 1, isNumberVerify: 1, loginType: 1, subscription:1
             }).populate('Documents').lean()
             // console.log("getdata", getdata)
             let obj = {}
@@ -520,8 +520,11 @@ class driver {
                 }
                 if(!getdata.Documents.registration_certificate){
                     obj.Profile_maintanance = "rc_yes"
-                } else {
+                } if(!getdata.subscription){
                     obj.Profile_maintanance= 'document_yes'
+                }
+                else{
+                    obj.Profile_maintanance = 'payment_yes'
                 }
             }
             obj.loginType = getdata.loginType 
