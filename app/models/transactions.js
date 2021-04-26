@@ -22,6 +22,14 @@ var transactionSchema = new Schema({
         type: String,
         trim: true
     },
+     driver_id :{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'driverAuth'
+     },
+     customer_id :{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'customer'
+     },
     from_id :{
         type: String,
         trim: true

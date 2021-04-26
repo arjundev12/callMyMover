@@ -493,44 +493,45 @@ class driver {
             res.json({ code: 500, success: false, message: "Internal server error" })
         }
     }
-   
+
     async checkDashboard(req, res) {
         try {
             let { ID } = req.body
-            if(ID){
+            if (ID) {
                 res.json({ code: 400, success: false, message: "Customer does not exist!" })
             }
             let getdata = await DriverModel.findOne({ _id: ID }, {
-                name: 1, isProfileCompleted: 1, isDocumentVerify: 1, isNumberVerify: 1, loginType: 1, subscription:1
+                name: 1, isProfileCompleted: 1, isDocumentVerify: 1, isNumberVerify: 1, loginType: 1, subscription: 1
             }).populate('Documents').lean()
             // console.log("getdata", getdata)
             let obj = {}
 
-            if(getdata.isProfileCompleted == false){
+            if (getdata.isProfileCompleted == false) {
                 obj.Profile_maintanance = "form_submit_no"
-            }else if(!getdata.Documents){
+            } else if (!getdata.Documents) {
                 obj.Profile_maintanance = "dl_yes"
             }
-            else if(getdata.Documents){
-                if(!getdata.Documents.driving_licence){
+            else if (getdata.Documents) {
+                if (!getdata.Documents.driving_licence) {
                     obj.Profile_maintanance = "dl_yes"
                 }
-                if(!getdata.Documents.identity_card){
+                if (!getdata.Documents.identity_card) {
                     obj.Profile_maintanance = "id_yes"
                 }
-                if(!getdata.Documents.registration_certificate){
+                if (!getdata.Documents.registration_certificate) {
                     obj.Profile_maintanance = "rc_yes"
-                } if(!getdata.subscription){
-                    obj.Profile_maintanance= 'document_yes'
                 }
-                else{
+                if (!getdata.subscription) {
+                    obj.Profile_maintanance = 'document_yes'
+                }
+                else {
                     obj.Profile_maintanance = 'payment_yes'
                 }
             }
-            obj.loginType = getdata.loginType 
+            obj.loginType = getdata.loginType
             obj.isNumberVerify = getdata.isNumberVerify
             obj.doc_verification = getdata.isDocumentVerify == 'verified' ? 'yes' : 'no';
-           
+
             return res.json({ code: 200, success: true, message: "document updated successfully", data: obj })
 
         } catch (error) {

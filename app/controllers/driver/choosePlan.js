@@ -24,11 +24,12 @@ class plans {
     //create vehicleRegistration Api
     async plan_subscription(req, res) {
         try {
-
+            
             let obj = {
                 transaction_type: 'debit',
                 transaction_id: req.body.transaction_id,
                 ammount: req.body.ammount,
+                driver_id : req.body.driver_id,
                 from_id: req.body.driver_id,
                 reason: 'for subscription'
             }
