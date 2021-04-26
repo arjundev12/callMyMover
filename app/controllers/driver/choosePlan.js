@@ -33,15 +33,15 @@ class plans {
                 from_id: req.body.driver_id,
                 reason: 'for subscription'
             }
-            let gettrans = await TransactionModel.findOne({ transaction_id: obj.transaction_id })
-            if (gettrans) {
-                res.send({ code: 400, success: false, message: "transaction id is already exist", })
-            } else {
+            // let gettrans = await TransactionModel.findOne({ transaction_id: obj.transaction_id })
+            // if (gettrans) {
+            //     res.send({ code: 400, success: false, message: "transaction id is already exist", })
+            // } else {
                 let saveData = new TransactionModel(obj)
                 let data = await saveData.save()
                 await DriverModel.findOneAndUpdate({ _id: obj.driver_id }, { $set: { subscription: true } })
                 res.send({ code: 200, success: true, message: "transaction save successfully", data: data })
-            }
+            // }
 
         } catch (error) {
             console.log("Error in catch", error)
