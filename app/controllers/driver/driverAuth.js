@@ -504,7 +504,7 @@ class driver {
                 name: 1, isProfileCompleted: 1, isDocumentVerify: 1, isNumberVerify: 1, loginType: 1, subscription: 1
             }).populate('Documents').lean()
             console.log("getdata", getdata)
-            console.log("!getdata.Documents.identity_card", !getdata.Documents.identity_card)
+            // console.log("!getdata.Documents.identity_card", !getdata.Documents.identity_card)
             let obj = {}
 
             if (getdata.isProfileCompleted == false) {
