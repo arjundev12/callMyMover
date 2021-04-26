@@ -503,7 +503,8 @@ class driver {
             let getdata = await DriverModel.findOne({ _id: ID }, {
                 name: 1, isProfileCompleted: 1, isDocumentVerify: 1, isNumberVerify: 1, loginType: 1, subscription: 1
             }).populate('Documents').lean()
-            // console.log("getdata", getdata)
+            console.log("getdata", getdata)
+            console.log("!getdata.Documents.identity_card", !getdata.Documents.identity_card )
             let obj = {}
 
             if (getdata.isProfileCompleted == false) {
@@ -514,14 +515,13 @@ class driver {
             else if (getdata.Documents) {
                 if (!getdata.Documents.driving_licence) {
                     obj.Profile_maintanance = "dl_yes"
-                }
-                if (!getdata.Documents.identity_card) {
+                }else if (!getdata.Documents.identity_card) {
                     obj.Profile_maintanance = "id_yes"
                 }
-                if (!getdata.Documents.registration_certificate) {
+               else if (!getdata.Documents.registration_certificate) {
                     obj.Profile_maintanance = "rc_yes"
                 }
-                if (!getdata.subscription) {
+               else if (!getdata.subscription) {
                     obj.Profile_maintanance = 'document_yes'
                 }
                 else {
