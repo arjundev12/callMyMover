@@ -32,6 +32,8 @@ router.post('/update-doc', driverAuth.updateDoc);
 router.post('/check-status', driverAuth.checkStatus);
 router.get('/get-videos', driverAuth.getVideoData);
 router.get('/get-plans', driverAuth.getplans);
+router.post('/check-dashboard', driverAuth.checkDashboard);
+
 
 
 

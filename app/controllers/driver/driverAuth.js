@@ -5,7 +5,7 @@ const DriverModel = require('../../models/driver/driver')
 const walletModel = require('../../models/wallet')
 const DocumentModel = require('../../models/driver/driverDocuments')
 const VideoModel = require('../../models/videos')
-const PlanModel= require('../../models/plans')
+const PlanModel = require('../../models/plans')
 const Mongoose = require('mongoose')
 const authConfig = require('../../authConfig/auth')
 const jwt = require('jsonwebtoken')
@@ -32,7 +32,8 @@ class driver {
             updateDoc: this.updateDoc.bind(this),
             checkStatus: this.checkStatus.bind(this),
             getVideoData: this.getVideoData.bind(this),
-            getplans: this.getplans.bind(this)
+            getplans: this.getplans.bind(this),
+            checkDashboard: this.checkDashboard.bind(this)
 
 
 
@@ -415,48 +416,48 @@ class driver {
             let { BID, FID, FDL, BDL, FRC, BRC, ID } = req.body
             let getdata = await DocumentModel.findOne({ owner: ID }).lean()
             console.log("get data", getdata)
-            console.log("BID || BID != ", BID || BID != "" , typeof BID ,typeof "")
+            console.log("BID || BID != ", BID || BID != "", typeof BID, typeof "")
             // console.log(BID )
-           
+
             if (BID || BID != "") {
-              if (!isBase64(req.body.BID, {mimeRequired: true})){
-               return res.json({ code: 422, success: false, message: "BID is not base64" })
-               }
+                if (!isBase64(req.body.BID, { mimeRequired: true })) {
+                    return res.json({ code: 422, success: false, message: "BID is not base64" })
+                }
                 this._deletImage(getdata.identity_card.back_Id);
                 getdata.identity_card.back_Id = await commenFunction._uploadBase64(BID, 'driver')
             }
             if (FID || FID != "") {
-                if (!isBase64(req.body.FID, {mimeRequired: true})){
+                if (!isBase64(req.body.FID, { mimeRequired: true })) {
                     return res.json({ code: 422, success: false, message: "FID is not base64" })
-                    }
+                }
                 this._deletImage(getdata.identity_card.front_Id);
                 getdata.identity_card.front_Id = await commenFunction._uploadBase64(FID, 'driver')
             }
             if (FDL || FDL != "") {
-                if (!isBase64(req.body.FDL, {mimeRequired: true})){
+                if (!isBase64(req.body.FDL, { mimeRequired: true })) {
                     return res.json({ code: 422, success: false, message: "FDL is not base64" })
-                    }
+                }
                 this._deletImage(getdata.driving_licence.front_Id);
                 getdata.driving_licence.front_Id = await commenFunction._uploadBase64(FDL, 'driver')
             }
             if (BDL || BDL != "") {
-                if (!isBase64(req.body.BDL, {mimeRequired: true})){
+                if (!isBase64(req.body.BDL, { mimeRequired: true })) {
                     return res.json({ code: 422, success: false, message: "BDL is not base64" })
-                    }
+                }
                 this._deletImage(getdata.driving_licence.back_Id);
                 getdata.driving_licence.back_Id = await commenFunction._uploadBase64(BDL, 'driver')
             }
             if (BRC || BRC != "") {
-                if (!isBase64(req.body.BRC, {mimeRequired: true})){
+                if (!isBase64(req.body.BRC, { mimeRequired: true })) {
                     return res.json({ code: 422, success: false, message: "BRC is not base64" })
-                    }
+                }
                 this._deletImage(getdata.registration_certificate.back_Id);
                 getdata.registration_certificate.back_Id = await commenFunction._uploadBase64(BRC, 'driver')
             }
             if (FRC || FRC != "") {
-                if (!isBase64(req.body.FRC, {mimeRequired: true})){
+                if (!isBase64(req.body.FRC, { mimeRequired: true })) {
                     return res.json({ code: 422, success: false, message: "FRC is not base64" })
-                    }
+                }
                 this._deletImage(getdata.registration_certificate.front_Id);
                 getdata.registration_certificate.front_Id = await commenFunction._uploadBase64(FRC, 'driver')
             }
@@ -496,7 +497,7 @@ class driver {
     }
     async getplans(req, res) {
         try {
-            let getdata = await PlanModel.find({type : 'driver'}, {
+            let getdata = await PlanModel.find({ type: 'driver' }, {
                 status: 0, type: 0,
             }).lean()
             return res.json({ code: 200, success: true, message: "get data successfully", data: getdata })
@@ -506,7 +507,33 @@ class driver {
             res.json({ code: 500, success: false, message: "Internal server error" })
         }
     }
+    async checkDashboard(req, res) {
+        try {
+            let { ID } = req.body
+            let getdata = await DriverModel.findOne({ _id: ID }, {
+                name: 1, isProfileCompleted: 1, isDocumentVerify: 1, isNumberVerify: 1, loginType: 1
+            }).populate('Documents').lean()
+            // console.log("getdata", getdata)
+            let obj = {}
+            obj.form_submit_no = getdata.isProfileCompleted == false ? 'no' : 'yes';
+            obj.Driver_partner = getdata.loginType == 'Driver_partner' ? 'yes' : 'no'
+            obj.isNumberVerify = getdata.isNumberVerify
+            if (getdata.Documents) {
+                obj.dl_yes = getdata.Documents.driving_licence ? 'yes' : 'no';
+                obj.id_yes = getdata.Documents.identity_card ? 'yes' : 'no';
+                obj.rc_yes = getdata.Documents.registration_certificate ? 'yes' : 'no';
+            }
+            obj.doc_verification = getdata.isDocumentVerify == 'verified' ? 'yes' : 'no';
+            obj.payment_yes = 'no'
+            return res.json({ code: 200, success: true, message: "document updated successfully", data: obj })
+
+        } catch (error) {
+            console.log("error in catch", error)
+            res.json({ code: 500, success: false, message: "Internal server error" })
+        }
+    }
 
 }
+
 
 module.exports = new driver();
