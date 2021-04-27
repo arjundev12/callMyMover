@@ -94,6 +94,8 @@ class plans {
                 }
                 let saveData = new RefHistoryModel(newObj)
                 let data = await saveData.save()
+                await Walletmodel.findOneAndUpdate({ driver_id: obj.from_driver_id },
+                    { $inc: { referral_ammount: 50, total_amount: 50 } })
                 return
             }
 

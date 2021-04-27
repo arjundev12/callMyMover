@@ -6,7 +6,7 @@ var walletSchema = new Schema({
         type: String
     },
     total_amount: {
-        type: String,
+        type: Number,
         default: "0",
         trim: true
     },
@@ -16,12 +16,12 @@ var walletSchema = new Schema({
         trim: true
     },
     referral_ammount: {
-        type: String,
+        type: Number,
         default: "0",
         trim: true
     },
     earning_ammount: {
-        type: String,
+        type: Number,
         default: "0",
         trim: true
     },
