@@ -60,6 +60,8 @@ class driver {
             user.otp_details.otp_time = await moment().format("DD.MM.YYYY HH.mm.ss")
             // console.log("hiiiiii",user )
             let updateData = await DriverModel.findOneAndUpdate({ _id: user._id }, user, { new: true }).lean()
+            let referId = await walletModel.findOne({driver_id:user._id })
+            updateData.referId = referId.referral_id
             return updateData
         } catch (error) {
             throw error
@@ -129,10 +131,11 @@ class driver {
                 isExist = false
                 let refid = await this._generateRefID()
                 await commenFunction._createWallet(data._id, 'driver', refid)
+                data.userRefCode = refid
                 successMessage = "Data save successfully"
-                if(saveData1.referId){
-                    data.referId = saveData1.referId
-                }
+                // if(saveData1.referId){
+                //     data.referId = saveData1.referId
+                // }
             }
             // await commenFunction._sendMail("arjunsinghyed@gmail.com")
             
