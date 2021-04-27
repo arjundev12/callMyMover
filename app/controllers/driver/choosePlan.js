@@ -40,8 +40,7 @@ class plans {
             //     res.send({ code: 400, success: false, message: "transaction id is already exist", })
             // } else {
             let saveData = new TransactionModel(obj)
-            let data 
-            // = await saveData.save()
+            let data = await saveData.save()
             let driverData = await DriverModel.findOneAndUpdate({ _id: obj.driver_id }, { $set: { subscription: true } })
             //  console.log("driverData", driverData)
             if (driverData.referId) {
