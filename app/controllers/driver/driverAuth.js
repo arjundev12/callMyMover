@@ -130,11 +130,12 @@ class driver {
                 let refid = await this._generateRefID()
                 await commenFunction._createWallet(data._id, 'driver', refid)
                 successMessage = "Data save successfully"
+                if(saveData1.referId){
+                    data.referId = saveData1.referId
+                }
             }
             // await commenFunction._sendMail("arjunsinghyed@gmail.com")
-            if(saveData1.referId){
-                data.referId = saveData1.referId
-            }
+            
                  
             res.json({ code: 200, success: true, message: successMessage, data: data, isExist: isExist })
 
