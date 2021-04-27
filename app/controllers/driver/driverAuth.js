@@ -564,8 +564,10 @@ class driver {
             )
             console.log("getdata", getdata)
             let obj = {}
-            obj.point = 0,
-                obj.wallet_point = -500
+            obj.point = getdata.referral_ammount,
+            obj.wallet_point = getdata.total_amount
+                // obj.referral_ammount= 
+
             return res.json({ code: 200, success: true, message: "Get user wallet successfully", data: obj })
         } catch (error) {
             console.log("error in catch", error)
