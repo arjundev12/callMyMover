@@ -34,7 +34,8 @@ class driver {
             getVideoData: this.getVideoData.bind(this),
             checkDashboard: this.checkDashboard.bind(this),
             getwallet: this.getwallet.bind(this),
-            createBusiness: this.createBusiness.bind(this)
+            createBusiness: this.createBusiness.bind(this),
+            viewProfile: this.viewProfile.bind(this)
 
 
 
@@ -564,12 +565,13 @@ class driver {
     }
     async createBusiness(req, res) {
         try {
-            const { ID, ORGNAME, CITY, CONTACT_NUMBER, PINCODE, ADDRESS } = req.body
+            const { ID, ORGNAME, CITY, CONTACT_NUMBER, PINCODE, ADDRESS,CONTACT_PERSON } = req.body
             if (!ID) {
                 res.json({ code: 400, success: false, message: "driver does not exist!" })
             }
             let obj = {
                 driver_id: ID,
+                contact_parson : CONTACT_PERSON,
                 organization_name: ORGNAME,
                 city: CITY,
                 number: CONTACT_NUMBER,
@@ -586,7 +588,38 @@ class driver {
         }
     }
 
-
+    async viewProfile(req, res) {
+        try {
+            const { ID }= req.body
+            if (!ID) {
+                res.json({ code: 400, success: false, message: "driver does not exist!" })
+            }
+           let getdata = await DriverModel.findOne({_id: ID},{
+            phoneNo:1, name:1,address:1,Documents:1,referId:1,loginType:1
+           }).populate('Documents')
+            let getVehicle = await VehicleModel.findOne({ vehicle_owner: ID }).lean()
+            console.log("data", getdata, ".....", getVehicle)
+          let obj ={
+            PHONE: getdata.phoneNo,
+            NAME: getdata.name,
+            ID :getdata._id,
+            ADDRESS: getdata.address,
+            VEHICLE_NO: getVehicle.vehicle_number,
+            VEHICLE_TYPE: getVehicle.vehicle_type,
+            bdl_IMAGE: getdata.Documents.driving_licence.back_Id,
+            fdl_IMAGE:  getdata.Documents.driving_licence.front_Id,
+            brc_IMAGE:  getdata.Documents.registration_certificate.back_Id,
+            frc_IMAGE:  getdata.Documents.registration_certificate.front_Id,
+            bid_IMAGE:  getdata.Documents.identity_card.back_Id,
+            fid_IMAGE:  getdata.Documents.identity_card.front_Id,
+          }
+           
+            return res.json({ code: 200, success: true, message: "Save successfully", data: obj })
+        } catch (error) {
+            console.log("error in catch", error)
+            res.json({ code: 500, success: false, message: "Internal server error" })
+        }
+    }
 
 }
 

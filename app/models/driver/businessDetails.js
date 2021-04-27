@@ -14,6 +14,10 @@ const businessSchema = Schema({
         type: String,
         trim: true
     },
+    contact_parson: {
+        type: String,
+        trim: true
+    },
     city: {
         type: String,
         trim: true
