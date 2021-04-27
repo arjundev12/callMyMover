@@ -12,6 +12,7 @@ const router = express.Router();
 
 const driverOrders=require('../../controllers/driver/customerOrders');
 const driverAuth=require('../../controllers/driver/driverAuth');
+const cmsAuth=require('../../controllers/admin/cms');
 // create login routes
 const driver=require('../../controllers/driver/driver');
 const choosePlane=require('../../controllers/driver/choosePlan');
@@ -35,6 +36,11 @@ router.get('/get-videos', driverAuth.getVideoData);
 router.get('/get-plans', choosePlane.getplans);
 router.post('/check-dashboard', driverAuth.checkDashboard);
 router.post('/plan-subscription', choosePlane.plan_subscription);
+router.post('/get-wallet', driverAuth.getwallet);
+router.get('/get-aboutus', cmsAuth.getAboutus);
+router.post('/bussiness-details', driverAuth.createBusiness);
+
+
 
 
 

@@ -5,6 +5,7 @@ const DriverModel = require('../../models/driver/driver')
 const walletModel = require('../../models/wallet')
 const DocumentModel = require('../../models/driver/driverDocuments')
 const VideoModel = require('../../models/videos')
+const BusinessModel = require('../../models/driver/businessDetails')
 const Mongoose = require('mongoose')
 const authConfig = require('../../authConfig/auth')
 const jwt = require('jsonwebtoken')
@@ -31,7 +32,9 @@ class driver {
             updateDoc: this.updateDoc.bind(this),
             checkStatus: this.checkStatus.bind(this),
             getVideoData: this.getVideoData.bind(this),
-            checkDashboard: this.checkDashboard.bind(this)
+            checkDashboard: this.checkDashboard.bind(this),
+            getwallet: this.getwallet.bind(this),
+            createBusiness: this.createBusiness.bind(this)
 
 
 
@@ -123,7 +126,8 @@ class driver {
                 let saveData = new DriverModel(saveData1)
                 data = await saveData.save()
                 isExist = false
-                await commenFunction._createWallet(data._id, 'driver', this._generateRefID())
+                let refid = await this._generateRefID()
+                await commenFunction._createWallet(data._id, 'driver', refid)
                 successMessage = "Data save successfully"
             }
             // await commenFunction._sendMail("arjunsinghyed@gmail.com")
@@ -515,7 +519,7 @@ class driver {
             else if (getdata.Documents) {
                 if (!getdata.Documents.driving_licence) {
                     obj.Profile_maintanance = "dl_yes"
-                } 
+                }
                 else if (!getdata.Documents.registration_certificate) {
                     obj.Profile_maintanance = "rc_yes"
                 }
@@ -540,6 +544,49 @@ class driver {
             res.json({ code: 500, success: false, message: "Internal server error" })
         }
     }
+    async getwallet(req, res) {
+        try {
+            let { ID } = req.body
+            if (!ID) {
+                res.json({ code: 400, success: false, message: "driver does not exist!" })
+            }
+            let getdata = await walletModel.findOne({ driver_id: ID },
+            )
+            console.log("getdata", getdata)
+            let obj = {}
+            obj.point = 0,
+                obj.wallet_point = -500
+            return res.json({ code: 200, success: true, message: "Get user wallet successfully", data: obj })
+        } catch (error) {
+            console.log("error in catch", error)
+            res.json({ code: 500, success: false, message: "Internal server error" })
+        }
+    }
+    async createBusiness(req, res) {
+        try {
+            const { ID, ORGNAME, CITY, CONTACT_NUMBER, PINCODE, ADDRESS } = req.body
+            if (!ID) {
+                res.json({ code: 400, success: false, message: "driver does not exist!" })
+            }
+            let obj = {
+                driver_id: ID,
+                organization_name: ORGNAME,
+                city: CITY,
+                number: CONTACT_NUMBER,
+                pincode: PINCODE,
+                address: ADDRESS,
+            }
+            let saveData = new BusinessModel(obj)
+            let data = await saveData.save()
+           
+            return res.json({ code: 200, success: true, message: "Save successfully", data: data })
+        } catch (error) {
+            console.log("error in catch", error)
+            res.json({ code: 500, success: false, message: "Internal server error" })
+        }
+    }
+
+
 
 }
 
