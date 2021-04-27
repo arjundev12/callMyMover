@@ -17,6 +17,7 @@ const { findOne, findOneAndUpdate } = require('../../models/wallet');
 var ObjectID = require('mongodb').ObjectID;
 const fs = require('fs')
 const isBase64 = require('is-base64');
+const Referalmodel = require('../../models/referalHistory');
 
 class driver {
     constructor() {
@@ -35,7 +36,8 @@ class driver {
             checkDashboard: this.checkDashboard.bind(this),
             getwallet: this.getwallet.bind(this),
             createBusiness: this.createBusiness.bind(this),
-            viewProfile: this.viewProfile.bind(this)
+            viewProfile: this.viewProfile.bind(this),
+            getRefHistory: this.getRefHistory.bind(this)
 
 
 
@@ -60,7 +62,7 @@ class driver {
             user.otp_details.otp_time = await moment().format("DD.MM.YYYY HH.mm.ss")
             // console.log("hiiiiii",user )
             let updateData = await DriverModel.findOneAndUpdate({ _id: user._id }, user, { new: true }).lean()
-            let referId = await walletModel.findOne({driver_id:user._id })
+            let referId = await walletModel.findOne({ driver_id: user._id })
             updateData.referId = referId.referral_id
             return updateData
         } catch (error) {
@@ -138,8 +140,8 @@ class driver {
                 // }
             }
             // await commenFunction._sendMail("arjunsinghyed@gmail.com")
-            
-                 
+
+
             res.json({ code: 200, success: true, message: successMessage, data: data, isExist: isExist })
 
         } catch (error) {
@@ -572,13 +574,13 @@ class driver {
     }
     async createBusiness(req, res) {
         try {
-            const { ID, ORGNAME, CITY, CONTACT_NUMBER, PINCODE, ADDRESS,CONTACT_PERSON } = req.body
+            const { ID, ORGNAME, CITY, CONTACT_NUMBER, PINCODE, ADDRESS, CONTACT_PERSON } = req.body
             if (!ID) {
                 res.json({ code: 400, success: false, message: "driver does not exist!" })
             }
             let obj = {
                 driver_id: ID,
-                contact_parson : CONTACT_PERSON,
+                contact_parson: CONTACT_PERSON,
                 organization_name: ORGNAME,
                 city: CITY,
                 number: CONTACT_NUMBER,
@@ -587,7 +589,7 @@ class driver {
             }
             let saveData = new BusinessModel(obj)
             let data = await saveData.save()
-           
+
             return res.json({ code: 200, success: true, message: "Save successfully", data: data })
         } catch (error) {
             console.log("error in catch", error)
@@ -597,31 +599,62 @@ class driver {
 
     async viewProfile(req, res) {
         try {
-            const { ID }= req.body
+            const { ID } = req.body
             if (!ID) {
                 res.json({ code: 400, success: false, message: "driver does not exist!" })
             }
-           let getdata = await DriverModel.findOne({_id: ID},{
-            phoneNo:1, name:1,address:1,Documents:1,referId:1,loginType:1
-           }).populate('Documents')
+            let getdata = await DriverModel.findOne({ _id: ID }, {
+                phoneNo: 1, name: 1, address: 1, Documents: 1, referId: 1, loginType: 1
+            }).populate('Documents')
             let getVehicle = await VehicleModel.findOne({ vehicle_owner: ID }).lean()
             console.log("data", getdata, ".....", getVehicle)
-          let obj ={
-            PHONE: getdata.phoneNo,
-            NAME: getdata.name,
-            ID :getdata._id,
-            ADDRESS: getdata.address,
-            VEHICLE_NO: getVehicle.vehicle_number,
-            VEHICLE_TYPE: getVehicle.vehicle_type,
-            bdl_IMAGE: getdata.Documents.driving_licence.back_Id,
-            fdl_IMAGE:  getdata.Documents.driving_licence.front_Id,
-            brc_IMAGE:  getdata.Documents.registration_certificate.back_Id,
-            frc_IMAGE:  getdata.Documents.registration_certificate.front_Id,
-            bid_IMAGE:  getdata.Documents.identity_card.back_Id,
-            fid_IMAGE:  getdata.Documents.identity_card.front_Id,
-          }
-           
+            let obj = {
+                PHONE: getdata.phoneNo,
+                NAME: getdata.name,
+                ID: getdata._id,
+                ADDRESS: getdata.address,
+                VEHICLE_NO: getVehicle.vehicle_number,
+                VEHICLE_TYPE: getVehicle.vehicle_type,
+                bdl_IMAGE: getdata.Documents.driving_licence.back_Id,
+                fdl_IMAGE: getdata.Documents.driving_licence.front_Id,
+                brc_IMAGE: getdata.Documents.registration_certificate.back_Id,
+                frc_IMAGE: getdata.Documents.registration_certificate.front_Id,
+                bid_IMAGE: getdata.Documents.identity_card.back_Id,
+                fid_IMAGE: getdata.Documents.identity_card.front_Id,
+            }
+
             return res.json({ code: 200, success: true, message: "Save successfully", data: obj })
+        } catch (error) {
+            console.log("error in catch", error)
+            res.json({ code: 500, success: false, message: "Internal server error" })
+        }
+    }
+    async getRefHistory(req, res) {
+        try {
+            const { ID } = req.body
+            if (!ID) {
+                res.json({ code: 400, success: false, message: "driver does not exist!" })
+            } else {
+
+                let getWallet = await walletModel.findOne({ driver_id: ID }).lean()
+                let getRefHistory = await Referalmodel.find({ from_driver_id: ID })
+                console.log("data", getWallet, ".....", getRefHistory)
+                let array = []
+                let newObj = {}
+                for (let item of getRefHistory) {
+                    let obj = {}
+                    obj.id = item.to_driver_id
+                    obj.to = 'Driver_partner'
+                    obj.balance = 50
+                    obj.unic_id = item._id
+                    obj.created_time = item.createdAt
+                    array.push(obj)
+                }
+                newObj.total_point = getWallet.referral_ammount ;
+                newObj.history = array
+                return res.json({ code: 200, success: true, message: "Get history successfully", data: newObj })
+            }
+
         } catch (error) {
             console.log("error in catch", error)
             res.json({ code: 500, success: false, message: "Internal server error" })

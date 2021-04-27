@@ -40,6 +40,8 @@ router.post('/get-wallet', driverAuth.getwallet);
 router.get('/get-aboutus', cmsAuth.getAboutus);
 router.post('/bussiness-details', driverAuth.createBusiness);
 router.post('/view-profile', driverAuth.viewProfile);
+router.post('/referral-history', driverAuth.getRefHistory);
+
 
 
 
