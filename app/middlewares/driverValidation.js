@@ -335,6 +335,7 @@ class driverValidation {
     }
     async uploadId(req, res, next) {
         // return next();
+        console.log(req)
         if (Object.keys(req.body).length <=3) {
                 req.checkBody({
                     ID: {

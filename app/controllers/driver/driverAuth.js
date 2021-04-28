@@ -428,7 +428,7 @@ class driver {
             let { BID, FID, FDL, BDL, FRC, BRC, ID } = req.body
             let getdata = await DocumentModel.findOne({ owner: ID }).lean()
             console.log("get data", getdata)
-            console.log("BID || BID != ", BID || BID != "", typeof BID, typeof "")
+            console.log("BID || BID !=cddcdcdcdcdcdcdcd ", BID || BID != "", typeof BID, BID)
             // console.log(BID )
 
             if (BID || BID != "") {
