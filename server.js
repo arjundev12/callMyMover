@@ -5,6 +5,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const dotenv = require('dotenv');
 var multer = require('multer');
+const path = require('path')
 var upload = multer();
 
 
@@ -14,7 +15,7 @@ app.use(bodyParser.urlencoded({ extended: true }))
 // for parsing multipart/form-data
 app.use(upload.array()); 
 app.use(express.static('public'));
-
+app.use( express.static(path.join(__dirname, '/')))
 
 dotenv.config({ path: './config/config.env' });
 // var expressValidator = require('express-validator');
