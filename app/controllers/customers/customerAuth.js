@@ -1,9 +1,12 @@
 // let config = require("../../../config/config")
 let commenFunction = require('../../middlewares/common')
 const UsersModel = require('../../models/customer/customers');
-const VehicleModel = require('../../models/customer/vehicleDetails');
-const DriverModel = require('../../models/customer/driver')
+// const VehicleModel = require('../../models/customer/vehicleDetails');
+// const DriverModel = require('../../models/customer/driver')
+const VehicleModel = require('../../models/driver/vechileDetail');
+const DriverModel = require('../../models/driver/driver')
 const walletModel = require('../../models/wallet')
+const DriverLocation = require('../../models/driver/driverLocation')
 const Mongoose = require('mongoose')
 const authConfig = require('../../authConfig/auth')
 const jwt = require('jsonwebtoken')
@@ -25,7 +28,7 @@ class users {
             getCustomerDetails: this.getCustomerDetails.bind(this),
             customerUpdate: this.customerUpdate.bind(this),
             getLocationName: this.getLocationName.bind(this),
-            getWallet : this.getWallet.bind(this),
+            getWallet: this.getWallet.bind(this),
             resendOtp: this.resendOtp.bind(this)
         }
     }
@@ -75,7 +78,7 @@ class users {
                         otp: await this._randomOTP(),
                         otp_time: moment().format("DD.MM.YYYY HH.mm.ss")
                     },
-                    ride_otp:  await this._randomOTP()
+                    ride_otp: await this._randomOTP()
                 }
                 if (req.profile_details) {
                     saveData1.profile_details = profile_details
@@ -83,7 +86,7 @@ class users {
 
                 let saveData = new UsersModel(saveData1)
                 data = await saveData.save();
-                await commenFunction._createWallet(data._id, 'customer' )
+                await commenFunction._createWallet(data._id, 'customer')
                 successMessage = "Data save successfully"
             }
             // await commenFunction._sendMail("arjunsinghyed@gmail.com")
@@ -92,11 +95,11 @@ class users {
 
         } catch (error) {
             console.log("Error in catch", error)
-            res.json({ code: 400, success: false, message: "Internal server error", data: null })
+            res.json({ code: 400, success: false, message: "Internal server error", })
         }
 
     }
-    async resendOtp (req, res){
+    async resendOtp(req, res) {
         try {
             let data;
             let errorMessage;
@@ -118,7 +121,7 @@ class users {
                         otp: await this._randomOTP(),
                         otp_time: moment().format("DD.MM.YYYY HH.mm.ss")
                     },
-                    ride_otp:  await this._randomOTP()
+                    ride_otp: await this._randomOTP()
                 }
                 if (req.profile_details) {
                     saveData1.profile_details = profile_details
@@ -126,7 +129,7 @@ class users {
 
                 let saveData = new UsersModel(saveData1)
                 data = await saveData.save();
-                await commenFunction._createWallet(data._id, 'customer' )
+                await commenFunction._createWallet(data._id, 'customer')
                 successMessage = "Resend otp is successfully"
             }
             // await commenFunction._sendMail("arjunsinghyed@gmail.com")
@@ -135,7 +138,7 @@ class users {
 
         } catch (error) {
             console.log("Error in catch", error)
-            res.json({ code: 400, success: false, message: "Internal server error", data: null })
+            res.json({ code: 400, success: false, message: "Internal server error", })
         }
     }
     async verifyOtp(req, res) {
@@ -179,7 +182,7 @@ class users {
             }
         } catch (error) {
             console.log("error in catch", error)
-            res.json({ code: 500, success: false, message: "Internal server error", data: null })
+            res.json({ code: 500, success: false, message: "Internal server error", })
         }
     }
     async getDriver(req, res) {
@@ -187,7 +190,14 @@ class users {
             let data;
             let errorMessage;
             let successMessage;
-            data = await DriverModel.find()
+            data = await DriverModel.find({}, {
+                name: 1,
+                isProfileCompleted: 1,
+                isDocumentVerify: 1,
+                address: 1,
+                phoneNo: 1,
+                driverStatus: 1
+            })
             successMessage = "Data get successfully"
             if (errorMessage) {
                 res.json({ code: 400, success: false, message: errorMessage })
@@ -196,7 +206,7 @@ class users {
             }
         } catch (error) {
             console.log("error in catch", error)
-            res.json({ code: 400, success: false, message: "Internal server error", data: null })
+            res.json({ code: 400, success: false, message: "Internal server error", })
         }
 
     }
@@ -205,10 +215,51 @@ class users {
             let data;
             let errorMessage;
             let successMessage;
-            data = await VehicleModel.find().populate('vehicle_owner').lean()
+            //     data = await VehicleModel.find().populate('vehicle_driver','name phoneNo')
+            //     // for (let item of data) {
+            //     //     let getlocation = await commenFunction._coordinatesInToObj([item.location])
+            //     //     item.location = getlocation[0]
+            //     // }
+            //   let data1 = await DriverLocation.find().populate('driverId', 'name phoneNo')
+            //   let array=[]
+            data = await DriverLocation.aggregate([{ $match: {} },
+            {
+                $lookup: {
+                    from: "vehicledetails",
+                    localField: "driverId",
+                    foreignField: "vehicle_owner",
+                    as: "vehicles"
+                }
+            },
+            {
+                $unwind: "$vehicles"
+            },
+            {
+                $lookup: {
+                    from: "driverauths",
+                    localField: "vehicles.vehicle_owner",
+                    foreignField: "_id",
+                    as: "driver"
+                }
+            },
+            {
+                $unwind: "$driver"
+            },
+            {
+                $project: {
+                    "vehicles.vehicle_number": 1,
+                    "vehicles.vehicle_type": 1,
+                    "vehicles.vehicle_driver": 1,
+                    location: 1,
+                    "driver.name": 1,
+                    "driver.phoneNo": 1,
+                    "driver.address": 1
+                }
+            },
+
+            ])
             for (let item of data) {
-                let getlocation = await commenFunction._coordinatesInToObj([item.location])
-                item.location = getlocation[0]
+                item.location = await commenFunction._coordinatesInToObj([item.location])
             }
             successMessage = "Data get successfully"
             if (errorMessage) {
@@ -218,7 +269,7 @@ class users {
             }
         } catch (error) {
             console.log("error in catch", error)
-            res.json({ code: 400, success: false, message: "Internal server error", data: null })
+            res.json({ code: 400, success: false, message: "Internal server error", })
         }
 
     }
@@ -241,7 +292,7 @@ class users {
             }
         } catch (error) {
             console.log("error in catch", error)
-            res.json({ code: 500, success: false, message: "Internal server error", data: null })
+            res.json({ code: 500, success: false, message: "Internal server error", })
         }
 
     }
@@ -263,7 +314,7 @@ class users {
             }
         } catch (error) {
             console.log("error in catch", error)
-            res.json({ code: 500, success: false, message: "Internal server error", data: null })
+            res.json({ code: 500, success: false, message: "Internal server error", })
         }
 
     }
@@ -280,11 +331,30 @@ class users {
                 $project: {
                     "vehicle_name": 1,
                     "vehicle_type": 1,
-                    "vehicle_rate": 1,
+                    // "vehicle_rate": 1,
                     "truckLogo": { $literal: constant.truckLogo }
                 }
             }
             ])
+            for (let item of data) {
+                if (item.vehicle_type == 'micro') {
+                    item.vehicle_rate = {
+                        "rate": "10",
+                        "unit": "per km"
+                    }
+                } else if (item.vehicle_type == 'mini') {
+                    item.vehicle_rate = {
+                        "rate": "5",
+                        "unit": "per km"
+                    }
+                } else if (item.vehicle_type == 'sedan') {
+                    item.vehicle_rate = {
+                        "rate": "15",
+                        "unit": "per km"
+                    }
+                }
+
+            }
             successMessage = "Data save successfully"
             if (errorMessage) {
                 res.json({ code: 400, success: false, message: errorMessage })
@@ -293,7 +363,7 @@ class users {
             }
         } catch (error) {
             console.log("error in catch", error)
-            res.json({ code: 500, success: false, message: "Internal server error", data: null })
+            res.json({ code: 500, success: false, message: "Internal server error", })
         }
 
     }
@@ -313,8 +383,26 @@ class users {
                 }
             }])
             for (let item of data) {
+                if (item.vehicle_type == 'micro') {
+                    item.vehicle_rate = {
+                        "rate": "10",
+                        "unit": "per km"
+                    }
+                } else if (item.vehicle_type == 'mini') {
+                    item.vehicle_rate = {
+                        "rate": "5",
+                        "unit": "per km"
+                    }
+                } else if (item.vehicle_type == 'sedan') {
+                    item.vehicle_rate = {
+                        "rate": "15",
+                        "unit": "per km"
+                    }
+                }
+                // console.log("")
                 let estimatePrice = baseFare + (item.vehicle_rate.rate * distenceInKm);
                 let estimateTime = distenceInKm * timePerKmInMin
+
                 array.push({
                     type: item.vehicle_type,
                     estimatePrice: `${estimatePrice}rs`,
@@ -338,7 +426,7 @@ class users {
             res.json({ code: 200, success: true, message: "get estimate successfully", data: data })
         } catch (error) {
             console.log("error in catch", error)
-            res.json({ code: 500, success: false, message: "Internal server error", data: null })
+            res.json({ code: 500, success: false, message: "Internal server error", })
         }
 
     }
@@ -346,15 +434,48 @@ class users {
         try {
             let data;
             let location = req.body.location
-            data = await DriverModel.find().sort()
-            console.log("data", data[0])
-            let data1 = await VehicleModel.findOne({ vehicle_owner: data[0]._id }).populate('vehicle_owner').lean()
-            let getlocation = await commenFunction._coordinatesInToObj([data1.location])
-            data1.location = getlocation[0]
-            res.json({ code: 200, success: true, message: "get driver successfully", data: data1 })
+            data = await DriverLocation.aggregate([{ $match: {} },
+                {
+                    $lookup: {
+                        from: "vehicledetails",
+                        localField: "driverId",
+                        foreignField: "vehicle_owner",
+                        as: "vehicles"
+                    }
+                },
+                {
+                    $unwind: "$vehicles"
+                },
+                {
+                    $lookup: {
+                        from: "driverauths",
+                        localField: "vehicles.vehicle_owner",
+                        foreignField: "_id",
+                        as: "driver"
+                    }
+                },
+                {
+                    $unwind: "$driver"
+                },
+                {
+                    $project: {
+                        "vehicles.vehicle_number": 1,
+                        "vehicles.vehicle_type": 1,
+                        "vehicles.vehicle_driver": 1,
+                        location: 1,
+                        "driver.name": 1,
+                        "driver.phoneNo": 1,
+                        "driver.address": 1
+                    }
+                },
+                ])
+                for (let item of data) {
+                    item.location = await commenFunction._coordinatesInToObj([item.location])
+                }
+            res.json({ code: 200, success: true, message: "get driver successfully", data: data })
         } catch (error) {
             console.log("error in catch", error)
-            res.json({ code: 500, success: false, message: "Internal server error", data: null })
+            res.json({ code: 500, success: false, message: "Internal server error", })
         }
 
     }
@@ -366,7 +487,7 @@ class users {
             res.json({ code: 200, success: true, message: "get user successfully", data: data })
         } catch (error) {
             console.log("error in catch", error)
-            res.json({ code: 500, success: false, message: "Internal server error", data: null })
+            res.json({ code: 500, success: false, message: "Internal server error", })
         }
 
     }
@@ -398,7 +519,7 @@ class users {
             res.json({ code: 200, success: true, message: "User update successfully", data: data })
         } catch (error) {
             console.log("error in catch", error)
-            res.json({ code: 500, success: false, message: "Internal server error", data: null })
+            res.json({ code: 500, success: false, message: "Internal server error", })
         }
 
     }
@@ -410,18 +531,18 @@ class users {
 
         } catch (error) {
             console.log("error in catch", error)
-            res.json({ code: 500, success: false, message: "Internal server error", data: null })
+            res.json({ code: 500, success: false, message: "Internal server error", })
         }
     }
     async getWallet(req, res) {
         try {
             console.log("lat, long", req.body)
-            let data = await walletModel.findOne({customer_id : req.query.id})
+            let data = await walletModel.findOne({ customer_id: req.query.id })
             res.json({ code: 200, success: true, message: "User update successfully", data: data })
 
         } catch (error) {
             console.log("error in catch", error)
-            res.json({ code: 500, success: false, message: "Internal server error", data: null })
+            res.json({ code: 500, success: false, message: "Internal server error", })
         }
     }
 

@@ -11,7 +11,7 @@ const DriverdataSchema = Schema({
   },
   driverId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Driver"
+    ref: "driverauth"
   },    
 },
   {
