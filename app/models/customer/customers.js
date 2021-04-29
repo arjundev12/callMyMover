@@ -45,7 +45,10 @@ var UsersSchema = new Schema({
     type: String,
     trim: true,
   },
-
+  referId:{
+    type: String,
+    trim: true
+  },
   profile_details: {
     type: { any: [Schema.Types.Mixed] }
   }

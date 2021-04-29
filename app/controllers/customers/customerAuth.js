@@ -50,11 +50,33 @@ class users {
             user.otp_details.status = false
             user.otp_details.otp_time = await moment().format("DD.MM.YYYY HH.mm.ss")
             // console.log("hiiiiii",user )
-            let updateData = await UsersModel.findOneAndUpdate({ _id: user._id }, user, { new: true })
+            let updateData = await UsersModel.findOneAndUpdate({ _id: user._id }, user, { new: true }).lean()
             return updateData
         } catch (error) {
             throw error
         }
+    }
+    async _generateRefID() {
+        try {
+            let flage = false
+            let fourDigitsRandom
+            do {
+                fourDigitsRandom = await Math.floor(1000 + Math.random() * 9000);
+                let getData = await walletModel.find({ referral_id: fourDigitsRandom.toString() })
+                if (getData.length > 0) {
+                    flage = true
+                } else {
+                    flage = false
+                }
+            }
+            while (flage);
+
+            return '@' + fourDigitsRandom
+
+        } catch (error) {
+            throw error
+        }
+
     }
     async signUp(req, res) {
         try {
@@ -79,6 +101,10 @@ class users {
                         otp_time: moment().format("DD.MM.YYYY HH.mm.ss")
                     },
                     ride_otp: await this._randomOTP()
+                   
+                }
+                if(req.body.referId){
+                       saveData1.referId= req.body.referId 
                 }
                 if (req.profile_details) {
                     saveData1.profile_details = profile_details
@@ -86,11 +112,14 @@ class users {
 
                 let saveData = new UsersModel(saveData1)
                 data = await saveData.save();
-                await commenFunction._createWallet(data._id, 'customer')
+                let refid = await this._generateRefID()
+                await commenFunction._createWallet(data._id, 'customer', refid)
                 successMessage = "Data save successfully"
             }
             // await commenFunction._sendMail("arjunsinghyed@gmail.com")
-
+            let getData = await walletModel.findOne({ customer_id: data._id})
+            data.referral_id = getData.referral_id ? getData.referral_id : ""
+            
             res.json({ code: 200, success: true, message: successMessage, data: data })
 
         } catch (error) {
