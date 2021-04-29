@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+var mongoosePaginate = require('mongoose-paginate');
 const Schema = mongoose.Schema;
 const crypto = require('crypto');
 const driverSchema = Schema({
@@ -103,5 +104,6 @@ const driverSchema = Schema({
   {
     timestamps: true
   });
+  driverSchema.plugin(mongoosePaginate);
 const Driver = mongoose.model('driverAuth', driverSchema);
 module.exports = Driver;
