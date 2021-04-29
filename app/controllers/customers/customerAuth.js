@@ -106,8 +106,8 @@ class users {
                 if(req.body.referId){
                        saveData1.referId= req.body.referId 
                 }
-                if (req.profile_details) {
-                    saveData1.profile_details = profile_details
+                if (req.body.profile_details) {
+                    saveData1.profile_details = req.body.profile_details
                 }
 
                 let saveData = new UsersModel(saveData1)
@@ -119,7 +119,7 @@ class users {
             // await commenFunction._sendMail("arjunsinghyed@gmail.com")
             let getData = await walletModel.findOne({ customer_id: data._id})
             data.referral_id = getData.referral_id ? getData.referral_id : ""
-            
+
             res.json({ code: 200, success: true, message: successMessage, data: data })
 
         } catch (error) {
