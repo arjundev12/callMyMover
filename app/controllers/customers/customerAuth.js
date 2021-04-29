@@ -499,7 +499,12 @@ class users {
                 },
                 ])
                 for (let item of data) {
-                    item.location = await commenFunction._coordinatesInToObj([item.location])
+                    let obj=  {
+                        lat: item.location.coordinates[0].toString(),
+                        long: item.location.coordinates[1].toString(),
+                        address :  item.location.address
+                    }   
+                    item.location = obj
                 }
             res.json({ code: 200, success: true, message: "get driver successfully", data: data })
         } catch (error) {
