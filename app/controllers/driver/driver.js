@@ -15,7 +15,8 @@ updateDriverLocation = async (req, res) => {
         let saveData = {
             location: {
                 coordinates: [Number(req.body.LAT), Number(req.body.LONG)],
-                address: req.body.ADDRESS
+                // address: req.body.ADDRESS
+                type:"Point"
             },
             address: req.body.ADDRESS,
             Appkey: req.body.APP_KEY
@@ -24,7 +25,7 @@ updateDriverLocation = async (req, res) => {
         if (getLocation) {
             data = await DriverLocation.findOneAndUpdate({ driverId: req.body.D_ID }, { $set: saveData }, { new: true })
 
-            data.location = await commenFunction._coordinatesInToObj([data.location])
+            // data.location = await commenFunction._coordinatesInToObj([data.location])
             res.json({ code: 200, success: true, message: 'Location update successfully', data: data })
         } else {
             saveData.driverId = req.body.D_ID

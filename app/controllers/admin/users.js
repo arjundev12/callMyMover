@@ -4,6 +4,7 @@ const commenFunction = require('../../middlewares/common');
 const CustomerModel = require('../../models/customer/customers')
 const DriverModel = require('../../models/driver/driver')
 const DocumentModel = require('../../models/driver/driverDocuments')
+const CityModel = require('../../models/city')
 var bcrypt = require('bcryptjs');
 
 class Users {
@@ -38,7 +39,9 @@ class Users {
             let query = {
                 _id : req.query._id
             }
-            let getUser = await DriverModel.findOne(query)
+            let getUser = await DriverModel.findOne(query).lean()
+            let city = await CityModel.findOne({id : getUser.city})
+            getUser.city= city.name
             res.json({ code: 200, success: true, message: "Data get successfully", data: getUser })
         } catch (error) {
             console.log("Error in catch", error)
