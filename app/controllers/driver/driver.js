@@ -23,9 +23,14 @@ updateDriverLocation = async (req, res) => {
         }
         let getLocation = await DriverLocation.findOne({ driverId: req.body.D_ID })
         if (getLocation) {
-            data = await DriverLocation.findOneAndUpdate({ driverId: req.body.D_ID }, { $set: saveData }, { new: true })
+            data = await DriverLocation.findOneAndUpdate({ driverId: req.body.D_ID }, { $set: saveData }, { new: true }).lean()
 
             // data.location = await commenFunction._coordinatesInToObj([data.location])
+            data.location =  {
+                lat: data.location.coordinates[0].toString(),
+                long: data.location.coordinates[1].toString(),
+                address: data.address
+            }
             res.json({ code: 200, success: true, message: 'Location update successfully', data: data })
         } else {
             saveData.driverId = req.body.D_ID
