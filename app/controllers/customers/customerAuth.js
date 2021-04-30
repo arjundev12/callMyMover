@@ -523,7 +523,7 @@ class users {
                 item.location = obj
             }
             if (data.length == 0) {
-                res.json({ code: 404, success: false, message: "Sorry Our Service Are Not Available In This Region", title: "Thanks to joining CMM Family" })
+                res.json({ code: 400, success: false, message: "Sorry Our Service Are Not Available In This Region", title: "Thanks to joining CMM Family" })
             } else {
                 res.json({ code: 200, success: true, message: "get driver successfully", data: data })
             }
