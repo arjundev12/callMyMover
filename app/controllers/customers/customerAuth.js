@@ -101,10 +101,10 @@ class users {
                         otp_time: moment().format("DD.MM.YYYY HH.mm.ss")
                     },
                     ride_otp: await this._randomOTP()
-                   
+
                 }
-                if(req.body.referId){
-                       saveData1.referId= req.body.referId 
+                if (req.body.referId) {
+                    saveData1.referId = req.body.referId
                 }
                 if (req.body.profile_details) {
                     saveData1.profile_details = req.body.profile_details
@@ -117,7 +117,7 @@ class users {
                 successMessage = "Data save successfully"
             }
             // await commenFunction._sendMail("arjunsinghyed@gmail.com")
-            let getData = await walletModel.findOne({ customer_id: data._id})
+            let getData = await walletModel.findOne({ customer_id: data._id })
             data.referral_id = getData.referral_id ? getData.referral_id : ""
 
             res.json({ code: 200, success: true, message: successMessage, data: data })
@@ -461,9 +461,23 @@ class users {
     }
     async getNearestDriver(req, res) {
         try {
+            let milesToRadian = function (Km) {
+               let miles = Km * 0.621371
+                var earthRadiusInMiles = 3959;
+                return miles / earthRadiusInMiles;
+            };
             let data;
-            let location = req.body.location
-            data = await DriverLocation.aggregate([{ $match: {} },
+            console.log("req.body", req.body)
+            let {PICKUP_LAT, PICKUP_LONG,C_ID} = req.body
+           
+            let query = {
+                "location": {
+                    $geoWithin: {
+                        $centerSphere: [[Number(PICKUP_LAT), Number(PICKUP_LONG)], milesToRadian(50)]
+                    }
+                }
+            }
+            data = await DriverLocation.aggregate([{ $match:query },
                 {
                     $lookup: {
                         from: "vehicledetails",
@@ -491,7 +505,9 @@ class users {
                         "vehicles.vehicle_number": 1,
                         "vehicles.vehicle_type": 1,
                         "vehicles.vehicle_driver": 1,
+
                         location: 1,
+                        address:1,
                         "driver.name": 1,
                         "driver.phoneNo": 1,
                         "driver.address": 1
@@ -502,7 +518,7 @@ class users {
                     let obj=  {
                         lat: item.location.coordinates[0].toString(),
                         long: item.location.coordinates[1].toString(),
-                        address :  item.location.address
+                        address :  item.address
                     }   
                     item.location = obj
                 }

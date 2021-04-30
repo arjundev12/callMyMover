@@ -15,9 +15,9 @@ updateDriverLocation = async (req, res) => {
         let saveData = {
             location: {
                 coordinates: [Number(req.body.LAT), Number(req.body.LONG)],
-                "type": "point",
                 address: req.body.ADDRESS
             },
+            address: req.body.ADDRESS,
             Appkey: req.body.APP_KEY
         }
         let getLocation = await DriverLocation.findOne({ driverId: req.body.D_ID })
