@@ -473,7 +473,7 @@ class users {
             let query = {
                 "location": {
                     $geoWithin: {
-                        $centerSphere: [[Number(PICKUP_LAT), Number(PICKUP_LONG)], milesToRadian(50)]
+                        $centerSphere: [[Number(PICKUP_LAT), Number(PICKUP_LONG)], milesToRadian(10)]
                     }
                 }
             }

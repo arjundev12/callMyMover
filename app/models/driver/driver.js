@@ -99,6 +99,11 @@ const driverSchema = Schema({
     type: String,
     enum: ["active", "inactive", "blocked"],
     default: "inactive"
+  },
+  gender: {
+    type: String,
+    enum: ["male", "female"],
+    default: "male"
   }
 },
   {

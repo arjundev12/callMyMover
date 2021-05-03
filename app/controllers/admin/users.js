@@ -42,6 +42,7 @@ class Users {
             let getUser = await DriverModel.findOne(query).lean()
             let city = await CityModel.findOne({id : getUser.city})
             getUser.city= city.name
+            getUser.city_id = city.id
             res.json({ code: 200, success: true, message: "Data get successfully", data: getUser })
         } catch (error) {
             console.log("Error in catch", error)
