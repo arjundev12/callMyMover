@@ -10,6 +10,9 @@ let validationData= require('../../middlewares/adminValidation');
 router.post('/get-driver',  users.getDriver);
 router.get('/view-driver',  users.viewDriver);
 router.put('/update-driver', users.UpdateDriver)
+router.post('/get-customers', users.getCustomers)
+router.post('/get-wallets', users.getWallet)
+
 
 
 module.exports = router;

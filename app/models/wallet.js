@@ -35,7 +35,7 @@ var walletSchema = new Schema({
     },
     driver_id: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Driver"
+        ref: "driverAuth"
     },
     status: {
         type: String 

@@ -18,6 +18,7 @@ var ObjectID = require('mongodb').ObjectID;
 const fs = require('fs')
 const isBase64 = require('is-base64');
 const Referalmodel = require('../../models/referalHistory');
+const vehicleModel = require('../../models/driver/vechileDetail');
 
 class driver {
     constructor() {
@@ -425,53 +426,35 @@ class driver {
     }
     async updateDoc(req, res) {
         try {
-            let { BID, FID, FDL, BDL, FRC, BRC, ID } = req.body
+            let { BID, FID, FDL, BDL, FRC, BRC, ID ,vehicle_id} = req.body
             let getdata = await DocumentModel.findOne({ owner: ID }).lean()
             console.log("get data", getdata)
-            // console.log("BID || BID !=cddcdcdcdcdcdcdcd ", BID || BID != "", typeof BID, BID)
-            // console.log(BID )
-
             if (BID || BID != "") {
-                // if (!isBase64(req.body.BID, { mimeRequired: true })) {
-                //     return res.json({ code: 422, success: false, message: "BID is not base64" })
-                // }
                 this._deletImage(getdata.identity_card.back_Id);
                 getdata.identity_card.back_Id = await commenFunction._uploadBase64(BID, 'driver')
             }
             if (FID || FID != "") {
-                // if (!isBase64(req.body.FID, { mimeRequired: true })) {
-                //     return res.json({ code: 422, success: false, message: "FID is not base64" })
-                // }
                 this._deletImage(getdata.identity_card.front_Id);
                 getdata.identity_card.front_Id = await commenFunction._uploadBase64(FID, 'driver')
             }
             if (FDL || FDL != "") {
-                // if (!isBase64(req.body.FDL, { mimeRequired: true })) {
-                //     return res.json({ code: 422, success: false, message: "FDL is not base64" })
-                // }
                 this._deletImage(getdata.driving_licence.front_Id);
                 getdata.driving_licence.front_Id = await commenFunction._uploadBase64(FDL, 'driver')
             }
             if (BDL || BDL != "") {
-                // if (!isBase64(req.body.BDL, { mimeRequired: true })) {
-                //     return res.json({ code: 422, success: false, message: "BDL is not base64" })
-                // }
                 this._deletImage(getdata.driving_licence.back_Id);
                 getdata.driving_licence.back_Id = await commenFunction._uploadBase64(BDL, 'driver')
             }
             if (BRC || BRC != "") {
-                // if (!isBase64(req.body.BRC, { mimeRequired: true })) {
-                //     return res.json({ code: 422, success: false, message: "BRC is not base64" })
-                // }
                 this._deletImage(getdata.registration_certificate.back_Id);
                 getdata.registration_certificate.back_Id = await commenFunction._uploadBase64(BRC, 'driver')
             }
             if (FRC || FRC != "") {
-                // if (!isBase64(req.body.FRC, { mimeRequired: true })) {
-                //     return res.json({ code: 422, success: false, message: "FRC is not base64" })
-                // }
                 this._deletImage(getdata.registration_certificate.front_Id);
                 getdata.registration_certificate.front_Id = await commenFunction._uploadBase64(FRC, 'driver')
+            }
+            if (vehicle_id) {
+                getdata.vehicle_id =vehicle_id
             }
             let data = await DocumentModel.findOneAndUpdate({ owner: ID }, getdata, { new: true })
             await DriverModel.findOneAndUpdate({ _id: ID }, { $set: { Documents: data._id, isDocumentVerify: 'uploade' } })

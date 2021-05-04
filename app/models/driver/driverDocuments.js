@@ -15,6 +15,10 @@ const driverSchema = Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'driverauths'
   },
+  vehicle_id: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'vehicledetails'
+  },
  
 },
   {
