@@ -548,7 +548,7 @@ class users {
     async customerUpdate(req, res) {
         try {
             let data;
-            let getData = await UsersModel.findOne({ _id: req.query._id }).lean()
+            let getData = await UsersModel.findOne({ _id: req.body._id }).lean()
             if (getData.status != 'active') {
                 res.json({ code: 400, success: false, message: "Otp is not verify " })
             }

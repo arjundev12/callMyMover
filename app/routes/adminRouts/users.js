@@ -11,8 +11,11 @@ router.post('/get-driver',  users.getDriver);
 router.get('/view-driver',  users.viewDriver);
 router.put('/update-driver', users.UpdateDriver)
 router.post('/get-customers', users.getCustomers)
-router.post('/get-wallets', users.getWallet)
+router.get('/view-customer',  users.viewCustomer);
 
+router.post('/get-wallets', users.getWallet)
+router.get('/view-wallet', users.viewWallet)
+router.put('/update-customer', users.UpdateCustomer)
 
 
 module.exports = router;

@@ -17,7 +17,10 @@ class Users {
             viewDriver: this.viewDriver.bind(this),
             UpdateDriver: this.UpdateDriver.bind(this),
             getCustomers: this.getCustomers.bind(this),
-            getWallet: this.getWallet.bind(this)
+            viewCustomer: this.viewCustomer.bind(this),
+            getWallet: this.getWallet.bind(this),
+            UpdateCustomer: this.UpdateCustomer.bind(this),
+            viewWallet: this.viewWallet.bind(this)
         }
     }
 
@@ -41,24 +44,49 @@ class Users {
     }
     async getWallet(req, res) {
         try {
-         
+
             let query = {
-                wallet_type:req.body.type
+                wallet_type: req.body.type
             }
             let options = {
                 offset: req.body.offset || 0,
                 limit: req.body.limit || 10,
                 sort: { createdAt: -1 },
                 lean: true,
-                populate : req.body.type =='driver'?({path:'driver_id', select : 'name'}): ({path:'customer_id', select : 'name'})
+                populate: req.body.type == 'driver' ? ({ path: 'driver_id', select: 'name' }) : ({ path: 'customer_id', select: 'name' })
                 // select: 'name loginType address phoneNo createdAt',
             }
             // console.log("query, options", query, options)
             let getWallet = await Walletmodel.paginate(query, options)
+            console.log("getWallet", getWallet)
             res.json({ code: 200, success: true, message: "Get list successfully", data: getWallet })
         } catch (error) {
             console.log("Error in catch", error)
-            res.json({ code: 400, success: false, message: "Internal server error",  })
+            res.json({ code: 400, success: false, message: "Internal server error", })
+        }
+
+    }
+    async viewWallet(req, res) {
+        try {
+
+            let query = {
+                _id: req.query._id,
+                wallet_type: req.query.type
+            }
+            console.log("query", query)
+            let data = req.query.type == 'driver' ? 'driver_id' : 'customer_id'
+            let getWallet = await Walletmodel.findOne(query).populate(data,'name').lean()
+            console.log("getWallet", getWallet)
+            if(getWallet.customer_id){
+                getWallet.name = getWallet.customer_id.name
+            }else{
+                getWallet.name = getWallet.driver_id.name
+            }
+           
+            res.json({ code: 200, success: true, message: "Get list successfully", data: getWallet })
+        } catch (error) {
+            console.log("Error in catch", error)
+            res.json({ code: 400, success: false, message: "Internal server error", })
         }
 
     }
@@ -80,20 +108,44 @@ class Users {
         }
 
     }
+    async viewCustomer(req, res) {
+        try {
+            let query = {
+                _id: req.query._id
+            }
+            let getUser = await CustomerModel.findOne(query).populate('Documents').lean()
+            // let city = await CityModel.findOne({id : getUser.city})
+            // let vechileList = await VehicleModel.find({vehicle_owner : query._id})
+            console.log("vechileList", getUser)
+            // getUser.Documents.registration_certificate.name = "RC"
+            // getUser.Documents.driving_licence.name = "DL"
+            // getUser.Documents.identity_card.name = "ID"
+            // let array1 = [getUser.Documents.registration_certificate,getUser.Documents.driving_licence,getUser.Documents.identity_card]
+            // getUser.city= city.name
+            // getUser.city_id = city.id
+            // getUser.Documents = array1
+            // getUser.vechileList = vechileList
+            res.json({ code: 200, success: true, message: "Data get successfully", data: getUser })
+        } catch (error) {
+            console.log("Error in catch", error)
+            res.json({ code: 400, success: false, message: "Internal server error", data: null })
+        }
+
+    }
     async viewDriver(req, res) {
         try {
             let query = {
-                _id : req.query._id
+                _id: req.query._id
             }
             let getUser = await DriverModel.findOne(query).populate('Documents').lean()
-            let city = await CityModel.findOne({id : getUser.city})
-            let vechileList = await VehicleModel.find({vehicle_owner : query._id})
-            console.log("vechileList",vechileList)
+            let city = await CityModel.findOne({ id: getUser.city })
+            let vechileList = await VehicleModel.find({ vehicle_owner: query._id })
+            console.log("vechileList", vechileList)
             getUser.Documents.registration_certificate.name = "RC"
             getUser.Documents.driving_licence.name = "DL"
             getUser.Documents.identity_card.name = "ID"
-            let array1 = [getUser.Documents.registration_certificate,getUser.Documents.driving_licence,getUser.Documents.identity_card]
-            getUser.city= city.name
+            let array1 = [getUser.Documents.registration_certificate, getUser.Documents.driving_licence, getUser.Documents.identity_card]
+            getUser.city = city.name
             getUser.city_id = city.id
             getUser.Documents = array1
             getUser.vechileList = vechileList
@@ -107,10 +159,25 @@ class Users {
     async UpdateDriver(req, res) {
         try {
             let query = {
-                _id : req.body._id
+                _id: req.body._id
             }
             let data = req.body
-            let getUser = await DriverModel.findOneAndUpdate(query, {$set : data}).lean()
+            let getUser = await DriverModel.findOneAndUpdate(query, { $set: data }).lean()
+            res.json({ code: 200, success: true, message: "Update successfully", data: getUser })
+        } catch (error) {
+            console.log("Error in catch", error)
+            res.json({ code: 400, success: false, message: "Internal server error", data: null })
+        }
+
+
+    }
+    async UpdateCustomer(req, res) {
+        try {
+            let query = {
+                _id: req.body._id
+            }
+            let data = req.body
+            let getUser = await CustomerModel.findOneAndUpdate(query, { $set: data }).lean()
             res.json({ code: 200, success: true, message: "Update successfully", data: getUser })
         } catch (error) {
             console.log("Error in catch", error)
