@@ -16,6 +16,8 @@ router.get('/view-customer',  users.viewCustomer);
 router.post('/get-wallets', users.getWallet)
 router.get('/view-wallet', users.viewWallet)
 router.put('/update-customer', users.UpdateCustomer)
+router.get('/view-doc', users.docDetails)
+
 
 
 module.exports = router;

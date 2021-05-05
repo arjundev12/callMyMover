@@ -13,7 +13,7 @@ const driverSchema = Schema({
   },
   owner: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'driverauths'
+    ref: 'driverAuth'
   },
   vehicle_id: {
     type: mongoose.Schema.Types.ObjectId,

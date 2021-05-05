@@ -20,14 +20,15 @@ class Users {
             viewCustomer: this.viewCustomer.bind(this),
             getWallet: this.getWallet.bind(this),
             UpdateCustomer: this.UpdateCustomer.bind(this),
-            viewWallet: this.viewWallet.bind(this)
+            viewWallet: this.viewWallet.bind(this),
+            docDetails: this.docDetails.bind(this)
         }
     }
 
     async getDriver(req, res) {
         try {
             let options = {
-                offset: req.body.offset || 0,
+                page: req.body.offset || 1,
                 limit: req.body.limit || 10,
                 sort: { createdAt: -1 },
                 lean: true,
@@ -35,6 +36,7 @@ class Users {
             }
             let query = {}
             let getUser = await DriverModel.paginate(query, options)
+            console.log("getWallet", getUser)
             res.json({ code: 200, success: true, message: "Get list successfully", data: getUser })
         } catch (error) {
             console.log("Error in catch", error)
@@ -49,7 +51,7 @@ class Users {
                 wallet_type: req.body.type
             }
             let options = {
-                offset: req.body.offset || 0,
+                page: req.body.offset || 1,
                 limit: req.body.limit || 10,
                 sort: { createdAt: -1 },
                 lean: true,
@@ -58,7 +60,7 @@ class Users {
             }
             // console.log("query, options", query, options)
             let getWallet = await Walletmodel.paginate(query, options)
-            console.log("getWallet", getWallet)
+            // console.log("getWallet", getWallet)
             res.json({ code: 200, success: true, message: "Get list successfully", data: getWallet })
         } catch (error) {
             console.log("Error in catch", error)
@@ -93,13 +95,14 @@ class Users {
     async getCustomers(req, res) {
         try {
             let options = {
-                offset: req.body.offset || 0,
+                page: req.body.offset || 1,
                 limit: req.body.limit || 10,
                 sort: { createdAt: -1 },
                 lean: true,
                 // select: 'name loginType address phoneNo createdAt',
             }
             let query = {}
+            console.log("hiii", options)
             let getUser = await CustomerModel.paginate(query, options)
             res.json({ code: 200, success: true, message: "Get list successfully", data: getUser })
         } catch (error) {
@@ -162,7 +165,9 @@ class Users {
                 _id: req.body._id
             }
             let data = req.body
-            let getUser = await DriverModel.findOneAndUpdate(query, { $set: data }).lean()
+            console.log("request", data)
+            let getUser = await DriverModel.findOneAndUpdate(query, { $set: data },{new:true}).lean()
+            console.log("getUser", getUser)
             res.json({ code: 200, success: true, message: "Update successfully", data: getUser })
         } catch (error) {
             console.log("Error in catch", error)
@@ -179,6 +184,19 @@ class Users {
             let data = req.body
             let getUser = await CustomerModel.findOneAndUpdate(query, { $set: data }).lean()
             res.json({ code: 200, success: true, message: "Update successfully", data: getUser })
+        } catch (error) {
+            console.log("Error in catch", error)
+            res.json({ code: 400, success: false, message: "Internal server error", data: null })
+        }
+
+    }
+    async docDetails(req, res) {
+        try {
+            let query = {
+                owner: req.query._id
+            }
+            let docData = await DocumentModel.findOne(query).populate('owner','isDocumentVerify').lean()
+            res.json({ code: 200, success: true, message: "Update successfully", data: docData })
         } catch (error) {
             console.log("Error in catch", error)
             res.json({ code: 400, success: false, message: "Internal server error", data: null })
