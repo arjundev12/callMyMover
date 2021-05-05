@@ -165,7 +165,7 @@ class Users {
                 _id: req.body._id
             }
             let data = req.body
-            console.log("request", data)
+            console.log("request11", data)
             let getUser = await DriverModel.findOneAndUpdate(query, { $set: data },{new:true}).lean()
             console.log("getUser", getUser)
             res.json({ code: 200, success: true, message: "Update successfully", data: getUser })
