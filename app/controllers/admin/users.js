@@ -32,11 +32,11 @@ class Users {
                 limit: req.body.limit || 10,
                 sort: { createdAt: -1 },
                 lean: true,
-                select: 'name loginType address phoneNo createdAt',
+                select: 'name loginType address phoneNo createdAt isProfileCompleted isDocumentVerify',
             }
             let query = {}
             let getUser = await DriverModel.paginate(query, options)
-            console.log("getWallet", getUser)
+            // console.log("getWallet", getUser)
             res.json({ code: 200, success: true, message: "Get list successfully", data: getUser })
         } catch (error) {
             console.log("Error in catch", error)
@@ -56,11 +56,8 @@ class Users {
                 sort: { createdAt: -1 },
                 lean: true,
                 populate: req.body.type == 'driver' ? ({ path: 'driver_id', select: 'name' }) : ({ path: 'customer_id', select: 'name' })
-                // select: 'name loginType address phoneNo createdAt',
             }
-            // console.log("query, options", query, options)
             let getWallet = await Walletmodel.paginate(query, options)
-            // console.log("getWallet", getWallet)
             res.json({ code: 200, success: true, message: "Get list successfully", data: getWallet })
         } catch (error) {
             console.log("Error in catch", error)
@@ -71,20 +68,22 @@ class Users {
     async viewWallet(req, res) {
         try {
 
-            let query = {
-                _id: req.query._id,
-                wallet_type: req.query.type
+            let query = {}
+            let data = req.query.type == 'driver' ? 'driver_id' : 'customer_id'
+            if (req.query.type == 'driver') {
+                query.driver_id = req.query._id
+            } else {
+                query.customer_id = req.query._id
             }
             console.log("query", query)
-            let data = req.query.type == 'driver' ? 'driver_id' : 'customer_id'
-            let getWallet = await Walletmodel.findOne(query).populate(data,'name').lean()
-            console.log("getWallet", getWallet)
-            if(getWallet.customer_id){
+            let getWallet = await Walletmodel.findOne(query).populate(data, 'name').lean()
+            // console.log("getWallet", getWallet)
+            if (getWallet.customer_id) {
                 getWallet.name = getWallet.customer_id.name
-            }else{
+            } else {
                 getWallet.name = getWallet.driver_id.name
             }
-           
+
             res.json({ code: 200, success: true, message: "Get list successfully", data: getWallet })
         } catch (error) {
             console.log("Error in catch", error)
@@ -102,7 +101,7 @@ class Users {
                 // select: 'name loginType address phoneNo createdAt',
             }
             let query = {}
-            console.log("hiii", options)
+            // console.log("hiii", options)
             let getUser = await CustomerModel.paginate(query, options)
             res.json({ code: 200, success: true, message: "Get list successfully", data: getUser })
         } catch (error) {
@@ -166,7 +165,7 @@ class Users {
             }
             let data = req.body
             console.log("request11", data)
-            let getUser = await DriverModel.findOneAndUpdate(query, { $set: data },{new:true}).lean()
+            let getUser = await DriverModel.findOneAndUpdate(query, { $set: data }, { new: true }).lean()
             console.log("getUser", getUser)
             res.json({ code: 200, success: true, message: "Update successfully", data: getUser })
         } catch (error) {
@@ -195,7 +194,7 @@ class Users {
             let query = {
                 owner: req.query._id
             }
-            let docData = await DocumentModel.findOne(query).populate('owner','isDocumentVerify').lean()
+            let docData = await DocumentModel.findOne(query).populate('owner', 'isDocumentVerify').lean()
             res.json({ code: 200, success: true, message: "Update successfully", data: docData })
         } catch (error) {
             console.log("Error in catch", error)
