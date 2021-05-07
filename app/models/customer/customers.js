@@ -49,6 +49,9 @@ var UsersSchema = new Schema({
     type: String,
     trim: true
   },
+  profile_pic: {
+    type: String
+  },
   profile_details: {
     type: { any: [Schema.Types.Mixed] }
   }

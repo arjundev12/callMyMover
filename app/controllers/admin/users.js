@@ -5,6 +5,7 @@ const CustomerModel = require('../../models/customer/customers')
 const DriverModel = require('../../models/driver/driver')
 const DocumentModel = require('../../models/driver/driverDocuments')
 const VehicleModel = require('../../models/driver/vechileDetail')
+const VehicleTypeModel= require('../../models/vehicleTyps')
 const CityModel = require('../../models/city')
 var bcrypt = require('bcryptjs');
 const { find } = require('../../models/driver/driver');
@@ -21,7 +22,13 @@ class Users {
             getWallet: this.getWallet.bind(this),
             UpdateCustomer: this.UpdateCustomer.bind(this),
             viewWallet: this.viewWallet.bind(this),
-            docDetails: this.docDetails.bind(this)
+            docDetails: this.docDetails.bind(this),
+            getVehicle: this.getVehicle.bind(this),
+            getVehicleTypes: this.getVehicleTypes.bind(this),
+            viewVehicleTypes: this.viewVehicleTypes.bind(this),
+            editVehicleTypes: this.editVehicleTypes.bind(this),
+            viewVehicle: this.viewVehicle.bind(this),
+            editVehicle: this.editVehicle.bind(this)
         }
     }
 
@@ -32,7 +39,7 @@ class Users {
                 limit: req.body.limit || 10,
                 sort: { createdAt: -1 },
                 lean: true,
-                select: 'name loginType address phoneNo createdAt isProfileCompleted isDocumentVerify',
+                select: 'name loginType address phoneNo createdAt isProfileCompleted isDocumentVerify driverStatus',
             }
             let query = {}
             let getUser = await DriverModel.paginate(query, options)
@@ -75,7 +82,7 @@ class Users {
             } else {
                 query.customer_id = req.query._id
             }
-            console.log("query", query)
+            // console.log("query", query)
             let getWallet = await Walletmodel.findOne(query).populate(data, 'name').lean()
             // console.log("getWallet", getWallet)
             if (getWallet.customer_id) {
@@ -175,12 +182,25 @@ class Users {
 
 
     }
+    async _deletImage(path) {
+        try {
+            fs.unlinkSync(path);
+        } catch (error) {
+            console.log("error in catch", error)
+        }
+        return true
+    }
     async UpdateCustomer(req, res) {
         try {
             let query = {
                 _id: req.body._id
             }
             let data = req.body
+            if (data.profile_pic) {
+                this._deletImage( data.profile_pic);
+                data.profile_pic = await commenFunction._uploadBase64Profile(data.profile_pic, 'ProfileImage')
+            }
+            console.log("data", data)
             let getUser = await CustomerModel.findOneAndUpdate(query, { $set: data }).lean()
             res.json({ code: 200, success: true, message: "Update successfully", data: getUser })
         } catch (error) {
@@ -199,6 +219,102 @@ class Users {
         } catch (error) {
             console.log("Error in catch", error)
             res.json({ code: 400, success: false, message: "Internal server error", data: null })
+        }
+
+    }
+    async getVehicle(req, res) {
+        try {
+
+            let query = {
+                // wallet_type: req.body.type
+            }
+            let options = {
+                page: req.body.offset || 1,
+                limit: req.body.limit || 10,
+                sort: { createdAt: -1 },
+                lean: true,
+                populate: ({ path: 'vehicle_owner', select: 'name isDocumentVerify' }) 
+            }
+            let getWallet = await VehicleModel.paginate(query, options)
+            res.json({ code: 200, success: true, message: "Get list successfully", data: getWallet })
+        } catch (error) {
+            console.log("Error in catch", error)
+            res.json({ code: 400, success: false, message: "Internal server error", })
+        }
+
+    }
+    async viewVehicle(req,res){
+        try {
+            let query = {
+                _id: req.query._id
+            }
+            let getTypes = await VehicleModel.findOne(query).populate('vehicle_owner','name isDocumentVerify')
+            console.log("...........",getTypes)
+            res.json({ code: 200, success: true, message: "Get data successfully", data: getTypes })
+        } catch (error) {
+            console.log("Error in catch", error)
+            res.json({ code: 400, success: false, message: "Internal server error", }) 
+        }
+    }
+    async editVehicle(req,res){
+        try {
+            let query = {
+                _id: req.body._id
+            }
+            let getTypes = await VehicleModel.findOneAndUpdate(query, {$set: req.body}, {new: true})
+            console.log("...........",getTypes)
+            res.json({ code: 200, success: true, message: "update data successfully", data: getTypes })
+        } catch (error) {
+            console.log("Error in catch", error)
+            res.json({ code: 400, success: false, message: "Internal server error", }) 
+        }
+    }
+    
+    async getVehicleTypes(req, res) {
+        try {
+
+            let query = {
+                // wallet_type: req.body.type
+            }
+            let options = {
+                page: req.body.offset || 1,
+                limit: req.body.limit || 10,
+                sort: { createdAt: -1 },
+                lean: true,
+                // populate: ({ path: 'vehicle_owner', select: 'name isDocumentVerify' }) 
+            }
+            let getWallet = await VehicleTypeModel.paginate(query, options)
+            res.json({ code: 200, success: true, message: "Get list successfully", data: getWallet })
+        } catch (error) {
+            console.log("Error in catch", error)
+            res.json({ code: 400, success: false, message: "Internal server error", })
+        }
+
+    }
+    async viewVehicleTypes(req, res) {
+        try {
+
+            let query = {
+                _id: req.query._id
+            }
+            let getTypes = await VehicleTypeModel.findOne(query)
+            // cons
+            res.json({ code: 200, success: true, message: "Get data successfully", data: getTypes })
+        } catch (error) {
+            console.log("Error in catch", error)
+            res.json({ code: 400, success: false, message: "Internal server error", })
+        }
+
+    }
+    async editVehicleTypes(req, res) {
+        try {
+            let data = req.body
+            let getTypes = await VehicleTypeModel.findOneAndUpdate({_id: data._id},{$set: data},{new:true})
+            // cons
+            res.json({ code: 200, success: true, message: "Get data successfully", data: getTypes })
+        } catch (error) {
+            console.log("Error in catch", error)
+            res.json({ code: 400, success: false, message: "Internal server error", })
         }
 
     }

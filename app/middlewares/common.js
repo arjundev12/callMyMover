@@ -21,7 +21,8 @@ class common {
             _createWallet: this._createWallet.bind(this),
             _randomOTP: this._randomOTP.bind(this),
             _uploadBase64: this._uploadBase64.bind(this),
-            _validateBase64: this._validateBase64.bind(this)
+            _validateBase64: this._validateBase64.bind(this),
+            _uploadBase64Profile: this._uploadBase64Profile.bind(this)
 
         }
     }
@@ -122,6 +123,26 @@ class common {
             console.log(global.globalPath,"............",'driver', storagePath)
             let filename =`${Date.now()}_image`
              let base64Image = await this._validateBase64(`data:image/jpeg;base64,${base64}`)
+            let filepath = await base64Img.imgSync(base64Image, storagePath, filename);
+            console.log("filepath", filepath)
+            return filepath
+        } catch (error) {
+            console.error("error in _createWallet", error)
+        }
+    }
+    async _uploadBase64Profile(base64,child_path) {
+        try {
+            let parant_path = 'public'
+            let storagePath = `${parant_path}/${child_path}`;
+            if (!fs.existsSync(parant_path)) {
+                fs.mkdirSync(parant_path);
+            }
+            if(!fs.existsSync(storagePath)){
+                fs.mkdirSync(storagePath);
+             }
+            console.log(global.globalPath,"............",'driver', storagePath)
+            let filename =`${Date.now()}_image`
+             let base64Image = await this._validateBase64(base64)
             let filepath = await base64Img.imgSync(base64Image, storagePath, filename);
             console.log("filepath", filepath)
             return filepath

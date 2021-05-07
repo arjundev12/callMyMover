@@ -48,11 +48,11 @@ var vehicleSchema = new Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "driverAuth"
     },
-    isDocumentComplete : {
-        type: Boolean,
-        trim: true,
-        default: false
-    },
+    status: { // for document verification 
+        type: String,
+        enum: ["active","inactive"],
+        default: "active"
+      },
     documents: {
         type: { any: [Schema.Types.Mixed] }
     },
