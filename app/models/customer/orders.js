@@ -23,7 +23,11 @@ var OrderSchema = new Schema({
   recieverInfo: {
     type: { any: [Schema.Types.Mixed] }
   },
-
+  isCreated: {
+    type: String,
+    enum: ['pending', 'completed'],
+    default: 'pending'
+  },
   status: {
     type: String,
     enum: ['new', 'accepted', 'pending', 'canceled', 'completed'],
