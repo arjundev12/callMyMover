@@ -13,10 +13,12 @@ var citySchema = new Schema({
      status :{
         type: String,
         trim:true,
+        default: "1"
      },
      is_deleted :{
         type: String,
         trim:true,
+        default: "0"
      },
      created_time : { type: Date, default: Date.now },
      modified_time : { type: Date, default: Date.now },

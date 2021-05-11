@@ -429,27 +429,27 @@ class driver {
             let { BID, FID, FDL, BDL, FRC, BRC, ID ,vehicle_id} = req.body
             let getdata = await DocumentModel.findOne({ owner: ID }).lean()
             console.log("get data", getdata)
-            if (BID || BID != "") {
+            if (BID && BID != "") {
                 this._deletImage(getdata.identity_card.back_Id);
                 getdata.identity_card.back_Id = await commenFunction._uploadBase64(BID, 'driver')
             }
-            if (FID || FID != "") {
+            if (FID && FID != "") {
                 this._deletImage(getdata.identity_card.front_Id);
                 getdata.identity_card.front_Id = await commenFunction._uploadBase64(FID, 'driver')
             }
-            if (FDL || FDL != "") {
+            if (FDL && FDL != "") {
                 this._deletImage(getdata.driving_licence.front_Id);
                 getdata.driving_licence.front_Id = await commenFunction._uploadBase64(FDL, 'driver')
             }
-            if (BDL || BDL != "") {
+            if (BDL && BDL != "") {
                 this._deletImage(getdata.driving_licence.back_Id);
                 getdata.driving_licence.back_Id = await commenFunction._uploadBase64(BDL, 'driver')
             }
-            if (BRC || BRC != "") {
+            if (BRC && BRC != "") {
                 this._deletImage(getdata.registration_certificate.back_Id);
                 getdata.registration_certificate.back_Id = await commenFunction._uploadBase64(BRC, 'driver')
             }
-            if (FRC || FRC != "") {
+            if (FRC && FRC != "") {
                 this._deletImage(getdata.registration_certificate.front_Id);
                 getdata.registration_certificate.front_Id = await commenFunction._uploadBase64(FRC, 'driver')
             }

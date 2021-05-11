@@ -46,18 +46,16 @@ class Orders {
             console.log("stoppage ", stoppage)
             stoppage ? stoppage : stoppage = []
             if (stoppage.length > 0 && stoppage != "") {
-                let index = 1
                 for (const iterator of stoppage) {
                     let stoppage1 = {}
                    
-                    stoppage1.id = index
+                    stoppage1.id = await this._randomNumber()
                     stoppage1.type = "point"
                     stoppage1.coordinates = [iterator.lat, iterator.long]
                     stoppage1.address = iterator.address
                     stoppage1.name = iterator.name
                     stoppage1.number = iterator.number
                     tempArray.push(stoppage1)
-                    index++
                 }
                 obj.stoppage = tempArray
             }
@@ -68,6 +66,16 @@ class Orders {
         } catch (error) {
             console.log("Error in catch", error)
             res.json({ code: 400, success: false, message: "Internal server error", })
+        }
+
+    }
+    async _randomNumber() {
+        try {
+            let fourDigitsRandom = Math.floor(1000 + Math.random() * 9000);
+            return fourDigitsRandom
+
+        } catch (error) {
+            throw error
         }
 
     }
@@ -104,17 +112,15 @@ class Orders {
             let tempArray = []
             stoppage ? stoppage : stoppage = []
             if (stoppage.length > 0 && stoppage != "") {
-                let index = 1;
                 for (const iterator of stoppage) {
                     let stoppage = {}
-                    stoppage.id = index
+                    stoppage.id = await this._randomNumber()
                     stoppage.type = "point"
                     stoppage.coordinates = [iterator.lat, iterator.long]
                     stoppage.address = iterator.address
                     stoppage.name = iterator.name
                     stoppage.number = iterator.number
                     tempArray.push(stoppage)
-                    index++
                 }
                 obj.stoppage = tempArray
             }
@@ -189,34 +195,42 @@ class Orders {
                 { _id: order_id }).lean()
                 if(data.pickupLocation){
                     data.pickupLocation = {
+                        locationType : "pickupLocation",
                         let: data.pickupLocation[0].coordinates[0],
                         long: data.pickupLocation[0].coordinates[1],
-                        address: data.pickupLocation[0].address
+                        address: data.pickupLocation[0].address,
+                        name: data.recieverInfo.name,
+                        number: data.recieverInfo.number
                     }
                 }
              if(data.dropLocation){
                 data.dropLocation = {
+                    locationType :"dropLocation",
                     let: data.dropLocation[0].coordinates[0],
                     long: data.dropLocation[0].coordinates[1],
-                    address: data.dropLocation[0].address
+                    address: data.dropLocation[0].address,
+                    name: data.recieverInfo.name,
+                    number: data.recieverInfo.number
                 }
              }
              if(data.stoppage){
                 let tempArray = []
                 for (const iterator of data.stoppage) {
                     let obj = {
+                        id: iterator.id?iterator.id: "",
+                        locationType: "stoppage",
                         let: iterator.coordinates[0],
                         long: iterator.coordinates[1],
                         address: iterator.address,
-                        name: iterator.name,
-                        number: iterator.number
+                        name: iterator.name ? iterator.name: "",
+                        number: iterator.number ? iterator.number :""
                     }
                     tempArray.push(obj)
                 }
-                data.stoppage = tempArray
+                tempArray.push(data.pickupLocation)
+                tempArray.push(data.dropLocation)
+                data.locations = tempArray
              }
-            
-
             res.json({ code: 200, success: true, message: "Get data seccessfully", data: data })
 
         } catch (error) {
