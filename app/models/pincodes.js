@@ -17,6 +17,7 @@ var pincodSchema = new Schema({
      status :{
         type: String,
         trim:true,
+        default: "1"
      },
      is_deleted :{
         type: String,

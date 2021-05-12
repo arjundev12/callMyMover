@@ -1,5 +1,6 @@
 const AdminModel = require('../../models/admin')
 const CityModel = require('../../models/city')
+const pincodModel = require('../../models/pincodes')
 const commenFunction = require('../../middlewares/common');
 
 class City {
@@ -7,7 +8,8 @@ class City {
         return {
             getCities: this.getCities.bind(this),
             updateCity: this.updateCity.bind(this),
-            addCity: this.addCity.bind(this)
+            addCity: this.addCity.bind(this),
+            addPin: this.addPin.bind(this)
         }
     }
 
@@ -60,6 +62,29 @@ class City {
         }
 
     }
+
+    async _generateUniqePinID() {
+        try {
+            let flage = false
+            let fourDigitsRandom
+            do {
+                fourDigitsRandom = await Math.floor(1000 + Math.random() * 9000);
+                let getData = await pincodModel.find({ id: fourDigitsRandom.toString() })
+                if (getData.length > 0) {
+                    flage = true
+                } else {
+                    flage = false
+                }
+            }
+            while (flage);
+
+            return fourDigitsRandom
+
+        } catch (error) {
+            throw error
+        }
+
+    }
     async addCity(req, res) {
         try {
             let { cityName } = req.body
@@ -78,6 +103,27 @@ class City {
                 res.json({ code: 200, success: true, message: "Add city successfully", data: data })
             }
 
+        } catch (error) {
+            console.log("Error in catch", error)
+            res.json({ code: 400, success: false, message: "Internal server error", data: null })
+        }
+    }
+    async addPin(req, res) {
+        try {
+            let { name, cityid } = req.body
+            console.log("req", req.body)
+            let getcity = await pincodModel.findOne({ name: name })
+            if (getcity) {
+                res.json({ code: 400, success: false, message: "Pin is already exist", data: getcity })
+            } else {
+                let saveData = new pincodModel({
+                    name: name,
+                    cityid: cityid,
+                    id: await this._generateUniqePinID()
+                })
+                let data = await saveData.save();
+                res.json({ code: 200, success: true, message: "Add Pin successfully", data: data })
+            }
         } catch (error) {
             console.log("Error in catch", error)
             res.json({ code: 400, success: false, message: "Internal server error", data: null })
