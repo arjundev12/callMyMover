@@ -48,7 +48,7 @@ class Orders {
             if (stoppage.length > 0 && stoppage != "") {
                 for (const iterator of stoppage) {
                     let stoppage1 = {}
-                   
+
                     stoppage1.id = await this._randomNumber()
                     stoppage1.type = "point"
                     stoppage1.coordinates = [iterator.lat, iterator.long]
@@ -164,7 +164,7 @@ class Orders {
                 if (data.stoppage) {
                     let tempArray = []
                     for (const iterator of data.stoppage) {
-                        console.log("iterator",iterator)
+                        console.log("iterator", iterator)
                         let obj = {
                             let: iterator.coordinates[0],
                             long: iterator.coordinates[1],
@@ -193,44 +193,45 @@ class Orders {
             let { order_id } = req.body
             data = await OrderModel.findOne(
                 { _id: order_id }).lean()
-                if(data.pickupLocation){
-                    data.pickupLocation = {
-                        locationType : "pickupLocation",
-                        let: data.pickupLocation[0].coordinates[0],
-                        long: data.pickupLocation[0].coordinates[1],
-                        address: data.pickupLocation[0].address,
-                        name: data.recieverInfo.name,
-                        number: data.recieverInfo.number
-                    }
+            if (data.pickupLocation) {
+                data.pickupLocation = {
+                    locationType: "pickupLocation",
+                    let: data.pickupLocation[0].coordinates[0],
+                    long: data.pickupLocation[0].coordinates[1],
+                    address: data.pickupLocation[0].address,
+                    name: data.recieverInfo.name,
+                    number: data.recieverInfo.number
                 }
-             if(data.dropLocation){
+            }
+            if (data.dropLocation) {
                 data.dropLocation = {
-                    locationType :"dropLocation",
+                    locationType: "dropLocation",
                     let: data.dropLocation[0].coordinates[0],
                     long: data.dropLocation[0].coordinates[1],
                     address: data.dropLocation[0].address,
                     name: data.recieverInfo.name,
                     number: data.recieverInfo.number
                 }
-             }
-             if(data.stoppage){
+            }
+            if (data.stoppage) {
                 let tempArray = []
                 for (const iterator of data.stoppage) {
                     let obj = {
-                        id: iterator.id?iterator.id: "",
+                        id: iterator.id ? iterator.id : "",
                         locationType: "stoppage",
                         let: iterator.coordinates[0],
                         long: iterator.coordinates[1],
                         address: iterator.address,
-                        name: iterator.name ? iterator.name: "",
-                        number: iterator.number ? iterator.number :""
+                        name: iterator.name ? iterator.name : "",
+                        number: iterator.number ? iterator.number : ""
                     }
                     tempArray.push(obj)
                 }
-                tempArray.unshift(data.pickupLocation)
-                tempArray.push(data.dropLocation)
+                data.stoppage = await stoppage
+                await tempArray.unshift(data.pickupLocation)
+                await tempArray.push(data.dropLocation)
                 data.locations = tempArray
-             }
+            }
             res.json({ code: 200, success: true, message: "Get data seccessfully", data: data })
 
         } catch (error) {
