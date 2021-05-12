@@ -227,7 +227,7 @@ class Orders {
                     }
                     tempArray.push(obj)
                 }
-                data.stoppage = await stoppage
+                data.stoppage = await tempArray
                 await tempArray.unshift(data.pickupLocation)
                 await tempArray.push(data.dropLocation)
                 data.locations = tempArray
