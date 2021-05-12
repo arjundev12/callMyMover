@@ -31,32 +31,29 @@ class Orders {
             if (pickupLocation && pickupLocation != "") {
                 obj.pickupLocation = [{
                     type: "point",
-                    coordinates: [pickupLocation.lat, pickupLocation.long],
+                    coordinates: [Number(pickupLocation.lat), Number(pickupLocation.long)],
                     address: pickupLocation.address,
                 }]
             }
             if (dropLocation && dropLocation != "") {
                 obj.dropLocation = [{
                     type: "point",
-                    coordinates: [dropLocation.lat, dropLocation.long],
+                    coordinates: [Number(dropLocation.lat), Number(dropLocation.long)],
                     address: dropLocation.address,
                 }]
             }
             let tempArray = []
-            console.log("stoppage ", stoppage)
-            stoppage ? stoppage : stoppage = []
-            if (stoppage.length > 0 && stoppage != "") {
-                for (const iterator of stoppage) {
-                    let stoppage1 = {}
-
-                    stoppage1.id = await this._randomNumber()
-                    stoppage1.type = "point"
-                    stoppage1.coordinates = [iterator.lat, iterator.long]
-                    stoppage1.address = iterator.address
-                    stoppage1.name = iterator.name
-                    stoppage1.number = iterator.number
-                    tempArray.push(stoppage1)
-                }
+            // console.log("stoppage ", stoppage)
+            // stoppage ? stoppage : stoppage = []
+            if (stoppage && stoppage != "") {
+                let stoppage1 = {}
+                stoppage1.id = await this._randomNumber()
+                stoppage1.type = "point"
+                stoppage1.coordinates = [Number(stoppage.lat), Number(stoppage.long)]
+                stoppage1.address = stoppage.address
+                stoppage1.name = stoppage.name ? stoppage.name : ""
+                stoppage1.number = stoppage.number ? stoppage.number : ""
+                tempArray.push(stoppage1)
                 obj.stoppage = tempArray
             }
             let saveData = new OrderModel(obj)
@@ -82,48 +79,74 @@ class Orders {
     async updateOrder(req, res) {
         try {
             let data
+            let getOrder
             let { order_id, pickupLocation, dropLocation, stoppage, owner, recieverInfo, orderInfo } = req.body
             let obj = {}
             console.log("hishidhdi", order_id, pickupLocation, dropLocation, stoppage, owner, recieverInfo, orderInfo)
             if (!order_id && order_id == "") {
                 res.json({ code: 400, success: false, message: "order id is required", })
+            } else {
+                getOrder = await OrderModel.findOne({ _id: order_id }).lean()
             }
+
             if (orderInfo && orderInfo != "") {
                 obj.orderInfo = orderInfo
             }
             if (recieverInfo && recieverInfo != "") {
                 obj.recieverInfo = recieverInfo
             }
-            console.log("jiiii", obj, pickupLocation != "")
+            // console.log("jiiii", obj, pickupLocation != "")
             if (pickupLocation && pickupLocation != "") {
                 obj.pickupLocation = [{
                     type: "point",
-                    coordinates: [pickupLocation.lat, pickupLocation.long],
+                    coordinates: [Number(pickupLocation.lat), Number(pickupLocation.long)],
                     address: pickupLocation.address,
                 }]
             }
             if (dropLocation && dropLocation != "") {
                 obj.dropLocation = [{
                     type: "point",
-                    coordinates: [dropLocation.lat, dropLocation.long],
+                    coordinates: [Number(dropLocation.lat), Number(dropLocation.long)],
                     address: dropLocation.address,
                 }]
             }
             let tempArray = []
-            stoppage ? stoppage : stoppage = []
-            if (stoppage.length > 0 && stoppage != "") {
-                for (const iterator of stoppage) {
-                    let stoppage = {}
-                    stoppage.id = await this._randomNumber()
-                    stoppage.type = "point"
-                    stoppage.coordinates = [iterator.lat, iterator.long]
-                    stoppage.address = iterator.address
-                    stoppage.name = iterator.name
-                    stoppage.number = iterator.number
-                    tempArray.push(stoppage)
+            // stoppage ? stoppage : stoppage = []
+            if (stoppage && stoppage != "") {
+                if (getOrder.stoppage && stoppage.id) {
+                    for (let item of getOrder.stoppage) {
+                        if (item.id == stoppage.id) {
+                            item.coordinates = [Number(stoppage.lat), Number(stoppage.long)]
+                            item.address = stoppage.address
+                            item.name = stoppage.name ? stoppage.name : ""
+                            item.number = stoppage.number ? stoppage.number : ""
+                        }
+                    }
+                    obj.stoppage = getOrder.stoppage
+                } else if (getOrder.stoppage && !stoppage.id) {
+                    let newObj = {}
+                    newObj.id = await this._randomNumber()
+                    newObj.coordinates = [Number(stoppage.lat), Number(stoppage.long)]
+                    newObj.address = stoppage.address
+                    newObj.name = stoppage.name ? stoppage.name : ""
+                    newObj.number = stoppage.number ? stoppage.number : ""
+
+                    getOrder.stoppage.push(newObj)
+                    obj.stoppage = getOrder.stoppage
+                } else {
+                    let newObj = {}
+                    newObj.id = await this._randomNumber()
+                    newObj.coordinates = [Number(stoppage.lat), Number(stoppage.long)]
+                    newObj.address = stoppage.address
+                    newObj.name = stoppage.name ? stoppage.name : ""
+                    newObj.number = stoppage.number ? stoppage.number : ""
+
+                    tempArray.push(newObj)
+                    obj.stoppage = tempArray
                 }
-                obj.stoppage = tempArray
+
             }
+            // console.log("obj", obj)
             data = await OrderModel.findOneAndUpdate(
                 { _id: order_id },
                 { $set: obj },
