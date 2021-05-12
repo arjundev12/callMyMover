@@ -215,6 +215,7 @@ class Orders {
             }
             if (data.stoppage) {
                 let tempArray = []
+                let tempArray1 = []
                 for (const iterator of data.stoppage) {
                     let obj = {
                         id: iterator.id ? iterator.id : "",
@@ -225,9 +226,10 @@ class Orders {
                         name: iterator.name ? iterator.name : "",
                         number: iterator.number ? iterator.number : ""
                     }
+                    tempArray1.push(obj)
                     tempArray.push(obj)
                 }
-                data.stoppage =  tempArray
+                data.stoppage =  tempArray1
                  tempArray.unshift(data.pickupLocation)
                  tempArray.push(data.dropLocation)
                 data.locations = tempArray
