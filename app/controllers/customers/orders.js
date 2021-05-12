@@ -227,7 +227,7 @@ class Orders {
                     }
                     tempArray.push(obj)
                 }
-                tempArray.push(data.pickupLocation)
+                tempArray.unshift(data.pickupLocation)
                 tempArray.push(data.dropLocation)
                 data.locations = tempArray
              }
