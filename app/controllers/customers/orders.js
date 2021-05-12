@@ -229,9 +229,9 @@ class Orders {
                     tempArray1.push(obj)
                     tempArray.push(obj)
                 }
-                data.stoppage =  tempArray1
-                 tempArray.unshift(data.pickupLocation)
-                 tempArray.push(data.dropLocation)
+                data.stoppage = tempArray1
+                tempArray.unshift(data.pickupLocation)
+                tempArray.push(data.dropLocation)
                 data.locations = tempArray
             }
             res.json({ code: 200, success: true, message: "Get data seccessfully", data: data })
