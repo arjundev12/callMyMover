@@ -11,7 +11,10 @@ class AdminAuth {
             adminCreate: this.adminCreate.bind(this),
             loginAdmin: this.loginAdmin.bind(this),
             uploadeVideo: this.uploadeVideo.bind(this),
-            addPlans: this.addPlans.bind(this)
+            addPlans: this.addPlans.bind(this),
+            getVideos: this.getVideos.bind(this),
+            uploadeEmbedVideo: this.uploadeEmbedVideo.bind(this),
+            UpdateVideoStatus: this.UpdateVideoStatus.bind(this)
         }
     }
 
@@ -64,6 +67,7 @@ class AdminAuth {
         try {
             if (req.files) {
                 let obj = {
+                    type: 'local',
                     title: req.body.title,
                     thumbnail: req.files.thumbnail[0].path,
                     video: req.files.video[0].path,
@@ -73,7 +77,50 @@ class AdminAuth {
                 let saveData = new VideoModel(obj)
                 let data = await saveData.save()
                 res.json({ code: 200, success: true, message: "video save successfully", data: data })
+            }else{
+                let obj = {
+                    type: 'embed',
+                    title: req.body.title,
+                    thumbnail: '',
+                    video: req.body.path,
+                    created_by: req.body.id,
+                    // meta: req.files
+                }
+                let saveData = new VideoModel(obj)
+                let data = await saveData.save()
+                res.json({ code: 200, success: true, message: "video save successfully", data: data })
             }
+        } catch (error) {
+            console.log("Error in catch", error)
+            res.json({ code: 400, success: false, message: "Internal server error", data: null })
+        }
+
+    }
+    async uploadeEmbedVideo(req, res) {
+        try {
+                let obj = {
+                    type: 'embed',
+                    title: req.body.title,
+                    thumbnail: '',
+                    video: req.body.path,   
+                    created_by: req.body.id,
+                    // meta: req.files
+                }
+                let saveData = new VideoModel(obj)
+                let data = await saveData.save()
+                res.json({ code: 200, success: true, message: "video save successfully", data: data })
+            
+        } catch (error) {
+            console.log("Error in catch", error)
+            res.json({ code: 400, success: false, message: "Internal server error", data: null })
+        }
+
+    }
+    async UpdateVideoStatus(req, res) {
+        try {
+                let {_id , status}= req.body
+                res.json({ code: 200, success: true, message: "video save successfully", data: data })
+            
         } catch (error) {
             console.log("Error in catch", error)
             res.json({ code: 400, success: false, message: "Internal server error", data: null })
@@ -91,6 +138,28 @@ class AdminAuth {
                 let data = await saveData.save()
                 res.json({ code: 200, success: true, message: "plan save successfully", data: data })
             }
+        } catch (error) {
+            console.log("Error in catch", error)
+            res.json({ code: 400, success: false, message: "Internal server error", data: null })
+        }
+
+    }
+    async getVideos(req, res) {
+        try {
+            console.log("req", req.body)
+            let query = {
+                // wallet_type: req.body.type
+            }
+            let options = {
+                page: req.body.offset || 1,
+                limit: req.body.limit || 10,
+                sort: { createdAt: -1 },
+                lean: true,
+                // populate: ({ path: 'vehicle_owner', select: 'name isDocumentVerify' }) 
+            }
+            let data = await VideoModel.paginate    (query, options)
+
+            res.json({ code: 200, success: true, message: "plan save successfully", data: data })
         } catch (error) {
             console.log("Error in catch", error)
             res.json({ code: 400, success: false, message: "Internal server error", data: null })

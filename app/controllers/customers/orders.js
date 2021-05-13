@@ -236,9 +236,10 @@ class Orders {
                     number: data.recieverInfo.number
                 }
             }
-            if (data.stoppage) {
-                let tempArray = []
+            let tempArray = []
                 let tempArray1 = []
+            if (data.stoppage) {
+                
                 for (const iterator of data.stoppage) {
                     let obj = {
                         id: iterator.id ? iterator.id : "",
@@ -256,7 +257,12 @@ class Orders {
                 tempArray.unshift(data.pickupLocation)
                 tempArray.push(data.dropLocation)
                 data.locations = tempArray
+            }else{
+                tempArray.unshift(data.pickupLocation)
+                tempArray.push(data.dropLocation)
+                data.locations = tempArray
             }
+            
             res.json({ code: 200, success: true, message: "Get data seccessfully", data: data })
 
         } catch (error) {

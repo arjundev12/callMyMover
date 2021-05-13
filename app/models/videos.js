@@ -14,6 +14,10 @@ var videoSchema = new Schema({
         type: String,
         trim: true
     },
+    type: {
+        type: String,
+        enum :["local", "embed"]
+    },
     created_by: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "admin"
