@@ -4,6 +4,7 @@ const UsersModel = require('../../models/customer/customers');
 // const VehicleModel = require('../../models/customer/vehicleDetails');
 // const DriverModel = require('../../models/customer/driver')
 const VehicleModel = require('../../models/driver/vechileDetail');
+const VehicleTypeModel = require('../../models/vehicleTyps');
 const DriverModel = require('../../models/driver/driver')
 const walletModel = require('../../models/wallet')
 const DriverLocation = require('../../models/driver/driverLocation')
@@ -396,62 +397,26 @@ class users {
         }
 
     }
-    async _estimate(baseFare, timePerKmInMin, distenceInKm) {
+    async _estimate( timePerKmInMin, distenceInKm) {
         try {
-            let array = [];
-            let data = await VehicleModel.aggregate([{
-                $group: {
-                    _id: "$vehicle_type", "doc": { "$first": "$$ROOT" }
-                }
-            }, { "$replaceRoot": { "newRoot": "$doc" } }, {
-                $project: {
-                    "location": 1,
-                    "vehicle_name": 1,
-                    "vehicle_type": 1,
-                    "vehicle_rate": 1,
-                }
-            }])
+            let data = await VehicleTypeModel.find().lean()
             for (let item of data) {
-                if (item.vehicle_type == 'micro') {
-                    item.vehicle_rate = {
-                        "rate": "10",
-                        "unit": "per km"
-                    }
-                } else if (item.vehicle_type == 'mini') {
-                    item.vehicle_rate = {
-                        "rate": "5",
-                        "unit": "per km"
-                    }
-                } else if (item.vehicle_type == 'sedan') {
-                    item.vehicle_rate = {
-                        "rate": "15",
-                        "unit": "per km"
-                    }
-                }
-                // console.log("")
-                let estimatePrice = baseFare + (item.vehicle_rate.rate * distenceInKm);
-                let estimateTime = distenceInKm * timePerKmInMin
-
-                array.push({
-                    type: item.vehicle_type,
-                    estimatePrice: `${estimatePrice}rs`,
-                    estimateTime: `${estimateTime}min`
-                })
+                item.estimatePrice = `${Number(item.base_price) + (item.vehicle_rate * distenceInKm)} rs`
+                item.estimateTime = `${distenceInKm * timePerKmInMin} min`
             }
-            return array
+            return data
         } catch (error) {
             throw error
         }
     }
     async estimatePriceTime(req, res) {
-        console.log("body", req.body, req.files, req.query, req.params)
+        // console.log("body", req.body, req.files, req.query, req.params)
         try {
             let data;
-            let basePrice = Number(constant.basePrice)
             let timePerKmInMin = Number(constant.timePerKM)
             let distenceInKm = Number(req.query.distence_km)
 
-            data = await this._estimate(basePrice, timePerKmInMin, distenceInKm)
+            data = await this._estimate( timePerKmInMin, distenceInKm)
             res.json({ code: 200, success: true, message: "get estimate successfully", data: data })
         } catch (error) {
             console.log("error in catch", error)
