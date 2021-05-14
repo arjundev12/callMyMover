@@ -23,6 +23,12 @@ var OrderSchema = new Schema({
   recieverInfo: {
     type: { any: [Schema.Types.Mixed] }
   },
+  pickupLocInfo: {
+    type: { any: [Schema.Types.Mixed] }
+  },
+  dropLocInfo: {
+    type: { any: [Schema.Types.Mixed] }
+  },
   isCreated: {
     type: String,
     enum: ['pending', 'completed'],

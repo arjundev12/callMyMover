@@ -80,7 +80,7 @@ class Orders {
         try {
             let data
             let getOrder
-            let { order_id, pickupLocation, dropLocation, stoppage, owner, recieverInfo, orderInfo } = req.body
+            let { order_id, pickupLocation, dropLocation, stoppage, owner, recieverInfo, orderInfo, dropLocInfo, pickupLocInfo } = req.body
             let obj = {}
             console.log("hishidhdi", order_id, pickupLocation, dropLocation, stoppage, owner, recieverInfo, orderInfo)
             if (!order_id && order_id == "") {
@@ -94,6 +94,12 @@ class Orders {
             }
             if (recieverInfo && recieverInfo != "") {
                 obj.recieverInfo = recieverInfo
+            }
+            if (pickupLocInfo && pickupLocInfo != "") {
+                obj.pickupLocInfo = pickupLocInfo
+            }
+            if (dropLocInfo && dropLocInfo != "") {
+                obj.dropLocInfo = dropLocInfo
             }
             // console.log("jiiii", obj, pickupLocation != "")
             if (pickupLocation && pickupLocation != "") {
@@ -222,8 +228,8 @@ class Orders {
                     let: data.pickupLocation[0].coordinates[0],
                     long: data.pickupLocation[0].coordinates[1],
                     address: data.pickupLocation[0].address,
-                    name: data.recieverInfo.name,
-                    number: data.recieverInfo.number
+                    name: data.pickupLocInfo ? data.pickupLocInfo.name : "",
+                    number: data.pickupLocInfo.number ? data.pickupLocInfo.number : ""
                 }
             }
             if (data.dropLocation) {
@@ -232,14 +238,14 @@ class Orders {
                     let: data.dropLocation[0].coordinates[0],
                     long: data.dropLocation[0].coordinates[1],
                     address: data.dropLocation[0].address,
-                    name: data.recieverInfo.name,
-                    number: data.recieverInfo.number
+                    name: data.dropLocInfo ? data.dropLocInfo.name : "",
+                    number: data.dropLocInfo ? data.dropLocInfo.number : ""
                 }
             }
             let tempArray = []
-                let tempArray1 = []
+            let tempArray1 = []
             if (data.stoppage) {
-                
+
                 for (const iterator of data.stoppage) {
                     let obj = {
                         id: iterator.id ? iterator.id : "",
@@ -257,12 +263,12 @@ class Orders {
                 tempArray.unshift(data.pickupLocation)
                 tempArray.push(data.dropLocation)
                 data.locations = tempArray
-            }else{
+            } else {
                 tempArray.unshift(data.pickupLocation)
                 tempArray.push(data.dropLocation)
                 data.locations = tempArray
             }
-            
+
             res.json({ code: 200, success: true, message: "Get data seccessfully", data: data })
 
         } catch (error) {

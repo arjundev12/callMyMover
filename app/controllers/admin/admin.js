@@ -108,7 +108,7 @@ class AdminAuth {
                 }
                 let saveData = new VideoModel(obj)
                 let data = await saveData.save()
-                res.json({ code: 200, success: true, message: "video save successfully", data: data })
+                res.json({ code: 200, success: true, message: "Video save successfully", data: data })
             
         } catch (error) {
             console.log("Error in catch", error)
@@ -119,7 +119,8 @@ class AdminAuth {
     async UpdateVideoStatus(req, res) {
         try {
                 let {_id , status}= req.body
-                res.json({ code: 200, success: true, message: "video save successfully", data: data })
+                let updateData = await VideoModel.findOneAndUpdate({_id: _id},{$set: {status :status}},{new: true})
+                res.json({ code: 200, success: true, message: "Status update successfully", data: updateData })
             
         } catch (error) {
             console.log("Error in catch", error)
