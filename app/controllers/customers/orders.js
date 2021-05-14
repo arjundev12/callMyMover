@@ -27,6 +27,8 @@ class Orders {
             }
             if (recieverInfo && recieverInfo != "") {
                 obj.recieverInfo = recieverInfo
+                obj.pickupLocInfo = recieverInfo
+                obj.dropLocInfo = recieverInfo
             }
             if (pickupLocation && pickupLocation != "") {
                 obj.pickupLocation = [{
