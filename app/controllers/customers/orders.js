@@ -229,7 +229,7 @@ class Orders {
                     long: data.pickupLocation[0].coordinates[1],
                     address: data.pickupLocation[0].address,
                     name: data.pickupLocInfo ? data.pickupLocInfo.name : "",
-                    number: data.pickupLocInfo.number ? data.pickupLocInfo.number : ""
+                    number: data.pickupLocInfo ? data.pickupLocInfo.number : ""
                 }
             }
             if (data.dropLocation) {
