@@ -8,8 +8,10 @@ class CMS {
     constructor() {
         return {
             AddCms: this.AddCms.bind(this),
-            // getplans: this.getplans.bind(this),
-            getAboutus: this.getAboutus.bind(this)
+            getCms: this.getCms.bind(this),
+            getAboutus: this.getAboutus.bind(this),
+            viewCms: this.viewCms.bind(this),
+            deleteCms: this.deleteCms.bind(this)
 
         }
     }
@@ -18,13 +20,13 @@ class CMS {
     async AddCms(req, res) {
         try {
             let obj = {
-                type:  req.body.type ,   //  'about', 'term', 'policies'
+                type: req.body.type,   //  'about', 'term', 'policies'
                 title: req.body.title,
                 content: req.body.content,
             }
-                let saveData = new cmsModel(obj)
-                let data = await saveData.save()
-                res.send({ code: 200, success: true, message: "Save successfully", data: data })
+            let saveData = new cmsModel(obj)
+            let data = await saveData.save()
+            res.send({ code: 200, success: true, message: "Save successfully", data: data })
 
         } catch (error) {
             console.log("Error in catch", error)
@@ -36,6 +38,45 @@ class CMS {
         try {
             let getdata = await cmsModel.findOne({ type: 'about' }).lean()
             return res.json({ code: 200, success: true, message: "get data successfully", data: getdata })
+
+        } catch (error) {
+            console.log("error in catch", error)
+            res.json({ code: 500, success: false, message: "Internal server error" })
+        }
+    }
+    async getCms(req, res) {
+        try {
+            let options = {
+                page: req.body.offset || 1,
+                limit: req.body.limit || 10,
+                sort: { created_time: -1 },
+            }
+            let query = {}
+            let getdata = await cmsModel.find(query)
+            // let getdata = await cmsModel.findOne({ type: 'about' }).lean()
+            return res.json({ code: 200, success: true, message: "get data successfully", data: getdata })
+
+        } catch (error) {
+            console.log("error in catch", error)
+            res.json({ code: 500, success: false, message: "Internal server error" })
+        }
+    }
+    async viewCms(req, res) {
+        try {
+           
+            let getdata = await cmsModel.findOne({ _id:req.query._id }).lean()
+            return res.json({ code: 200, success: true, message: "get data successfully", data: getdata })
+
+        } catch (error) {
+            console.log("error in catch", error)
+            res.json({ code: 500, success: false, message: "Internal server error" })
+        }
+    }
+    async deleteCms(req, res) {
+        try {
+           
+            let getdata = await cmsModel.findOneAndRemove({ _id:req.query._id }).lean()
+            return res.json({ code: 200, success: true, message: "Data  delete successfully", data: getdata })
 
         } catch (error) {
             console.log("error in catch", error)
