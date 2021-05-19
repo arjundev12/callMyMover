@@ -14,6 +14,7 @@ const jwt = require('jsonwebtoken')
 const constant = require('../../utils/constant')
 // const db = require('../models')
 const moment = require("moment");
+const geolib = require('geolib');
 class users {
     constructor() {
         return {
@@ -410,11 +411,16 @@ class users {
         }
     }
     async estimatePriceTime(req, res) {
-        // console.log("body", req.body, req.files, req.query, req.params)
+        console.log("body", req.body, req.files, req.query, req.params)
         try {
             let data;
+            let distence = await  geolib.getDistance(
+                { latitude: req.body.dropLocation.let, longitude: req.body.dropLocation.long },
+                { latitude: req.body.pickupLocation.let, longitude: req.body.pickupLocation.long },
+            )
+            console.log("distence,,,,,,",distence/1000)
             let timePerKmInMin = Number(constant.timePerKM)
-            let distenceInKm = Number(req.query.distence_km)
+            let distenceInKm = (distence/1000)
 
             data = await this._estimate( timePerKmInMin, distenceInKm)
             res.json({ code: 200, success: true, message: "get estimate successfully", data: data })
