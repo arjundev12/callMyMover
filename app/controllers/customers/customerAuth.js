@@ -406,6 +406,7 @@ class users {
             for (let item of data) {
                 item.estimatePrice = `${Number(item.base_price) + (item.vehicle_rate * distenceInKm)} rs`
                 item.estimateTime = `${distenceInKm * timePerKmInMin} min`
+                item.truck_logo = constant.truckLogo
             }
             return data
         } catch (error) {
