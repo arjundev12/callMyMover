@@ -25,6 +25,9 @@ router.post('/vehicle/types', users.getVehicleTypes)
 router.get('/view-vehicle-typs', users.viewVehicleTypes)
 router.put('/edit-vehicle-type', users.editVehicleTypes)
 
+router.post('/add-category', users.insertCategory)
+
+
 
 
 

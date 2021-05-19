@@ -15,6 +15,7 @@ const constant = require('../../utils/constant')
 // const db = require('../models')
 const moment = require("moment");
 const geolib = require('geolib');
+const CategoryModel = require('../../models/category')
 class users {
     constructor() {
         return {
@@ -31,7 +32,8 @@ class users {
             customerUpdate: this.customerUpdate.bind(this),
             getLocationName: this.getLocationName.bind(this),
             getWallet: this.getWallet.bind(this),
-            resendOtp: this.resendOtp.bind(this)
+            resendOtp: this.resendOtp.bind(this),
+            getCategory: this.getCategory.bind(this)
         }
     }
 
@@ -423,7 +425,18 @@ class users {
             let distenceInKm = (distence/1000)
 
             data = await this._estimate( timePerKmInMin, distenceInKm)
-            res.json({ code: 200, success: true, message: "get estimate successfully", data: data })
+            res.json({ code: 200, success: true, message: "Get estimate successfully", data: data })
+        } catch (error) {
+            console.log("error in catch", error)
+            res.json({ code: 500, success: false, message: "Internal server error", })
+        }
+
+    }
+    async getCategory(req, res) {
+        console.log("body", req.body, req.files, req.query, req.params)
+        try {
+            let data = await CategoryModel.find()
+            res.json({ code: 200, success: true, message: "Get data successfully", data: data })
         } catch (error) {
             console.log("error in catch", error)
             res.json({ code: 500, success: false, message: "Internal server error", })

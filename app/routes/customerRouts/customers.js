@@ -25,6 +25,8 @@ router.get('/get-vehicle', user_controller.getVehicle)
 router.get('/get-vehicle-type', user_controller.getVehicleType)
 router.post('/get-estimate', user_controller.estimatePriceTime)
 router.get('/get-wallet', user_controller.getWallet)
+router.get('/get-category', user_controller.getCategory)
+
 
 
 

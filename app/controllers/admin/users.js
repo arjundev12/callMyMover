@@ -10,6 +10,7 @@ const CityModel = require('../../models/city')
 var bcrypt = require('bcryptjs');
 const { find } = require('../../models/driver/driver');
 const Walletmodel = require('../../models/wallet');
+const CategoryModel = require('../../models/category');
 
 class Users {
     constructor() {
@@ -28,7 +29,8 @@ class Users {
             viewVehicleTypes: this.viewVehicleTypes.bind(this),
             editVehicleTypes: this.editVehicleTypes.bind(this),
             viewVehicle: this.viewVehicle.bind(this),
-            editVehicle: this.editVehicle.bind(this)
+            editVehicle: this.editVehicle.bind(this),
+            insertCategory: this.insertCategory.bind(this)
         }
     }
 
@@ -312,6 +314,21 @@ class Users {
             let getTypes = await VehicleTypeModel.findOneAndUpdate({_id: data._id},{$set: data},{new:true})
             // cons
             res.json({ code: 200, success: true, message: "Get data successfully", data: getTypes })
+        } catch (error) {
+            console.log("Error in catch", error)
+            res.json({ code: 400, success: false, message: "Internal server error", })
+        }
+
+    }
+
+    async insertCategory(req, res) {
+        try {
+            console.log(req.body)
+            let data = new CategoryModel({
+                name : req.body.name
+            })
+            let saveData = await data.save()
+            res.json({ code: 200, success: true, message: "Data save successfully", data: saveData })
         } catch (error) {
             console.log("Error in catch", error)
             res.json({ code: 400, success: false, message: "Internal server error", })
