@@ -8,6 +8,7 @@ router.post('/orders', orders_controller.orderCreate);
 router.post('/get-orders',orders_controller.getOrders);
 router.put('/reciever-update', orders_controller.updateOrder);
 router.post('/view-order',orders_controller.viewOrder);
+router.post('/upload-Image',orders_controller.uploadeOrderImage);
 
 
 module.exports = router;

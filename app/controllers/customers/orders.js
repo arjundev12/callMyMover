@@ -8,7 +8,8 @@ class Orders {
             orderCreate: this.orderCreate.bind(this),
             updateOrder: this.updateOrder.bind(this),
             getOrders: this.getOrders.bind(this),
-            viewOrder: this.viewOrder.bind(this)
+            viewOrder: this.viewOrder.bind(this),
+            uploadeOrderImage: this.uploadeOrderImage.bind(this)
         }
     }
 
@@ -278,6 +279,20 @@ class Orders {
             res.json({ code: 500, success: false, message: "Internal server error", })
         }
 
+    }
+
+    async uploadeOrderImage(req, res) {
+        try {
+            if (req.body.order_image) {
+                let data = await commenFunction._uploadBase64Order(req.body.order_image, 'OrderImage')
+                res.json({ code: 200, success: true, message: 'uploade successfully', data: data })
+            } else {
+                res.json({ code: 400, success: false, message: "order_image is require", })
+            }
+
+        } catch (error) {
+            res.json({ code: 400, success: false, message: "Internal server error", })
+        }
     }
 
 }
