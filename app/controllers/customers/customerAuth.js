@@ -400,10 +400,17 @@ class users {
         }
 
     }
-    async _estimate( timePerKmInMin, distenceInKm) {
+    async _estimate(timePerKmInMin, distenceInKm ,driverData) {
         try {
             let data = await VehicleTypeModel.find().lean()
             for (let item of data) {
+                item.current_status = 'inactive'
+                for(let driver of driverData){
+                    if(driver.vehicles.vehicle_type == item.vehicle_type){
+                        item.current_status = 'active'
+                    }
+
+                }
                 item.estimatePrice = `${Number(item.base_price) + (item.vehicle_rate * distenceInKm)} rs`
                 item.estimateTime = `${distenceInKm * timePerKmInMin} min`
                 item.truck_logo = constant.truckLogo
@@ -414,18 +421,18 @@ class users {
         }
     }
     async estimatePriceTime(req, res) {
-        console.log("body", req.body, req.files, req.query, req.params)
         try {
             let data;
-            let distence = await  geolib.getDistance(
+            let distence = await geolib.getDistance(
                 { latitude: req.body.dropLocation.let, longitude: req.body.dropLocation.long },
                 { latitude: req.body.pickupLocation.let, longitude: req.body.pickupLocation.long },
             )
-            console.log("distence,,,,,,",distence/1000)
+            console.log("distence,,,,,,", distence / 1000)
+           let drivervehicle = await this._getNearestDriver(req.body.pickupLocation.let, req.body.pickupLocation.long)
             let timePerKmInMin = Number(constant.timePerKM)
-            let distenceInKm = (distence/1000)
+            let distenceInKm = (distence / 1000)
 
-            data = await this._estimate( timePerKmInMin, distenceInKm)
+            data = await this._estimate(timePerKmInMin, distenceInKm ,drivervehicle)
             res.json({ code: 200, success: true, message: "Get estimate successfully", data: data })
         } catch (error) {
             console.log("error in catch", error)
@@ -444,17 +451,13 @@ class users {
         }
 
     }
-    async getNearestDriver(req, res) {
+    async _getNearestDriver(PICKUP_LAT, PICKUP_LONG) {
         try {
             let milesToRadian = function (Km) {
                 let miles = Km * 0.621371
                 var earthRadiusInMiles = 3959;
                 return miles / earthRadiusInMiles;
             };
-            let data;
-            console.log("req.body", req.body)
-            let { PICKUP_LAT, PICKUP_LONG, C_ID } = req.body
-
             let query = {
                 "location": {
                     $geoWithin: {
@@ -462,7 +465,7 @@ class users {
                     }
                 }
             }
-            data = await DriverLocation.aggregate([{ $match: query },
+          let data = await DriverLocation.aggregate([{ $match: query },
             {
                 $lookup: {
                     from: "vehicledetails",
@@ -499,6 +502,71 @@ class users {
                 }
             },
             ])
+            return data
+        } catch (error) {
+            console.log("error in catch", error)
+        }
+    }
+    async milesToRadian(Km) {
+        let miles = Km * 0.621371
+        var earthRadiusInMiles = 3959;
+        return miles / earthRadiusInMiles;
+    }
+    async getNearestDriver(req, res) {
+        try {
+            // let milesToRadian = function (Km) {
+            //     let miles = Km * 0.621371
+            //     var earthRadiusInMiles = 3959;
+            //     return miles / earthRadiusInMiles;
+            // };
+            let data;
+            console.log("req.body", req.body)
+            let { PICKUP_LAT, PICKUP_LONG, C_ID } = req.body
+            data = await this._getNearestDriver(PICKUP_LAT, PICKUP_LONG)
+            // let query = {
+            //     "location": {
+            //         $geoWithin: {
+            //             $centerSphere: [[Number(PICKUP_LAT), Number(PICKUP_LONG)], milesToRadian(10)]
+            //         }
+            //     }
+            // }
+            // data = await DriverLocation.aggregate([{ $match: query },
+            // {
+            //     $lookup: {
+            //         from: "vehicledetails",
+            //         localField: "driverId",
+            //         foreignField: "vehicle_owner",
+            //         as: "vehicles"
+            //     }
+            // },
+            // {
+            //     $unwind: "$vehicles"
+            // },
+            // {
+            //     $lookup: {
+            //         from: "driverauths",
+            //         localField: "vehicles.vehicle_owner",
+            //         foreignField: "_id",
+            //         as: "driver"
+            //     }
+            // },
+            // {
+            //     $unwind: "$driver"
+            // },
+            // {
+            //     $project: {
+            //         "vehicles.vehicle_number": 1,
+            //         "vehicles.vehicle_type": 1,
+            //         "vehicles.vehicle_driver": 1,
+
+            //         location: 1,
+            //         address: 1,
+            //         "driver.name": 1,
+            //         "driver.phoneNo": 1,
+            //         "driver.address": 1
+            //     }
+            // },
+            // ])
             for (let item of data) {
                 let obj = {
                     lat: item.location.coordinates[0].toString(),
