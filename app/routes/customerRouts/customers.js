@@ -26,6 +26,8 @@ router.get('/get-vehicle-type', user_controller.getVehicleType)
 router.post('/get-estimate', user_controller.estimatePriceTime)
 router.get('/get-wallet', user_controller.getWallet)
 router.get('/get-category', user_controller.getCategory)
+//fcm token
+router.post('/set-token',user_controller.setFcmToken);
 
 
 

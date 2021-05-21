@@ -16,6 +16,7 @@ const constant = require('../../utils/constant')
 const moment = require("moment");
 const geolib = require('geolib');
 const CategoryModel = require('../../models/category')
+const FcmToken = require('../../models/fcmToken')
 class users {
     constructor() {
         return {
@@ -33,7 +34,8 @@ class users {
             getLocationName: this.getLocationName.bind(this),
             getWallet: this.getWallet.bind(this),
             resendOtp: this.resendOtp.bind(this),
-            getCategory: this.getCategory.bind(this)
+            getCategory: this.getCategory.bind(this),
+            setFcmToken: this.setFcmToken.bind(this)
         }
     }
 
@@ -652,6 +654,36 @@ class users {
             res.json({ code: 500, success: false, message: "Internal server error", })
         }
     }
+    
+  async setFcmToken (req, res) {
+    try {
+
+        if (req.body.fcmToken) {
+            let data
+            let query = { status: 'active' }
+            let setData = { fcmToken: req.body.fcmToken }
+            if (req.body.userId) {
+                setData.userId = req.body.userId
+                query.userId = req.body.userId
+            }
+            console.log("query", query, "setData", setData)
+            data = await FcmToken.findOne(query);
+            if (data) {
+                data = await FcmToken.findOneAndUpdate(query, { $set: setData }, { new: true });
+            } else {
+                let saveData = new FcmToken(setData)
+                data = await saveData.save();
+            }
+            res.json({ code: 200, success: true, message: "Token set successfully", data: data })
+        } else {
+            res.json({ code: 403, success: false, message: "Fcm token is required", })
+        }
+
+    } catch (error) {
+        console.log("error in catch", error)
+        res.json({ code: 500, success: false, message: "Internal server error", })
+    }
+}
 
 }
 
