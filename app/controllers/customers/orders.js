@@ -83,7 +83,7 @@ class Orders {
         try {
             let data
             let getOrder
-            let { order_id, pickupLocation, dropLocation, stoppage, owner, recieverInfo, orderInfo, dropLocInfo, pickupLocInfo,payment_details,vehicle_details } = req.body
+            let { isCreated,order_id, pickupLocation, dropLocation, stoppage, owner, recieverInfo, orderInfo, dropLocInfo, pickupLocInfo,payment_details,vehicle_details } = req.body
             let obj = {}
             console.log("hishidhdi", order_id, pickupLocation, dropLocation, stoppage, owner, recieverInfo, orderInfo)
             if (!order_id && order_id == "") {
@@ -94,6 +94,9 @@ class Orders {
 
             if (orderInfo && orderInfo != "") {
                 obj.orderInfo = orderInfo
+            } 
+            if (isCreated && isCreated != "") {
+                obj.isCreated = isCreated
             }
             if (recieverInfo && recieverInfo != "") {
                 obj.recieverInfo = recieverInfo
