@@ -17,6 +17,9 @@ const moment = require("moment");
 const geolib = require('geolib');
 const CategoryModel = require('../../models/category')
 const FcmToken = require('../../models/fcmToken')
+const OrderModel = require('../../models/customer/orders')
+const NotificationModel = require('../../models/notification')
+const Notification = require('../../middlewares/notification');
 class users {
     constructor() {
         return {
@@ -35,7 +38,8 @@ class users {
             getWallet: this.getWallet.bind(this),
             resendOtp: this.resendOtp.bind(this),
             getCategory: this.getCategory.bind(this),
-            setFcmToken: this.setFcmToken.bind(this)
+            setFcmToken: this.setFcmToken.bind(this),
+            sendNotificationforDriver: this.sendNotificationforDriver.bind(this)
         }
     }
 
@@ -402,13 +406,13 @@ class users {
         }
 
     }
-    async _estimate(timePerKmInMin, distenceInKm ,driverData) {
+    async _estimate(timePerKmInMin, distenceInKm, driverData) {
         try {
             let data = await VehicleTypeModel.find().lean()
             for (let item of data) {
                 item.current_status = 'inactive'
-                for(let driver of driverData){
-                    if(driver.vehicles.vehicle_type == item.vehicle_type){
+                for (let driver of driverData) {
+                    if (driver.vehicles.vehicle_type == item.vehicle_type) {
                         item.current_status = 'active'
                     }
 
@@ -430,11 +434,11 @@ class users {
                 { latitude: req.body.pickupLocation.let, longitude: req.body.pickupLocation.long },
             )
             console.log("distence,,,,,,", distence / 1000)
-           let drivervehicle = await this._getNearestDriver(req.body.pickupLocation.let, req.body.pickupLocation.long)
+            let drivervehicle = await this._getNearestDriver(req.body.pickupLocation.let, req.body.pickupLocation.long)
             let timePerKmInMin = Number(constant.timePerKM)
             let distenceInKm = (distence / 1000)
 
-            data = await this._estimate(timePerKmInMin, distenceInKm ,drivervehicle)
+            data = await this._estimate(timePerKmInMin, distenceInKm, drivervehicle)
             res.json({ code: 200, success: true, message: "Get estimate successfully", data: data })
         } catch (error) {
             console.log("error in catch", error)
@@ -467,7 +471,7 @@ class users {
                     }
                 }
             }
-          let data = await DriverLocation.aggregate([{ $match: query },
+            let data = await DriverLocation.aggregate([{ $match: query },
             {
                 $lookup: {
                     from: "vehicledetails",
@@ -498,6 +502,7 @@ class users {
 
                     location: 1,
                     address: 1,
+                    "driver._id": 1,
                     "driver.name": 1,
                     "driver.phoneNo": 1,
                     "driver.address": 1
@@ -654,37 +659,94 @@ class users {
             res.json({ code: 500, success: false, message: "Internal server error", })
         }
     }
-    
-  async setFcmToken (req, res) {
-    try {
 
-        if (req.body.fcmToken) {
-            let data
-            let query = { status: 'active' }
-            let setData = { fcmToken: req.body.fcmToken }
-            if (req.body.userId) {
-                setData.userId = req.body.userId
-                query.userId = req.body.userId
-            }
-            console.log("query", query, "setData", setData)
-            data = await FcmToken.findOne(query);
-            if (data) {
-                data = await FcmToken.findOneAndUpdate(query, { $set: setData }, { new: true });
+    async setFcmToken(req, res) {
+        try {
+
+            if (req.body.fcmToken) {
+                let data
+                let query = { status: 'active' }
+                let setData = { fcmToken: req.body.fcmToken }
+                if (req.body.userId) {
+                    setData.userId = req.body.userId
+                    query.userId = req.body.userId
+                }
+                console.log("query", query, "setData", setData)
+                data = await FcmToken.findOne(query);
+                if (data) {
+                    data = await FcmToken.findOneAndUpdate(query, { $set: setData }, { new: true });
+                } else {
+                    let saveData = new FcmToken(setData)
+                    data = await saveData.save();
+                }
+                res.json({ code: 200, success: true, message: "Token set successfully", data: data })
             } else {
-                let saveData = new FcmToken(setData)
-                data = await saveData.save();
+                res.json({ code: 403, success: false, message: "Fcm token is required", })
             }
-            res.json({ code: 200, success: true, message: "Token set successfully", data: data })
-        } else {
-            res.json({ code: 403, success: false, message: "Fcm token is required", })
+
+        } catch (error) {
+            console.log("error in catch", error)
+            res.json({ code: 500, success: false, message: "Internal server error", })
         }
-
-    } catch (error) {
-        console.log("error in catch", error)
-        res.json({ code: 500, success: false, message: "Internal server error", })
     }
-}
+    async sendNotificationforDriver(req, res) {
+        try {
+            let { order_id } = req.body
+            if(!order_id){
+               return res.json({ code: 400, success: false, message: "order is required", })
+            }else{
+                let data = await OrderModel.findOne({ _id: order_id, }).lean()
+                if(data.isCreated== 'completed'){
+                    let driverData = await this._getNearestDriver(data.pickupLocation[0].coordinates[0], data.pickupLocation[0].coordinates[1])
+                    let driver_id
+                    // console.log("driverData",driverData )
+                    for (let item of driverData) {
+                        
+                        if (item.vehicles.vehicle_type == data.vehicle_details.vehicle_type) {
+                            let obj = data.cancel_reasons ? data.cancel_reasons.find(i => i.driverId === item.driver._id) : false
+                            if (obj) continue;
+                            driver_id = item.driver._id
+                            break;
+                        }
+                    }
+                    if (!driver_id) {
+                        res.json({ code: 400, success: false, message: "currently this driver is not available", })
+                    } else {
+                        console.log("driver_id",driver_id )
+                         let fcmTokenData = await FcmToken.findOne({userId: driver_id})
+                         if (fcmTokenData){
+                                let message = {
+                                    title : "This is order's req from customer",
+                                    time: moment().format("DD.MM.YYYY HH.mm.ss")
+                                }
+                                let saveNotification = new NotificationModel({
+                                  title: message.title,
+                                  orderId: data._id,
+                                  orderInfo: data.orderInfo,
+                                  toId: driver_id,
+                                  fromId: data.owner,
+                                })
+                                await saveNotification.save()
+                            let sendnotification = await Notification._sendPushNotificationToDriver(message, fcmTokenData.fcmToken, data)
+                            res.json({ code: 200, success: true, message: "Notification send successfully", })
+                        }else{
+                            res.json({ code: 400, success: true, message: "Fcm token is not updated", })     
+                        }
+                    }
+                }else{
+                    return res.json({ code: 400, success: false, message: "The order is incomplete please fill mendetory field", }) 
+                }
+              
+            }
+            
+        } catch (error) {
+            console.log("error in catch", error)
+            res.json({ code: 400, success: false, message: "Internal server error", })
+        }
+    }
+
 
 }
+
 
 module.exports = new users();

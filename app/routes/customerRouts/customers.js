@@ -28,6 +28,9 @@ router.get('/get-wallet', user_controller.getWallet)
 router.get('/get-category', user_controller.getCategory)
 //fcm token
 router.post('/set-token',user_controller.setFcmToken);
+router.post('/send-request',user_controller.sendNotificationforDriver);
+
+
 
 
 

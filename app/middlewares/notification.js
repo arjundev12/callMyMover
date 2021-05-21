@@ -102,7 +102,50 @@ _sendPushNotification = async (message, fcmtoken =null, data = null) => {
   }
   return true
 }
-module.exports = { _sendPushNotification }
+_sendPushNotificationToDriver = async (message, fcmtoken =null, data = null) => {
+  try {
+    // message.data = JSON.stringify(data)
+    console.log("hiiiii",  typeof   data, data)
+
+    var payload = {
+      // notification: message,
+      data : {
+        title: message.title,
+        time : message.time,
+        // otp : message.otp? message.otp : "",
+        orderId: data._id.toString(),
+        // status: data.status,
+        // estimateTime: `${data.estimateTime.time} ${data.estimateTime.unit}`,
+        // estimateDistance: `${data.estimateDistance.distance} ${data.estimateDistance.unit}`,
+        // pickupLocation:  data.pickupLocation[0].address,
+        // dropLocation:  data.dropLocation[0].address,
+        // job_cost:  data.orderInfo.job_cost
+
+      }
+    };
+    let token 
+    if(fcmtoken == '' || fcmtoken == null || fcmtoken == undefined){
+      let getToken = await fcmToken.findOne({status : 'active'})
+      token = [getToken.fcmToken]
+    }else{
+      token = [fcmtoken]
+    }
+  
+    console.log(payload)
+    var option = {
+      priority: "high",
+      timeToLive: 60 * 60 * 24
+    }
+    let response = await firebaseAdmin.messaging().sendToDevice(token, payload, option)
+    console.log("response of notification", response)
+  } catch (error) {
+    console.log("error in notification", error)
+  }
+  return true
+}
+module.exports = { _sendPushNotification,
+  _sendPushNotificationToDriver,
+}
 
 
 
