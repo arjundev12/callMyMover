@@ -83,7 +83,7 @@ class Orders {
         try {
             let data
             let getOrder
-            let { order_id, pickupLocation, dropLocation, stoppage, owner, recieverInfo, orderInfo, dropLocInfo, pickupLocInfo } = req.body
+            let { order_id, pickupLocation, dropLocation, stoppage, owner, recieverInfo, orderInfo, dropLocInfo, pickupLocInfo,payment_details,vehicle_details } = req.body
             let obj = {}
             console.log("hishidhdi", order_id, pickupLocation, dropLocation, stoppage, owner, recieverInfo, orderInfo)
             if (!order_id && order_id == "") {
@@ -103,6 +103,12 @@ class Orders {
             }
             if (dropLocInfo && dropLocInfo != "") {
                 obj.dropLocInfo = dropLocInfo
+            }
+            if (payment_details && payment_details != "") {
+                obj.payment_details = payment_details
+            }
+            if (vehicle_details && vehicle_details != "") {
+                obj.vehicle_details = vehicle_details
             }
             // console.log("jiiii", obj, pickupLocation != "")
             if (pickupLocation && pickupLocation != "") {

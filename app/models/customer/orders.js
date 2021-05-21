@@ -55,6 +55,12 @@ var OrderSchema = new Schema({
   },
   cancel_reasons: {
     type: { any: [Schema.Types.Mixed] }
+  },
+  vehicle_details: {
+    type: { any: [Schema.Types.Mixed] }
+  },
+  payment_details: {
+    type: { any: [Schema.Types.Mixed] }
   }
 }, { timestamps: true });
 OrderSchema.plugin(mongoosePaginate);
