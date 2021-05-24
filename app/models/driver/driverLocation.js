@@ -19,7 +19,7 @@ const DriverdataSchema = Schema({
   },
   driverId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "driverauth"
+    ref: "driverAuth"
   },
 },
   {

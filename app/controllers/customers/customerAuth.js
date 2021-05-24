@@ -39,7 +39,8 @@ class users {
             resendOtp: this.resendOtp.bind(this),
             getCategory: this.getCategory.bind(this),
             setFcmToken: this.setFcmToken.bind(this),
-            sendNotificationforDriver: this.sendNotificationforDriver.bind(this)
+            sendNotificationforDriver: this.sendNotificationforDriver.bind(this),
+            viewDriver: this.viewDriver.bind(this)
         }
     }
 
@@ -744,8 +745,24 @@ class users {
             res.json({ code: 400, success: false, message: "Internal server error", })
         }
     }
-
-
+    async viewDriver(req, res) {
+        try {
+            let query = {
+                driverId: req.body.driverId
+            }
+            let getUser = await DriverLocation.findOne(query).populate('driverId','name phoneNo').lean()
+            getUser.location = {
+                lat: getUser.location.coordinates[0],
+                long :getUser.location.coordinates[1]
+            }
+            getUser.driver_details = getUser.driverId
+            delete getUser.driverId
+            res.json({ code: 200, success: true, message: "Data get successfully", data: getUser })
+        } catch (error) {
+            console.log("Error in catch", error)
+            res.json({ code: 400, success: false, message: "Internal server error", data: null })
+        }
+    }
 }
 
 

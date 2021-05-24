@@ -29,6 +29,8 @@ router.get('/get-category', user_controller.getCategory)
 //fcm token
 router.post('/set-token',user_controller.setFcmToken);
 router.post('/send-request',user_controller.sendNotificationforDriver);
+router.post('/view-driver',user_controller.viewDriver);
+
 
 
 
