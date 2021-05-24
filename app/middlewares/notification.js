@@ -59,18 +59,20 @@ _sendPushNotification = async (message, fcmtoken =null, data = null) => {
         otp : message.otp? message.otp : "",
         _id: data._id.toString(),
         status: data.status,
-        estimateTime: `${data.estimateTime.time} ${data.estimateTime.unit}`,
-        estimateDistance: `${data.estimateDistance.distance} ${data.estimateDistance.unit}`,
+        estimateTime: `${data.vehicle_details.estimateTime}`,
+        estimateDistance: `${data.vehicle_details.estimateDistance}`,
         pickupLocation:  data.pickupLocation[0].address,
         dropLocation:  data.dropLocation[0].address,
-        job_cost:  data.orderInfo.job_cost
+        job_cost:  data.orderInfo.job_cost? data.orderInfo.job_cost: ""
 
       }
     };
     let token 
     // console.log("hiiiii",  typeof   payload.data.pickupLocation, payload.data.pickupLocation)
     if(fcmtoken == '' || fcmtoken == null || fcmtoken == undefined){
-      let getToken = await fcmToken.findOne({status : 'active'})
+      // let getToken = await fcmToken.findOne({status : 'active'})
+      let getToken = await fcmToken.findOne({userId : data.owner})
+      
       token = [getToken.fcmToken]
     }else{
       token = [fcmtoken]
