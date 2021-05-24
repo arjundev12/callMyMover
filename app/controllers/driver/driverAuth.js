@@ -64,7 +64,9 @@ class driver {
             // console.log("hiiiiii",user )
             let updateData = await DriverModel.findOneAndUpdate({ _id: user._id }, user, { new: true }).lean()
             let referId = await walletModel.findOne({ driver_id: user._id })
-            updateData.referId = referId.referral_id
+            if(referId){
+                updateData.referId = referId.referral_id
+            }
             return updateData
         } catch (error) {
             throw error
