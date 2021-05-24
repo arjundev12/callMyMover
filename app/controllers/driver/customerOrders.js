@@ -27,6 +27,7 @@ findAllOrders = async (req, res) => {
 updateOrder = async (req, res) => {
     try {
         let order = await Orders.findOne({ _id: req.body.orderId })
+        console.log("order", order)
         // if (order.status == 'new' || order.status == 'canceled') {
         let data = await Orders.findOneAndUpdate({ _id: req.body.orderId }, {
             $set: {
@@ -36,7 +37,7 @@ updateOrder = async (req, res) => {
         }, { new: true });
         // if (data.status == 'accepted'  ||data.status == 'canceled' ) {
         //send notification on customer divice
-        console.log("data.status", data.status)
+        console.log("data.status", data)
         let message = {
             title: `your order is ${data.status} by service provider`,
             time: Date.now().toString()

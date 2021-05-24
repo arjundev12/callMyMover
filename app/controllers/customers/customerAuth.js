@@ -699,7 +699,7 @@ class users {
                 if(data.isCreated== 'completed'){
                     let driverData = await this._getNearestDriver(data.pickupLocation[0].coordinates[0], data.pickupLocation[0].coordinates[1])
                     let driver_id
-                    // console.log("driverData",driverData )
+                    console.log("driverData.......",driverData )
                     for (let item of driverData) {
                         
                         if (item.vehicles.vehicle_type == data.vehicle_details.vehicle_type) {
@@ -712,7 +712,7 @@ class users {
                     if (!driver_id) {
                         res.json({ code: 400, success: false, message: "currently this driver is not available", })
                     } else {
-                        console.log("driver_id",driver_id )
+                        console.log("driver_id....",driver_id )
                          let fcmTokenData = await FcmToken.findOne({userId: driver_id})
                          if (fcmTokenData){
                                 let message = {
