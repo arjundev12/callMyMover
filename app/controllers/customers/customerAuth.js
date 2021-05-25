@@ -538,6 +538,7 @@ class users {
             //         }
             //     }
             // }
+            
             // data = await DriverLocation.aggregate([{ $match: query },
             // {
             //     $lookup: {
@@ -764,6 +765,5 @@ class users {
         }
     }
 }
-
 
 module.exports = new users();

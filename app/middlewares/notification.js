@@ -63,7 +63,8 @@ _sendPushNotification = async (message, fcmtoken =null, data = null) => {
         estimateDistance: `${data.vehicle_details.estimateDistance}`,
         pickupLocation:  data.pickupLocation[0].address,
         dropLocation:  data.dropLocation[0].address,
-        job_cost:  data.orderInfo.job_cost? data.orderInfo.job_cost: ""
+        job_cost:  data.orderInfo.job_cost? data.orderInfo.job_cost: "",
+        driverId: data.driverId ? data.driverId: ""
 
       }
     };
