@@ -88,7 +88,7 @@ _sendPushNotification = async (message, fcmtoken =null, data = null) => {
       })
       saveNotification.save()
     }
-    // console.log("",payload,token)
+    console.log(",payload,token,payload,token",payload,token)
     var option = {
       priority: "high",
       timeToLive: 60 * 60 * 24
