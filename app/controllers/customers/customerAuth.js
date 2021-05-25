@@ -421,6 +421,7 @@ class users {
                 item.estimatePrice = `${Number(item.base_price) + (item.vehicle_rate * distenceInKm)} rs`
                 item.estimateTime = `${distenceInKm * timePerKmInMin} min`
                 item.truck_logo = constant.truckLogo
+                item.estimateDistance= `${distenceInKm} Km`
             }
             return data
         } catch (error) {
@@ -440,6 +441,7 @@ class users {
             let distenceInKm = (distence / 1000)
 
             data = await this._estimate(timePerKmInMin, distenceInKm, drivervehicle)
+            // data.estimateDistance = `${distenceInKm} Km`
             res.json({ code: 200, success: true, message: "Get estimate successfully", data: data })
         } catch (error) {
             console.log("error in catch", error)
