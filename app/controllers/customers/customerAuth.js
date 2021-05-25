@@ -751,7 +751,7 @@ class users {
     async viewDriver(req, res) {
         try {
             let query = {
-                driverId: req.body.driverId
+                driverId: req.body.driverId.toString()
             }
             let getUser = await DriverLocation.findOne(query).populate('driverId','name phoneNo').lean()
             getUser.location = {
