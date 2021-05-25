@@ -751,16 +751,24 @@ class users {
     async viewDriver(req, res) {
         try {
             let query = {
-                driverId: req.body.driverId.toString()
+
+                driverId: Mongoose.Types.ObjectId(req.body.driverId)
             }
+            console.log("hihhihihih",query )
             let getUser = await DriverLocation.findOne(query).populate('driverId','name phoneNo').lean()
-            getUser.location = {
-                lat: getUser.location.coordinates[0],
-                long :getUser.location.coordinates[1]
+            console.log("hihhihihih",getUser )
+            if(getUser){
+                getUser.location = {
+                    lat: getUser.location.coordinates[0],
+                    long :getUser.location.coordinates[1]
+                }
+                getUser.driver_details = getUser.driverId
+                delete getUser.driverId
+                res.json({ code: 200, success: true, message: "Data get successfully", data: getUser })
+            }else{
+                res.json({ code: 200, success: true, message: "Driver current location is not updated", }) 
             }
-            getUser.driver_details = getUser.driverId
-            delete getUser.driverId
-            res.json({ code: 200, success: true, message: "Data get successfully", data: getUser })
+
         } catch (error) {
             console.log("Error in catch", error)
             res.json({ code: 400, success: false, message: "Internal server error", data: null })
